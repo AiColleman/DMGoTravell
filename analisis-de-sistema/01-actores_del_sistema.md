@@ -1,73 +1,242 @@
-# Actores del sistema
+# 01. Actores del sistema
 
-A continuación se definen los actores que interactúan con el sistema DMGOTRAVEL, incluyendo usuarios humanos, sistemas externos y procesos automatizados necesarios para la operación en un entorno de producción.
+## Propósito
 
-## Resumen de Actores
+Este documento identifica los actores humanos, sistemas externos y procesos automatizados que interactúan con **DMGOTRAVEL**, delimitando sus responsabilidades y restricciones dentro del alcance del sistema.
 
-| Actor | ¿Qué necesita realizar? | 
-| ----- | ----- | 
-| **Cliente** | Conocer la oferta turística, solicitar y gestionar sus reservas, realizar el pago de las mismas, y administrar sus datos personales. | 
-| **Administrador** | Mantener el catálogo actualizado, controlar la operación de reservas, gestionar estados y consultar indicadores o auditorías. | 
-| **Pasarela de Pago (Culqi)** | Procesar de manera segura las transacciones de pago con tarjeta y notificar al sistema la confirmación de los fondos. | 
-| **Google** | Proveer la identidad del usuario de manera segura para permitir el acceso mediante autenticación social. | 
-| **Resend** | Enviar de manera automatizada y única los comprobantes de pago exitoso al correo electrónico de los clientes. | 
-| **Sistema de Tareas (Cronjob)** | Proceso automatizado interno que audita y cancela periódicamente las reservas pendientes que han superado el tiempo límite de pago. | 
+La solución se implementará con **React** en el frontend y **ASP.NET Core** en el backend, utilizando **JWT** para autenticación de la API, **PostgreSQL** como motor relacional, **Entity Framework Core** como ORM y servicios externos como **Culqi**, **Resend**, **Google OAuth** y **Cloudflare R2**.
 
-## Descripción Detallada y Responsabilidades
+---
 
-### Cliente
+## Resumen de actores
 
-* **Tipo:** Humano, primario.
-* **Descripción:** Es el usuario final del sistema. Puede ser alguien que explora la plataforma de forma anónima o alguien ya registrado (con el rol `client` o vía Google). Su objetivo es explorar el catálogo, concretar y hacer seguimiento a sus viajes.
-* **Responsabilidades y límites:**
-  * Accede al catálogo público para consultar detalles de las ofertas (título, descripción, precio, capacidad, duración).
-  * Debe autenticarse para solicitar reservas para las ofertas activas en fechas disponibles.
-  * Realiza el proceso de pago a través del checkout integrado.
-  * Consulta el historial de sus propias reservas y tiene permisos para cancelar exclusivamente aquellas que se encuentren en estado `pending`.
-  * Recibe en su correo electrónico un comprobante de pago exitoso tras completar el proceso de reserva y cobro.
-  * Puede actualizar sus datos básicos (nombre y teléfono) y solicitar la eliminación lógica de su cuenta.
+| Actor | Tipo | Responsabilidad principal |
+|---|---|---|
+| **Cliente** | Humano, primario | Consultar ofertas y hoteles, autenticarse, realizar reservas, pagar y gestionar su perfil. |
+| **Administrador** | Humano, primario | Gestionar catálogo, hoteles, reservas, clientes, auditoría e indicadores. |
+| **Culqi** | Sistema externo | Procesar pagos electrónicos y notificar eventos de pago mediante Webhooks. |
+| **Google** | Sistema externo | Proveer autenticación social mediante OAuth 2.0 / OpenID Connect. |
+| **Resend** | Sistema externo | Enviar correos transaccionales y comprobantes. |
+| **Cloudflare R2** | Sistema externo | Almacenar imágenes y archivos multimedia del catálogo. |
+| **Hangfire** | Proceso interno automatizado | Ejecutar trabajos en segundo plano, como vencimiento de reservas y reintentos controlados. |
 
-### Administrador
+---
 
-* **Tipo:** Humano, primario.
-* **Descripción:** Es el usuario encargado del back-office y la gestión operativa de DMGOTRAVEL. Accede a través de rutas protegidas específicas para su rol (`role:admin`).
-* **Responsabilidades y límites:**
-  * Crea, actualiza y gestiona el catálogo de servicios o paquetes (precios, cupos, duración e itinerarios).
-  * Revisa las reservas de todos los clientes, monitorea los estados y aplica las transiciones válidas de forma manual si se requiere.
-  * Consulta la lista de clientes, revisa los registros de auditoría y exporta resúmenes administrativos e indicadores a PDF.
-  * *Límite:* No existe un registro público para este rol; las cuentas administrativas deben ser provisionadas internamente.
+## 1. Cliente
 
-### Pasarela de Pago (Culqi)
+**Tipo:** Humano, primario.
 
-* **Tipo:** Sistema externo, secundario.
-* **Descripción:** Servicio de terceros encargado de procesar los cobros de las reservas mediante tarjetas de crédito o débito directamente en la plataforma.
-* **Responsabilidades y límites:**
-  * Recibe los datos de pago tokenizados desde el frontend.
-  * Valida y procesa la transacción de cobro, comunicándose con las redes financieras.
-  * Devuelve una respuesta al cliente en el frontend y, de manera asíncrona y segura, emite un evento (*Webhook*) al backend de Laravel para confirmar la captura de fondos y habilitar la generación del comprobante.
+**Descripción:** Usuario final de la plataforma. Puede explorar el catálogo de manera anónima, pero debe autenticarse para realizar operaciones asociadas a una cuenta, como reservar, pagar o consultar su historial.
 
-### Google
+### Responsabilidades
 
-* **Tipo:** Sistema externo, secundario.
-* **Descripción:** Proveedor de identidad que facilita el acceso rápido y seguro a la plataforma mediante el flujo de Social Login (OAuth).
-* **Responsabilidades y límites:**
-  * Autentica al usuario en sus propios servidores y solicita su consentimiento para compartir datos básicos (email, nombre).
-  * Devuelve la identidad al backend (mediante Laravel Socialite) tras el callback exitoso.
+- Consultar el catálogo público de ofertas turísticas activas.
+- Consultar hoteles, tipos de habitación, tarifas y disponibilidad.
+- Registrarse mediante correo y contraseña.
+- Iniciar sesión con credenciales locales.
+- Iniciar sesión mediante Google OAuth.
+- Crear una reserva turística.
+- Agregar alojamiento de forma opcional.
+- Consultar el precio total calculado por el backend.
+- Realizar el pago electrónico mediante Culqi.
+- Consultar su historial y el estado de sus reservas.
+- Cancelar una reserva únicamente mientras se encuentre en estado `pending`.
+- Actualizar sus datos personales permitidos.
+- Solicitar la eliminación lógica de su cuenta.
+- Recibir correos de confirmación y comprobantes.
 
-### Resend
+### Restricciones
 
-* **Tipo:** Sistema externo, secundario.
-* **Descripción:** Plataforma de servicio de correo transaccional utilizada para enviar notificaciones críticas y documentos, específicamente los comprobantes de pago, a los clientes.
-* **Responsabilidades y límites:**
-  * Recibe la petición desde el backend una vez que el sistema confirma vía webhook que el pago (vía Culqi) fue exitoso.
-  * Toma el documento generado por el backend (comprobante en HTML o archivo PDF) y lo envía a la dirección de correo electrónico asociada al cliente.
-  * *Límite / Control interno:* Su ejecución depende del backend, el cual asegura un envío único al registrar la marca `comprobanteEnviado: true` en la base de datos tras la solicitud, evitando que el cliente reciba correos duplicados por reintentos o errores.
+- No puede acceder a reservas pertenecientes a otros clientes.
+- No puede establecer manualmente el precio de una reserva.
+- No puede modificar directamente el estado de una reserva.
+- No puede confirmar una reserva sin que exista un pago validado.
+- No puede acceder a funciones administrativas.
 
-### Sistema de Tareas (Cronjob / Laravel Scheduler)
+---
 
-* **Tipo:** Proceso interno automatizado.
-* **Descripción:** Tarea en segundo plano programada en el servidor que reemplaza la intervención manual para el mantenimiento de la integridad de los datos de las reservas.
-* **Responsabilidades y límites:**
-  * Se ejecuta periódicamente (ej. cada hora o según la regla de negocio) revisando la base de datos de DMGOTRAVEL.
-  * Identifica las reservas en estado `pending` cuyo tiempo límite para realizar el pago ha expirado.
-  * Ejecuta la cancelación automática (`cancelled`), liberando así los cupos para que otros clientes puedan reservar.
+## 2. Administrador
+
+**Tipo:** Humano, primario.
+
+**Descripción:** Usuario responsable de la operación administrativa de DMGOTRAVEL. Accede mediante autenticación y autorización basada en roles.
+
+### Responsabilidades
+
+- Crear, modificar, activar y desactivar ofertas turísticas.
+- Gestionar paquetes turísticos.
+- Registrar y actualizar hoteles.
+- Gestionar tipos de habitación, tarifas e inventario.
+- Consultar reservas de todos los clientes.
+- Consultar clientes registrados.
+- Gestionar estados operativos permitidos de las reservas.
+- Consultar registros de auditoría.
+- Consultar indicadores de operación y ventas.
+- Exportar reportes administrativos.
+- Supervisar tareas operativas y excepciones.
+
+### Restricciones
+
+- No existe registro público para cuentas administrativas.
+- Una cuenta administrativa debe ser aprovisionada mediante un mecanismo interno controlado.
+- No puede editar ni eliminar registros de auditoría.
+- No debe cambiar una reserva `pending` a `confirmed` sin evidencia de un pago válido.
+- Las operaciones críticas deben quedar registradas en auditoría.
+
+---
+
+## 3. Culqi
+
+**Tipo:** Sistema externo, secundario.
+
+**Descripción:** Pasarela de pagos encargada de procesar transacciones electrónicas.
+
+### Responsabilidades
+
+- Tokenizar o procesar la información de pago según el flujo oficial de Culqi.
+- Procesar la transacción solicitada.
+- Retornar el resultado del intento de pago.
+- Emitir eventos mediante Webhooks cuando corresponda.
+
+### Responsabilidades del backend frente a Culqi
+
+El backend de DMGOTRAVEL debe:
+
+- Calcular el importe final de la reserva en el servidor.
+- No confiar en importes recibidos desde el frontend.
+- Relacionar cada operación de pago con una reserva.
+- Registrar el identificador externo de la operación.
+- Validar la autenticidad del Webhook conforme al mecanismo oficial de Culqi.
+- Implementar idempotencia para evitar procesamiento duplicado.
+- Confirmar la reserva únicamente después de validar un pago exitoso.
+- Registrar fallos, reintentos o eventos relevantes para trazabilidad.
+
+---
+
+## 4. Google
+
+**Tipo:** Sistema externo, secundario.
+
+**Descripción:** Proveedor de identidad utilizado para autenticación social.
+
+### Responsabilidades
+
+- Autenticar al usuario en la infraestructura de Google.
+- Solicitar consentimiento para compartir información autorizada.
+- Proporcionar al backend la identidad verificada del usuario.
+
+### Responsabilidades del backend
+
+- Validar correctamente la respuesta del proveedor.
+- Vincular la identidad externa con una cuenta local.
+- Evitar duplicación de usuarios por correo.
+- Emitir los tokens de acceso propios de DMGOTRAVEL después de validar la identidad.
+
+---
+
+## 5. Resend
+
+**Tipo:** Sistema externo, secundario.
+
+**Descripción:** Servicio de correo transaccional.
+
+### Responsabilidades
+
+- Enviar mensajes generados por DMGOTRAVEL.
+- Entregar confirmaciones y comprobantes de pago.
+- Retornar el resultado de la solicitud de envío.
+
+### Responsabilidades del backend
+
+- Registrar cada intento de notificación.
+- Evitar envíos duplicados.
+- Conservar el identificador retornado por el proveedor cuando esté disponible.
+- Reintentar únicamente cuando corresponda.
+- No bloquear la confirmación del pago por un fallo temporal del servicio de correo.
+
+---
+
+## 6. Cloudflare R2
+
+**Tipo:** Sistema externo, secundario.
+
+**Descripción:** Servicio de almacenamiento de objetos utilizado para archivos multimedia.
+
+### Responsabilidades
+
+- Almacenar imágenes del catálogo turístico y hoteles.
+- Proporcionar acceso controlado a los archivos.
+
+### Responsabilidades del backend
+
+- Validar extensión, tipo MIME y tamaño máximo.
+- Generar nombres de archivo no predecibles.
+- Almacenar únicamente las referencias necesarias en PostgreSQL.
+- Aplicar una estrategia consistente de eliminación o reemplazo de archivos.
+
+---
+
+## 7. Hangfire
+
+**Tipo:** Proceso interno automatizado.
+
+**Descripción:** Mecanismo de trabajos en segundo plano integrado en el backend ASP.NET Core.
+
+### Responsabilidades
+
+- Detectar reservas `pending` cuyo plazo de pago haya vencido.
+- Cambiar las reservas vencidas a `cancelled`.
+- Liberar cupos turísticos bloqueados.
+- Liberar inventario hotelero bloqueado.
+- Registrar la operación automática en auditoría.
+- Ejecutar reintentos controlados de procesos que lo requieran.
+
+### Consideraciones
+
+- El tiempo máximo de una reserva pendiente debe definirse mediante configuración.
+- Los trabajos deben ser idempotentes.
+- Una ejecución repetida no debe liberar dos veces el mismo inventario ni alterar una reserva ya finalizada.
+
+---
+
+## Matriz actor-funcionalidad
+
+| Funcionalidad | Cliente | Administrador | Culqi | Google | Resend | R2 | Hangfire |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Consultar catálogo | ✓ | ✓ |  |  |  | ✓ |  |
+| Gestionar catálogo |  | ✓ |  |  |  | ✓ |  |
+| Registrarse / iniciar sesión | ✓ | ✓ |  | ✓ |  |  |  |
+| Crear reserva | ✓ |  |  |  |  |  |  |
+| Procesar pago | ✓ |  | ✓ |  |  |  |  |
+| Confirmar pago |  |  | ✓ |  |  |  |  |
+| Enviar comprobante |  |  |  |  | ✓ |  | ✓ |
+| Consultar historial | ✓ | ✓ |  |  |  |  |  |
+| Cancelar reserva pendiente | ✓ | ✓ |  |  |  |  | ✓ |
+| Gestionar hoteles |  | ✓ |  |  |  | ✓ |  |
+| Consultar auditoría |  | ✓ |  |  |  |  |  |
+| Ejecutar tareas automáticas |  |  |  |  |  |  | ✓ |
+
+---
+
+## Criterio de consistencia tecnológica
+
+A partir de este documento, toda la documentación del proyecto debe considerar como base:
+
+```text
+Frontend        React
+Backend         ASP.NET Core / C#
+API             REST / JSON
+Autenticación   ASP.NET Core Identity + JWT
+OAuth           Google
+ORM             Entity Framework Core
+Base de datos   PostgreSQL / Supabase
+CQRS            MediatR
+Validación      FluentValidation
+Background      Hangfire
+Pagos           Culqi
+Correo          Resend
+Archivos        Cloudflare R2
+Hosting web     Vercel
+Hosting API     Render
+Edge            Cloudflare CDN / WAF
+```
