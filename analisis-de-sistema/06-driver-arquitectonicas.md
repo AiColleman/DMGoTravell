@@ -2,36 +2,198 @@
 
 ## Propósito
 
-Los drivers son las necesidades técnicas, operativas y de negocio que moldean profundamente la estructura del sistema. Esta síntesis se deriva del dominio de reservas turísticas (tours y hoteles), los atributos de calidad (AC) y las restricciones del sistema (RC) establecidas para la arquitectura en .NET y PostgreSQL.
+Los drivers arquitectónicos representan las necesidades de negocio, calidad y restricciones que influyen directamente en la estructura de DMGOTRAVEL.
 
-## Objetivos de negocio
+---
 
-*   Centralizar la oferta turística y hotelera en un catálogo unificado.
-*   Facilitar al cliente la reserva compuesta (tour + alojamiento) y el pago automatizado.
-*   Garantizar a la agencia el control exacto de cupos, evitando la sobreventa.
-*   Automatizar flujos operativos (cancelaciones, correos) para reducir la carga administrativa.
+# 1. Objetivos de negocio
 
-## Matriz de drivers arquitectónicos
+DMGOTRAVEL debe:
 
-| ID | Driver arquitectónico | Origen | ¿Por qué influye en la arquitectura? |
-| :--- | :--- | :--- | :--- |
-| **DA01** | El sistema debe soportar un incremento importante de usuarios durante campañas comerciales. | AC03 - Escalabilidad | Puede influir en la estrategia de escalamiento y despliegue. Obliga a diseñar un monolito sin estado (stateless) que pueda replicarse fácilmente. |
-| **DA02** | El sistema debe mantener tiempos de respuesta adecuados durante una alta concurrencia. | AC01 - Rendimiento | Puede influir en la comunicación entre componentes, procesamiento y almacenamiento. Requiere el uso de cachés en memoria (`IMemoryCache` de .NET) para el catálogo. |
-| **DA03** | El sistema debe proteger los datos de usuarios y operaciones de compra. | AC04 - Seguridad | Puede influir en autenticación, autorización y protección de datos. Exige el uso de JWT centralizado y encriptación de datos sensibles. |
-| **DA04** | El sistema debe integrarse con una pasarela de pago externa para procesar las operaciones de pago. | RC04 - Pasarela de pago | Condiciona la forma de comunicación e infraestructura de red, requiriendo endpoints públicos seguros para recibir webhooks asíncronos de Culqi. |
-| **DA05** | El sistema debe evitar estrictamente la sobreventa de cupos turísticos y habitaciones. | AC07 - Integridad y Concurrencia | Define el modelo de persistencia; obliga a usar transacciones con bloqueos de fila (`IsolationLevel`) en PostgreSQL mediante Entity Framework Core. |
-| **DA06** | El sistema debe automatizar la liberación de cupos de reservas no pagadas. | RC09 - Tareas en Segundo Plano | Exige integrar mecanismos de procesamiento en background (ej. `BackgroundService` en ASP.NET Core) que operen sin bloquear el hilo principal de peticiones HTTP. |
-| **DA07** | El sistema debe notificar al usuario sobre su comprobante de manera asíncrona y segura. | RC05 - Servicio de notificaciones | Introduce la necesidad de gestionar fallos de red hacia la API de Resend y aplicar un control de idempotencia (`comprobanteEnviado`) en la base de datos. |
+- centralizar la oferta turística y hotelera;
+- permitir reservas simples y compuestas;
+- procesar pagos electrónicos;
+- evitar sobreventa;
+- automatizar tareas operativas;
+- conservar trazabilidad;
+- mantener un costo operativo razonable;
+- permitir crecimiento progresivo sin introducir complejidad distribuida innecesaria.
 
-## Driver principal: Integridad transaccional de la reserva compuesta
+---
 
-La reserva es el núcleo del negocio y ahora enlaza de forma opcional servicios turísticos y habitaciones de hotel en una misma transacción. Una inconsistencia aquí genera pérdida de dinero o sobreventa. Por ello, la arquitectura exige que el bloqueo de cupos de tours y el inventario de hoteles se ejecute bajo una única transacción ACID en PostgreSQL. Si cualquiera de las dos validaciones falla, se debe aplicar un `Rollback` completo.
+# 2. Drivers principales
 
-## Tensiones arquitectónicas
+| ID | Driver | Origen | Impacto arquitectónico |
+|---|---|---|---|
+| **DA01** | Soportar crecimiento del tráfico. | AC03 | Backend stateless, frontend independiente y posibilidad de escalado horizontal. |
+| **DA02** | Mantener buen rendimiento en catálogo y consultas. | AC01 | Paginación, índices, DTOs, consultas optimizadas y caché limitada a datos no críticos. |
+| **DA03** | Proteger identidad y datos de clientes. | AC04, AC05 | Identity, JWT, RBAC, aislamiento por usuario, HTTPS y políticas de seguridad. |
+| **DA04** | Procesar pagos externos de forma segura. | RC14 | Integración desacoplada, idempotencia, Webhooks y trazabilidad de pagos. |
+| **DA05** | Evitar sobreventa. | AC07 | PostgreSQL, transacciones y estrategia explícita de concurrencia. |
+| **DA06** | Automatizar vencimiento de reservas. | RC17 | Hangfire y trabajos idempotentes. |
+| **DA07** | Enviar notificaciones sin bloquear la operación principal. | RC15 | Servicio de correo desacoplado e intentos persistidos. |
+| **DA08** | Conservar historial. | RN, AC09 | Snapshots de precio, borrado lógico y auditoría. |
+| **DA09** | Mantener el sistema modificable y testeable. | AC06, AC11 | Clean Architecture, módulos, interfaces y CQRS. |
+| **DA10** | Reducir complejidad de infraestructura inicial. | Restricción de proyecto | Monolito Modular en lugar de microservicios. |
 
-| Tensión | Situación actual | Criterio de resolución |
-| :--- | :--- | :--- |
-| **Rendimiento vs. Consistencia de Cupos** | Se necesita leer el catálogo rápido, pero los cupos cambian cada segundo. | Cachear únicamente los datos descriptivos del catálogo (textos, fotos, precios base). El cálculo de cupos siempre debe consultar directamente a PostgreSQL. |
-| **Monolito vs. Tareas asíncronas pesadas** | El Cronjob de cancelación (vencimiento de reservas) corre en el mismo servidor que la API web. | Utilizar hilos separados (`IHostedService`) y controlar el uso de CPU. Si el tráfico crece, este proceso deberá extraerse a un worker externo. |
-| **Acoplamiento vs. Manejo de Webhooks** | El estado de la reserva depende de una llamada externa (Culqi) que puede demorar o fallar. | Separar la intención de compra (reserva `pending`) de la confirmación (reserva `confirmed`). El Webhook solo actualiza el estado, no procesa lógica de carrito. |
-| **Eliminación vs. Integridad referencial** | Se requiere desactivar hoteles u ofertas, pero hay reservas históricas atadas a ellos. | Implementar Global Query Filters en EF Core para un borrado lógico estricto (`IsDeleted = true`), manteniendo las llaves foráneas intactas en la base de datos. |
+---
+
+# 3. Driver principal: integridad transaccional
+
+El núcleo del sistema es la reserva.
+
+Una reserva puede involucrar:
+
+```text
+Tour
++
+Alojamiento opcional
++
+Pago
+```
+
+La creación de la reserva debe evitar inconsistencias como:
+
+- reservar un tour sin cupos;
+- bloquear hotel sin poder bloquear tour;
+- descontar dos veces la misma habitación;
+- confirmar una reserva sin pago válido;
+- liberar disponibilidad dos veces.
+
+Por lo tanto, **integridad y concurrencia** son los drivers técnicos más importantes del dominio.
+
+---
+
+# 4. Decisiones derivadas
+
+## DA05 — Concurrencia
+
+Implica:
+
+```text
+PostgreSQL
++
+Entity Framework Core
++
+Transacciones
++
+Bloqueos/controles de concurrencia
++
+Restricciones de BD
+```
+
+La solución exacta se documentará en el diseño de persistencia.
+
+---
+
+## DA04 — Pagos
+
+Implica separar:
+
+```text
+Reserva pending
+        |
+        v
+Intento de pago
+        |
+        v
+Confirmación del proveedor
+        |
+        v
+Reserva confirmed
+```
+
+La API no debe utilizar un botón administrativo como mecanismo normal de confirmación de pagos.
+
+---
+
+## DA06 — Automatización
+
+El vencimiento se ejecutará con Hangfire.
+
+```text
+Reserva pending
+      |
+      | plazo vencido
+      v
+Hangfire
+      |
+      v
+cancelled
+      |
+      +--> liberar tour
+      +--> liberar hotel
+      +--> auditoría
+```
+
+---
+
+# 5. Tensiones arquitectónicas
+
+| Tensión | Riesgo | Resolución inicial |
+|---|---|---|
+| Rendimiento vs consistencia | Cachear disponibilidad puede mostrar datos incorrectos. | Cachear contenido descriptivo, no disponibilidad crítica. |
+| Simplicidad vs modularidad | Un monolito puede convertirse en código fuertemente acoplado. | Monolito Modular + Clean Architecture. |
+| Escalado horizontal vs caché local | `IMemoryCache` no se comparte entre instancias. | Utilizarlo solo donde sea seguro y diseñar migración futura a caché distribuida. |
+| Pago síncrono vs eventos externos | Puede existir retraso entre intento y confirmación. | Persistir Payment y procesar Webhooks de forma idempotente. |
+| Correo vs confirmación | Un fallo de correo no debe revertir un pago. | Confirmar pago primero y manejar notificación como proceso separado. |
+| Borrado vs historial | Eliminar catálogo puede romper reservas antiguas. | Soft delete y snapshots de datos críticos. |
+| Bajo costo vs alta disponibilidad | Los planes gratuitos o básicos pueden tener límites. | Diseñar portabilidad mediante Docker y servicios desacoplados. |
+
+---
+
+# 6. Priorización
+
+| Prioridad | Driver |
+|---|---|
+| **Crítica** | DA05 — Integridad y concurrencia |
+| **Crítica** | DA04 — Seguridad e idempotencia de pagos |
+| **Alta** | DA03 — Seguridad e identidad |
+| **Alta** | DA09 — Mantenibilidad y testabilidad |
+| **Alta** | DA06 — Automatización operativa |
+| **Media** | DA01 — Escalabilidad |
+| **Media** | DA02 — Rendimiento |
+| **Media** | DA07 — Notificaciones |
+| **Media** | DA08 — Historial |
+| **Media** | DA10 — Simplicidad operativa |
+
+---
+
+# 7. Trazabilidad de drivers
+
+```text
+Objetivos de negocio
+       |
+       v
+Historias de usuario
+       |
+       v
+Requisitos
+       |
+       v
+Atributos de calidad / Restricciones
+       |
+       v
+Drivers arquitectónicos
+       |
+       v
+ADR
+       |
+       v
+Implementación
+```
+
+Toda decisión arquitectónica importante debe poder vincularse al menos con un driver.
+
+---
+
+# 8. API Gateway como evolución futura
+
+Un API Gateway independiente no es un driver de la primera versión porque:
+
+- existe un único backend monolítico;
+- ASP.NET Core ya gestiona routing, CORS, rate limiting, autenticación y logging;
+- Cloudflare ya cubre WAF, DDoS, TLS y políticas perimetrales;
+- añadir un Gateway introduciría una nueva capa operativa con beneficios limitados en el escenario actual.
+
+Se considerará como evolución si aparecen múltiples APIs, BFF, microservicios o necesidades avanzadas de routing.
