@@ -1,64 +1,273 @@
 # 08. Arquitectura inicial
 
-A partir de las decisiones documentadas (Monolito en .NET, React, PostgreSQL y Clean Architecture), la arquitectura inicial del sistema se organiza separando claramente las responsabilidades. La siguiente estructura clasifica los componentes lógicos y físicos del proyecto tomando como referencia los grupos principales de diseño.
+## Propósito
 
-| Grupo | Elementos | Descripción en la arquitectura DMGOTRAVEL |
-| :--- | :--- | :--- |
-| **Actores** | Cliente, Administrador | Los usuarios que interactúan con el sistema mediante la interfaz de usuario. (Se omite el rol *Seller* por no aplicar al modelo de negocio de agencia centralizada). |
-| **Presentación** | Aplicación Web, API REST | **Aplicación Web:** SPA construida en React y alojada en Vercel.<br>**API REST:** Monolito desarrollado en ASP.NET Core y desplegado en Render. |
-| **Negocio** | Usuarios, Catálogo, Reservas | Los módulos principales (reemplazando *Carrito y Pedidos* por **Reservas** de tours y hoteles). La lógica se implementa usando el patrón CQRS (MediatR) y las tareas asíncronas con Hangfire. |
-| **Datos** | Base de datos, Almacenamiento multimedia | **Base de datos:** Motor relacional PostgreSQL alojado en Supabase con Connection Pooling.<br>**Almacenamiento:** Cloudflare R2 para las imágenes del catálogo. |
-| **Sistemas externos** | Pasarela de pago, Servicio de envío, Red / DNS | **Pasarela de pago:** Integración con Culqi para tokenización y recepción de Webhooks.<br>**Servicio de envío:** Integración con la API de Resend para comprobantes.<br>**Red:** Cloudflare (CDN/WAF) y Namecheap (Dominio). |
+Este documento define la arquitectura inicial de **DMGOTRAVEL** a partir de las decisiones adoptadas en el análisis del sistema.
 
-## Diagrama de la Arquitectura de Despliegue
+La solución se implementará como una aplicación web con:
 
-El siguiente esquema refleja cómo interactúan estos grupos de elementos en el entorno de producción definido en las decisiones arquitectónicas (ADR):
+- **Frontend:** React.
+- **Backend:** ASP.NET Core.
+- **Estilo de backend:** Monolito Modular.
+- **Enfoque interno:** Clean Architecture.
+- **Patrón de aplicación:** CQRS con MediatR.
+- **Persistencia:** PostgreSQL mediante Entity Framework Core.
+- **Background Jobs:** Hangfire.
+- **Pagos:** Culqi.
+- **Correo:** Resend.
+- **Multimedia:** Cloudflare R2.
+- **Hosting frontend:** Vercel.
+- **Hosting backend:** Render.
+- **Capa perimetral:** Cloudflare.
+- **API Gateway independiente:** no requerido en la primera versión.
+
+---
+
+# 1. Vista general
+
+DMGOTRAVEL se organiza en cuatro zonas principales:
+
+```text
+1. Frontend
+2. Capa perimetral
+3. Backend monolítico
+4. Persistencia e integraciones externas
+```
 
 ```mermaid
-flowchart TD
-    %% Actores
-    Cliente((Cliente))
-    Admin((Administrador))
+flowchart LR
 
-    %% Capa Perimetral y Presentación (Frontend)
-    subgraph Edge ["Capa Perimetral (Edge & CDN)"]
-        CF[Cloudflare CDN / WAF]
+    U["👤 Cliente / Administrador"]
+
+    subgraph FRONT["Frontend"]
+        VERCEL["Vercel"]
+        REACT["React SPA"]
+        VERCEL --> REACT
     end
 
-    subgraph Presentacion ["Presentación (Vercel)"]
-        React[SPA React]
+    subgraph EDGE["Capa perimetral de la API"]
+        CF["Cloudflare<br/>DNS + WAF + TLS + DDoS"]
     end
 
-    %% Capa de Negocio (Backend)
-    subgraph Negocio ["Monolito API (Render)"]
-        API[API REST ASP.NET Core]
-        Hangfire[Hangfire Background Service]
-        API --- Hangfire
+    subgraph BACK["Backend"]
+        API["ASP.NET Core REST API<br/>Monolito Modular"]
     end
 
-    %% Capa de Datos
-    subgraph Datos ["Capa de Datos y Medios"]
-        DB[(PostgreSQL - Supabase)]
-        R2[(Cloudflare R2 - Imágenes)]
+    subgraph DATA["Persistencia"]
+        DB[("PostgreSQL<br/>Supabase")]
+        R2[("Cloudflare R2<br/>Multimedia")]
     end
 
-    %% Sistemas Externos
-    subgraph Externos ["Sistemas Externos"]
-        Culqi[Culqi API / Webhooks]
-        Resend[Resend API - Correos]
+    subgraph EXT["Servicios externos"]
+        CULQI["Culqi"]
+        RESEND["Resend"]
+        GOOGLE["Google OAuth"]
     end
 
-    %% Relaciones
-    Cliente --> CF
-    Admin --> CF
-    CF --> React
-    React -->|Peticiones JSON / JWT| API
-    
-    API -->|CQRS Lectura/Escritura| DB
-    Hangfire -->|Lectura/Actualización de estados| DB
-    API -->|Subida/Lectura| R2
-    
-    API -->|Validación de firmas| Culqi
-    Culqi -->|Webhook de pago| API
-    
-    API -->|Envío de recibos| Resend
+    U --> REACT
+    REACT -->|"HTTPS / JSON"| CF
+    CF --> API
+
+    API --> DB
+    API --> R2
+    API <--> CULQI
+    API --> RESEND
+    API <--> GOOGLE
+```
+
+---
+
+# 2. Flujo de acceso
+
+## 2.1 Frontend
+
+El frontend se publicará en Vercel.
+
+```text
+https://dmgotravel.com
+https://www.dmgotravel.com
+```
+
+Cloudflare podrá gestionar el DNS del dominio. Para evitar una capa de proxy innecesaria delante de Vercel, el dominio del frontend puede mantenerse como **DNS only** cuando corresponda.
+
+```text
+Usuario
+   |
+   v
+Vercel
+   |
+   v
+React SPA
+```
+
+## 2.2 API
+
+La API se publicará mediante:
+
+```text
+https://api.dmgotravel.com
+```
+
+```text
+React
+  |
+  v
+Cloudflare
+DNS + WAF + TLS + DDoS
+  |
+  v
+ASP.NET Core REST API
+Render
+```
+
+En esta primera versión **no existe un API Gateway independiente**.
+
+---
+
+# 3. Backend monolítico
+
+El backend constituye una sola aplicación desplegable.
+
+```text
+DMGOTRAVEL Backend
+|
++-- Identity
++-- Catalog
++-- Hotels
++-- Reservations
++-- Payments
++-- Notifications
++-- Reports
++-- Audit
++-- Background Jobs
+```
+
+Todos los módulos forman parte de la misma solución, se despliegan juntos y utilizan la misma persistencia PostgreSQL.
+
+Esto corresponde a un **Monolito Modular**, no a microservicios.
+
+---
+
+# 4. Módulos funcionales
+
+| Módulo | Responsabilidad |
+|---|---|
+| **Identity** | Usuarios, autenticación, roles y Google OAuth. |
+| **Catalog** | Tours, servicios, paquetes e imágenes. |
+| **Hotels** | Hoteles, tipos de habitación, tarifas e inventario. |
+| **Reservations** | Reservas, disponibilidad y ciclo de vida. |
+| **Payments** | Culqi, pagos, eventos e idempotencia. |
+| **Notifications** | Correos transaccionales mediante Resend. |
+| **Reports** | Indicadores y reportes. |
+| **Audit** | Registro de operaciones críticas. |
+| **Background Jobs** | Vencimiento de reservas y tareas con Hangfire. |
+
+---
+
+# 5. Clean Architecture
+
+```text
+Presentation
+Application
+Domain
+Infrastructure
+```
+
+```mermaid
+flowchart TB
+    Presentation["Presentation<br/>ASP.NET Core REST API"]
+    Application["Application<br/>CQRS / MediatR / Use Cases"]
+    Domain["Domain<br/>Entidades / Reglas / Value Objects"]
+    Infrastructure["Infrastructure<br/>EF Core / Culqi / Resend / R2 / Identity"]
+
+    Presentation --> Application
+    Application --> Domain
+    Infrastructure --> Application
+    Infrastructure --> Domain
+```
+
+---
+
+# 6. Persistencia
+
+```text
+PostgreSQL
+Supabase
+Entity Framework Core
+Npgsql
+```
+
+El backend será el único responsable de acceder a la base de datos.
+
+```text
+React
+  |
+REST API
+  |
+ASP.NET Core
+  |
+EF Core
+  |
+PostgreSQL
+```
+
+---
+
+# 7. Servicios externos
+
+## Culqi
+
+Los Webhooks serán recibidos por la propia API.
+
+```text
+POST /api/v1/webhooks/culqi
+```
+
+## Resend
+
+```text
+ASP.NET Core
+  |
+  v
+Resend API
+```
+
+## Cloudflare R2
+
+```text
+ASP.NET Core
+  |
+  v
+Cloudflare R2
+```
+
+---
+
+# 8. Background Jobs
+
+Hangfire formará parte del mismo backend monolítico.
+
+```text
+DMGOTRAVEL Monolith
+|
++-- API REST
++-- CQRS
++-- EF Core
++-- Hangfire
+```
+
+Hangfire no constituye un microservicio separado.
+
+---
+
+# 9. Evolución futura
+
+La primera versión no requiere:
+
+- microservicios;
+- service mesh;
+- API Gateway independiente;
+- event bus distribuido;
+- múltiples bases de datos por módulo.
+
+Un API Gateway podrá evaluarse si aparecen múltiples APIs, BFF, microservicios o necesidades avanzadas de routing.
