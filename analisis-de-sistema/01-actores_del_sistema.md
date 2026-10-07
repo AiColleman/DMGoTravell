@@ -4,7 +4,7 @@
 
 Este documento identifica los actores humanos, sistemas externos y procesos automatizados que interactúan con **DMGOTRAVEL**, delimitando sus responsabilidades y restricciones dentro del alcance del sistema.
 
-La solución se implementará con **React** en el frontend y **ASP.NET Core** en el backend, utilizando **JWT** para autenticación de la API, **PostgreSQL** como motor relacional, **Entity Framework Core** como ORM y servicios externos como **Culqi**, **Resend**, **Google OAuth** y **Cloudflare R2**.
+La solución se implementará con **React** en el frontend y **ASP.NET Core** en el backend. La propia aplicación ASP.NET Core expondrá la **API REST**, utilizará **JWT** para autenticación, **PostgreSQL** como motor relacional, **Entity Framework Core** como ORM y servicios externos como **Culqi**, **Resend**, **Google OAuth** y **Cloudflare R2**.
 
 ---
 
@@ -240,3 +240,22 @@ Hosting web     Vercel
 Hosting API     Render
 Edge            Cloudflare CDN / WAF
 ```
+
+
+---
+
+## Evolución futura de entrada a la API
+
+La primera versión de DMGOTRAVEL no requiere un API Gateway independiente.
+
+La topología inicial será:
+
+```text
+Cliente
+  |
+Cloudflare
+  |
+ASP.NET Core REST API
+```
+
+Si en el futuro existen múltiples servicios backend, BFF, APIs especializadas o necesidades avanzadas de enrutamiento, podrá evaluarse la incorporación de un API Gateway mediante una nueva ADR.
