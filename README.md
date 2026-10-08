@@ -4,7 +4,21 @@
 
 ### Sistema Web para Agencia y Operadora Turística
 
-**Plataforma para la gestión de servicios turísticos, hoteles, reservas y pagos**
+**Plataforma integral para la gestión de servicios turísticos, hoteles, reservas, pagos y operación administrativa.**
+
+<br>
+
+![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react&logoColor=white)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-Backend-512BD4?logo=dotnet&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Container-2496ED?logo=docker&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-Edge-F38020?logo=cloudflare&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-Frontend_Hosting-000000?logo=vercel&logoColor=white)
+![Render](https://img.shields.io/badge/Render-Backend_Hosting-46E3B7?logo=render&logoColor=111111)
+
+<br>
+
+**Arquitectura Cliente-Servidor · Monolito Modular · Clean Architecture · CQRS**
 
 <br>
 
@@ -17,77 +31,117 @@
 ## 📑 Tabla de contenido
 
 - [Descripción](#-descripción)
-- [Objetivos del sistema](#-objetivos-del-sistema)
+- [Objetivos](#-objetivos)
+- [Estado actual](#-estado-actual)
 - [Actores del sistema](#-actores-del-sistema)
 - [Funcionalidades principales](#-funcionalidades-principales)
-- [Arquitectura del sistema](#️-arquitectura-del-sistema)
-- [Enfoque arquitectónico](#-enfoque-arquitectónico)
-- [Estilo arquitectónico](#-estilo-arquitectónico)
-- [Tecnologías](#️-tecnologías)
-- [Módulos principales](#-módulos-principales)
-- [Flujo de reserva y pago](#-flujo-de-reserva-y-pago)
+- [Arquitectura](#️-arquitectura)
+- [Arquitectura interna](#-arquitectura-interna)
+- [Módulos del monolito](#-módulos-del-monolito)
+- [Stack tecnológico](#️-stack-tecnológico)
+- [Flujo de reserva](#-flujo-de-reserva)
+- [Flujo de pago](#-flujo-de-pago)
 - [Seguridad](#-seguridad)
-- [Atributos de calidad](#-atributos-de-calidad)
+- [Persistencia y concurrencia](#-persistencia-y-concurrencia)
+- [Infraestructura y despliegue](#️-infraestructura-y-despliegue)
 - [Estructura del repositorio](#️-estructura-del-repositorio)
 - [Documentación](#-documentación)
 - [Decisiones arquitectónicas](#-decisiones-arquitectónicas)
-- [Infraestructura propuesta](#️-infraestructura-propuesta)
-- [Estado del proyecto](#-estado-del-proyecto)
 - [Roadmap](#️-roadmap)
+- [Evolución futura](#-evolución-futura)
+- [Convenciones](#-convenciones)
 - [Autor](#-autor)
 
 ---
 
 # 📌 Descripción
 
-**DMGOTRAVEL** es una propuesta de sistema web orientada a una **agencia y operadora turística**, diseñada para centralizar la gestión de servicios turísticos, paquetes, hoteles, habitaciones, reservas, pagos y actividades administrativas.
+**DMGOTRAVEL** es una plataforma web orientada a una **agencia y operadora turística**, diseñada para centralizar la gestión de:
 
-La plataforma permitirá que los clientes puedan consultar la oferta turística disponible, seleccionar servicios, agregar alojamiento de manera opcional, realizar reservas y efectuar pagos electrónicos desde una interfaz web.
+- servicios turísticos;
+- tours y paquetes;
+- hoteles;
+- tipos de habitación;
+- disponibilidad;
+- reservas;
+- pagos;
+- comprobantes;
+- clientes;
+- auditoría;
+- reportes administrativos.
 
-Por otro lado, los administradores podrán gestionar el catálogo turístico, hoteles, disponibilidad, reservas, clientes, auditoría e indicadores relacionados con la operación de la agencia.
+La plataforma permite que los clientes consulten la oferta turística, seleccionen servicios, agreguen alojamiento de manera opcional, realicen reservas y efectúen pagos electrónicos desde una interfaz web.
 
-La solución está diseñada bajo una arquitectura **Cliente-Servidor**, utilizando un backend basado en un **Monolito Modular desarrollado con ASP.NET Core**, estructurado mediante los principios de **Clean Architecture** y complementado con el patrón **CQRS**.
+Los administradores disponen de herramientas para gestionar el catálogo, hoteles, disponibilidad, reservas, clientes, auditoría e indicadores de operación.
 
-Actualmente, este repositorio contiene principalmente la documentación correspondiente al **análisis del sistema y diseño arquitectónico**, que constituye la base para la posterior implementación del software.
+> El backend se diseña como un **Monolito Modular en ASP.NET Core**, aplicando **Clean Architecture** y **CQRS con MediatR**, con persistencia en **PostgreSQL**.
 
 ---
 
-# 🎯 Objetivos del sistema
+# 🎯 Objetivos
 
-El sistema DMGOTRAVEL busca:
+DMGOTRAVEL busca:
 
-- Centralizar la oferta de servicios turísticos.
-- Gestionar tours, paquetes turísticos y alojamiento.
-- Permitir reservas simples de servicios turísticos.
+- Centralizar la oferta turística y hotelera.
+- Permitir reservas de servicios turísticos.
 - Permitir reservas compuestas de **tour + hotel**.
-- Gestionar disponibilidad y cupos en tiempo real.
-- Evitar la sobreventa de servicios y habitaciones.
-- Automatizar el procesamiento de reservas.
-- Integrar pagos electrónicos mediante **Culqi**.
+- Gestionar disponibilidad de tours y habitaciones.
+- Evitar sobreventa mediante control transaccional.
+- Procesar pagos mediante **Culqi**.
 - Enviar comprobantes mediante **Resend**.
-- Automatizar la cancelación de reservas pendientes vencidas.
-- Mantener registros de auditoría de operaciones críticas.
-- Brindar herramientas administrativas para supervisar la plataforma.
-- Disponer de una arquitectura mantenible y preparada para crecer.
+- Gestionar autenticación local y acceso con Google.
+- Automatizar el vencimiento de reservas pendientes.
+- Conservar trazabilidad mediante auditoría.
+- Utilizar almacenamiento externo para multimedia.
+- Mantener una arquitectura simple de operar y preparada para crecer.
+- Separar correctamente reglas de negocio, aplicación, infraestructura y presentación.
+
+---
+
+# 📊 Estado actual
+
+> **Fase actual: análisis y diseño arquitectónico finalizado / preparación para implementación.**
+
+| Área | Estado |
+|---|:---:|
+| Actores | ✅ |
+| Historias de usuario | ✅ |
+| Requisitos funcionales | ✅ |
+| Reglas de negocio | ✅ |
+| Atributos de calidad | ✅ |
+| Restricciones | ✅ |
+| Drivers arquitectónicos | ✅ |
+| ADR | ✅ |
+| Arquitectura inicial | ✅ |
+| Estilo arquitectónico | ✅ |
+| Clean Architecture | ✅ |
+| Arquitectura de despliegue | ✅ |
+| Modelo de dominio detallado | ⏳ |
+| Modelo de datos / ERD | ⏳ |
+| Contrato OpenAPI | ⏳ |
+| Backend | ⏳ |
+| Frontend | ⏳ |
+| Pruebas | ⏳ |
+| CI/CD | ⏳ |
+| Producción | ⏳ |
 
 ---
 
 # 👥 Actores del sistema
 
-DMGOTRAVEL identifica actores humanos, servicios externos y procesos automatizados.
-
 | Actor | Responsabilidad |
 |---|---|
-| 👤 **Cliente** | Consulta servicios turísticos, hoteles, realiza reservas, pagos y administra sus datos. |
-| 🧑‍💼 **Administrador** | Gestiona catálogo, hoteles, reservas, clientes, auditoría e indicadores. |
-| 💳 **Culqi** | Procesa pagos electrónicos y notifica su resultado mediante Webhooks. |
-| ✉️ **Resend** | Gestiona el envío de correos y comprobantes electrónicos. |
+| 👤 **Cliente** | Consulta catálogo, realiza reservas, pagos y gestiona su perfil. |
+| 🧑‍💼 **Administrador** | Gestiona catálogo, hoteles, reservas, clientes, reportes y auditoría. |
+| 💳 **Culqi** | Procesa pagos y notifica eventos relacionados con las transacciones. |
 | 🔐 **Google** | Proporciona autenticación externa mediante OAuth. |
-| ⚙️ **Sistema de tareas** | Ejecuta procesos automáticos como la cancelación de reservas vencidas. |
+| ✉️ **Resend** | Gestiona correos transaccionales y comprobantes. |
+| ☁️ **Cloudflare R2** | Almacena archivos multimedia del catálogo. |
+| ⚙️ **Hangfire** | Ejecuta trabajos persistentes y programados dentro del monolito. |
 
-📄 Documentación completa:
+📄 Documentación:
 
-[**01 - Actores del sistema**](./analisis-de-sistema/01-actores_del_sistema.md)
+[**01 — Actores del sistema**](./analisis-de-sistema/01-actores-del-sistema.md)
 
 ---
 
@@ -97,25 +151,22 @@ DMGOTRAVEL identifica actores humanos, servicios externos y procesos automatizad
 
 El cliente podrá:
 
-- Consultar el catálogo público.
-- Explorar servicios turísticos.
-- Consultar paquetes disponibles.
-- Consultar hoteles.
-- Visualizar habitaciones y tarifas.
-- Consultar disponibilidad.
-- Registrarse en el sistema.
-- Iniciar sesión.
-- Autenticarse mediante un proveedor externo.
-- Crear una reserva turística.
-- Añadir alojamiento opcional.
-- Consultar el precio total antes de pagar.
-- Realizar pagos electrónicos.
-- Recibir un comprobante de pago.
-- Consultar el historial de reservas.
-- Consultar el estado de una reserva.
-- Cancelar reservas pendientes.
-- Actualizar sus datos personales.
-- Solicitar la eliminación lógica de su cuenta.
+- explorar ofertas activas;
+- consultar tours y paquetes;
+- consultar hoteles;
+- revisar tipos de habitación y tarifas;
+- registrarse;
+- iniciar sesión;
+- autenticarse mediante Google;
+- crear una reserva;
+- agregar alojamiento opcional;
+- conocer el precio total calculado por el backend;
+- realizar pagos;
+- recibir comprobantes;
+- consultar historial de reservas;
+- cancelar reservas pendientes;
+- actualizar sus datos personales;
+- solicitar la eliminación lógica de su cuenta.
 
 ---
 
@@ -123,242 +174,229 @@ El cliente podrá:
 
 El administrador podrá:
 
-- Crear servicios turísticos.
-- Modificar servicios turísticos.
-- Desactivar servicios del catálogo.
-- Gestionar paquetes turísticos.
-- Registrar hoteles.
-- Gestionar habitaciones.
-- Administrar precios.
-- Controlar disponibilidad.
-- Consultar reservas.
-- Gestionar estados de reservas.
-- Consultar clientes.
-- Consultar registros de auditoría.
-- Visualizar indicadores.
-- Exportar información administrativa a PDF.
+- crear y modificar ofertas;
+- activar o desactivar contenido;
+- gestionar hoteles;
+- gestionar tipos de habitación;
+- administrar inventario;
+- controlar precios;
+- consultar reservas;
+- gestionar estados permitidos;
+- consultar clientes;
+- consultar auditoría;
+- consultar indicadores;
+- generar reportes administrativos.
 
 ---
 
 ## ⚙️ Automatización
 
-El sistema contará con procesos automatizados para:
+El sistema ejecutará procesos automáticos para:
 
-- Detectar reservas pendientes vencidas.
-- Cancelar automáticamente reservas sin pago.
-- Liberar cupos turísticos.
-- Liberar habitaciones bloqueadas.
-- Registrar operaciones automáticas.
-- Ejecutar tareas en segundo plano.
+- detectar reservas pendientes vencidas;
+- cancelar reservas expiradas;
+- liberar cupos turísticos;
+- liberar inventario hotelero;
+- ejecutar reintentos controlados;
+- registrar operaciones automáticas.
 
 ---
 
-# 🏗️ Arquitectura del sistema
+# 🏗️ Arquitectura
 
-DMGOTRAVEL utiliza una arquitectura **Cliente-Servidor**, donde la aplicación frontend y el backend se encuentran desacoplados.
+DMGOTRAVEL utiliza una arquitectura **Cliente-Servidor**.
+
+El frontend y backend son aplicaciones independientes, pero el backend de negocio permanece como **un único Monolito Modular**.
 
 ```mermaid
 flowchart LR
 
-    Usuario["👤 Cliente / Administrador"]
+    USER["👤 Cliente / Administrador"]
 
-    subgraph EDGE["🌐 Capa Perimetral"]
-        Cloudflare["Cloudflare<br/>CDN + WAF"]
+    subgraph FRONT["Frontend"]
+        VERCEL["Vercel"]
+        REACT["React SPA"]
+        VERCEL --> REACT
     end
 
-    subgraph FRONTEND["🖥️ Frontend"]
-        React["React SPA<br/>Vercel"]
+    subgraph EDGE["Capa perimetral API"]
+        CF["Cloudflare<br/>DNS + WAF + TLS + DDoS"]
     end
 
-    subgraph BACKEND["⚙️ Backend - Monolito Modular"]
-        API["ASP.NET Core<br/>REST API"]
-        CQRS["CQRS<br/>MediatR"]
-        Jobs["Hangfire<br/>Background Jobs"]
+    subgraph BACK["Backend"]
+        API["ASP.NET Core REST API<br/>Monolito Modular"]
     end
 
-    subgraph DATOS["🗄️ Datos"]
-        PostgreSQL[("PostgreSQL<br/>Supabase")]
+    subgraph DATA["Datos"]
+        DB[("PostgreSQL<br/>Supabase")]
         R2[("Cloudflare R2<br/>Multimedia")]
     end
 
-    subgraph EXTERNOS["🔌 Servicios externos"]
-        Culqi["Culqi<br/>Pagos"]
-        Resend["Resend<br/>Email"]
-        Google["Google<br/>OAuth"]
+    subgraph EXT["Servicios externos"]
+        CULQI["Culqi"]
+        RESEND["Resend"]
+        GOOGLE["Google OAuth"]
     end
 
-    Usuario --> Cloudflare
-    Cloudflare --> React
-    React -->|"HTTPS / REST / JSON / JWT"| API
+    USER --> REACT
 
-    API --> CQRS
-    API --> Jobs
-    CQRS --> PostgreSQL
-    Jobs --> PostgreSQL
+    REACT -->|"HTTPS / REST / JSON"| CF
+    CF --> API
+
+    API --> DB
     API --> R2
-    API <--> Culqi
-    API --> Resend
-    API <--> Google
+
+    API <--> CULQI
+    API --> RESEND
+    API <--> GOOGLE
 ```
+
+### Características principales
+
+- Frontend desacoplado.
+- API REST.
+- Monolito Modular.
+- Clean Architecture.
+- CQRS.
+- Persistencia relacional.
+- Integraciones externas desacopladas.
+- Cloudflare como capa perimetral de la API.
+- Sin API Gateway independiente en la primera versión.
+
+📄 [Arquitectura inicial](./arquitectura/arquitectura-inicial.md)
 
 ---
 
-# 🧩 Enfoque arquitectónico
+# 🧩 Arquitectura interna
 
-La organización interna del backend se basa en **Clean Architecture**.
+El backend utiliza **Clean Architecture**.
 
-Este enfoque permite separar las reglas del negocio de tecnologías específicas como bases de datos, APIs externas, servicios de almacenamiento o frameworks.
+```mermaid
+flowchart TB
 
-<p align="center">
-  <img src="./arquitectura/imagenes/DMGOTRAVEL-enfoque.png"
-       alt="Enfoque arquitectónico DMGOTRAVEL"
-       width="850" />
-</p>
+    P["Presentation<br/>REST API / JWT / Middleware"]
+    A["Application<br/>CQRS / MediatR / Use Cases"]
+    D["Domain<br/>Entities / Value Objects / Rules"]
+    I["Infrastructure<br/>EF Core / Culqi / Resend / R2 / Hangfire"]
 
-La arquitectura se organiza principalmente en cuatro capas:
+    P --> A
+    A --> D
+
+    I --> A
+    I --> D
+```
+
+## Capas
 
 | Capa | Responsabilidad |
 |---|---|
-| 🟡 **Domain** | Entidades, reglas de negocio, Value Objects y contratos principales. |
-| 🟢 **Application** | Casos de uso, Commands, Queries, DTO, validaciones e interfaces. |
-| 🟣 **Infrastructure** | Entity Framework Core, PostgreSQL, Culqi, Resend, almacenamiento y servicios externos. |
-| 🔵 **Presentation** | API REST, controladores, middleware, seguridad y comunicación HTTP. |
+| 🟡 **Domain** | Entidades, Value Objects, invariantes y reglas del negocio. |
+| 🟢 **Application** | Commands, Queries, handlers, DTOs, validaciones e interfaces. |
+| 🟣 **Infrastructure** | EF Core, PostgreSQL, Identity, Culqi, Resend, R2 y Hangfire. |
+| 🔵 **Presentation** | REST API, JWT, RBAC, middleware, OpenAPI y ProblemDetails. |
 
----
-
-## Principios utilizados
-
-- Separación de responsabilidades.
-- Inversión de dependencias.
-- Bajo acoplamiento.
-- Alta cohesión.
-- Dominio independiente.
-- Testabilidad.
-- Modularidad.
-- Mantenibilidad.
-- Escalabilidad.
-- Integraciones desacopladas.
-
----
-
-# 🏛️ Estilo arquitectónico
-
-DMGOTRAVEL combina diferentes estilos, patrones y principios arquitectónicos.
-
-## Cliente-Servidor
-
-El frontend y backend funcionan como aplicaciones independientes y se comunican mediante HTTP utilizando una API REST.
-
----
-
-## Monolito Modular
-
-El backend se despliega como una sola aplicación.
-
-Sin embargo, internamente se divide en módulos funcionales con responsabilidades claramente definidas.
-
-Esto proporciona la simplicidad operacional de un monolito sin perder una adecuada separación lógica del sistema.
-
----
-
-## Clean Architecture
-
-Las dependencias del sistema apuntan hacia las capas internas.
-
-La lógica del negocio no depende directamente de:
-
-- PostgreSQL.
-- Culqi.
-- Resend.
-- Cloudflare.
-- Frameworks externos.
-- Servicios de infraestructura.
-
----
-
-## CQRS
-
-Se utiliza **Command Query Responsibility Segregation** para diferenciar las operaciones que modifican información de aquellas que únicamente realizan consultas.
-
-### Commands
-
-Operaciones que modifican el sistema.
-
-Ejemplos:
+### Regla de dependencia
 
 ```text
-CrearReservaCommand
-ConfirmarPagoCommand
-CancelarReservaCommand
-CrearHotelCommand
-ActualizarOfertaCommand
+Presentation ---> Application ---> Domain
+
+Infrastructure ---> Application
+Infrastructure ---> Domain
 ```
 
-### Queries
+Las reglas del dominio no dependen de infraestructura.
 
-Operaciones orientadas a lectura.
+📄 [Enfoque arquitectónico](./arquitectura/enfoque/enfoque-arquitectonico.md)
 
-Ejemplos:
+---
+
+# 📦 Módulos del monolito
+
+El backend está organizado mediante módulos funcionales.
 
 ```text
-ObtenerCatalogoQuery
-ObtenerOfertaQuery
-ObtenerHotelesQuery
-ObtenerReservasQuery
-ObtenerHistorialQuery
+DMGOTRAVEL
+│
+├── Identity
+│   ├── Users
+│   ├── Authentication
+│   └── Roles
+│
+├── Catalog
+│   ├── Tours
+│   ├── Services
+│   └── Packages
+│
+├── Hotels
+│   ├── Hotels
+│   ├── RoomTypes
+│   └── Availability
+│
+├── Reservations
+│
+├── Payments
+│
+├── Notifications
+│
+├── Reports
+│
+├── Audit
+│
+└── Background Jobs
 ```
 
----
-
-<p align="center">
-  <img src="./arquitectura/imagenes/DMGOTRAVEL-arquitectura-monolito.png"
-       alt="Arquitectura monolítica DMGOTRAVEL"
-       width="900" />
-</p>
+> Los módulos **no son microservicios**. Todos forman parte de la misma aplicación backend y se despliegan juntos.
 
 ---
 
-# 🛠️ Tecnologías
+# 🛠️ Stack tecnológico
 
 ## Frontend
 
-- React
-- JavaScript
+| Tecnología | Uso |
+|---|---|
+| **React** | Interfaz web. |
+| **JavaScript / TypeScript** | Desarrollo frontend. |
+| **Vercel** | Hosting del frontend. |
 
 ---
 
 ## Backend
 
-- ASP.NET Core
-- C#
-- REST API
-- Entity Framework Core
-- MediatR
-- FluentValidation
-- Hangfire
+| Tecnología | Uso |
+|---|---|
+| **ASP.NET Core** | Backend y API REST. |
+| **C#** | Lenguaje principal. |
+| **MediatR** | CQRS y casos de uso. |
+| **FluentValidation** | Validación. |
+| **Hangfire** | Background Jobs. |
+| **ASP.NET Core Identity** | Gestión de identidad. |
+| **JWT** | Autenticación de API. |
+| **OpenAPI / Swagger** | Contrato y documentación de API. |
+| **ProblemDetails** | Formato estándar de errores. |
 
 ---
 
-## Base de datos
+## Persistencia
 
-- PostgreSQL.
-- Entity Framework Core.
-- Supabase.
-- Transacciones ACID.
-- Control de concurrencia.
-- Borrado lógico.
+| Tecnología | Uso |
+|---|---|
+| **PostgreSQL** | Base de datos relacional. |
+| **Supabase** | PostgreSQL gestionado. |
+| **Entity Framework Core** | ORM. |
+| **Npgsql** | Proveedor PostgreSQL para .NET. |
 
 ---
 
 ## Infraestructura
 
-- Cloudflare CDN.
-- Cloudflare WAF.
-- Cloudflare R2.
-- Vercel.
-- Render.
-- Docker.
-- Namecheap.
+| Tecnología | Uso |
+|---|---|
+| **Docker** | Contenedor del backend. |
+| **Render** | Hosting del backend. |
+| **Cloudflare** | DNS, WAF, TLS y DDoS. |
+| **Cloudflare R2** | Almacenamiento multimedia. |
+| **Vercel** | Hosting del frontend. |
 
 ---
 
@@ -366,412 +404,692 @@ ObtenerHistorialQuery
 
 | Servicio | Uso |
 |---|---|
-| **Culqi** | Procesamiento de pagos. |
+| **Culqi** | Pagos electrónicos. |
 | **Resend** | Correos transaccionales. |
-| **Google OAuth** | Autenticación externa. |
-| **Cloudflare R2** | Almacenamiento multimedia. |
-| **Supabase** | PostgreSQL gestionado. |
-| **Vercel** | Hosting frontend. |
-| **Render** | Hosting backend. |
+| **Google OAuth** | Autenticación social. |
 
 ---
 
-# 📦 Módulos principales
+# 🔄 Flujo de reserva
 
-El backend se plantea como un **Monolito Modular**.
+Una reserva puede ser:
 
 ```text
-DMGOTRAVEL
-│
-├── 👤 Identity
-│   ├── Users
-│   ├── Authentication
-│   └── Roles
-│
-├── 🧳 Catalog
-│   ├── Tours
-│   ├── Services
-│   └── Packages
-│
-├── 🏨 Hotels
-│   ├── Hotels
-│   ├── Rooms
-│   └── Availability
-│
-├── 📅 Reservations
-├── 💳 Payments
-├── 📧 Notifications
-├── 📊 Reports
-├── 📝 Audit
-└── ⚙️ Background Jobs
+Tour
 ```
 
-Los módulos comparten la misma aplicación y proceso de despliegue, pero mantienen responsabilidades independientes.
+o:
 
----
+```text
+Tour + Hotel
+```
 
-# 🔄 Flujo de reserva y pago
-
-El flujo principal del sistema puede representarse de la siguiente manera:
+El hotel es opcional.
 
 ```mermaid
 sequenceDiagram
 
     actor Cliente
-
-    participant Frontend as React
+    participant React
     participant API as ASP.NET Core
     participant DB as PostgreSQL
+
+    Cliente->>React: Seleccionar tour
+    Cliente->>React: Indicar personas
+
+    opt Alojamiento opcional
+        Cliente->>React: Seleccionar hotel
+        Cliente->>React: Seleccionar habitación y fechas
+    end
+
+    React->>API: Crear reserva
+
+    API->>DB: Validar disponibilidad del tour
+
+    opt Reserva con hotel
+        API->>DB: Validar disponibilidad por noche
+    end
+
+    API->>DB: Crear transacción
+
+    API->>DB: Bloquear disponibilidad
+    API->>DB: Guardar precios históricos
+    API->>DB: Crear reserva pending
+
+    DB-->>API: Reserva creada
+    API-->>React: Reserva + total + vencimiento
+```
+
+### Principios
+
+- El backend calcula el precio.
+- La reserva nace en `pending`.
+- La disponibilidad se controla transaccionalmente.
+- No deben existir reservas parciales.
+- El precio histórico no cambia si cambia posteriormente el catálogo.
+
+---
+
+# 💳 Flujo de pago
+
+```mermaid
+sequenceDiagram
+
+    actor Cliente
+    participant React
     participant Culqi
+    participant API as ASP.NET Core
+    participant DB as PostgreSQL
     participant Resend
 
-    Cliente->>Frontend: Seleccionar tour
+    Cliente->>React: Iniciar pago
 
-    opt Alojamiento
-        Cliente->>Frontend: Seleccionar hotel
-    end
+    React->>Culqi: Tokenización / Checkout
+    Culqi-->>React: Token / resultado inicial
 
-    Frontend->>API: Crear reserva
-    API->>DB: Validar disponibilidad
-    API->>DB: Bloquear cupos
+    React->>API: Solicitar procesamiento
 
-    alt Hotel seleccionado
-        API->>DB: Bloquear habitación
-    end
+    API->>DB: Obtener reserva y monto oficial
+    API->>Culqi: Procesar pago
 
-    API->>DB: Crear reserva pending
-    API-->>Frontend: Reserva creada
+    Culqi-->>API: Resultado
 
-    Cliente->>Frontend: Realizar pago
-    Frontend->>Culqi: Tokenizar tarjeta
-    Culqi-->>API: Webhook de pago
+    Culqi-->>API: Webhook
+    API->>API: Validar evento + idempotencia
 
-    API->>API: Validar Webhook
-    API->>DB: Actualizar reserva a confirmed
-    API->>Resend: Generar y enviar comprobante
-    Resend-->>Cliente: Correo de confirmación
+    API->>DB: Registrar Payment
+    API->>DB: pending -> confirmed
+
+    API->>Resend: Enviar confirmación
 ```
+
+### Regla principal
+
+```text
+pending -> confirmed
+```
+
+solo ocurre después de validar un pago exitoso.
+
+El administrador no utilizará un cambio manual de estado como sustituto de la confirmación de pago.
 
 ---
 
 # 🔐 Seguridad
 
-La arquitectura contempla diferentes mecanismos para proteger la plataforma.
+DMGOTRAVEL contempla seguridad en diferentes niveles.
 
-### Autenticación
-
-- JSON Web Tokens (**JWT**).
-- Autenticación centralizada.
-- Integración OAuth.
-- Manejo de identidad de usuarios.
-
-### Autorización
-
-Se utiliza control basado en roles:
+## Autenticación
 
 ```text
-RBAC
-├── Client
-└── Admin
-```
-
-### API
-
-La comunicación se realizará mediante:
-
-```text
-HTTPS
-REST
-JSON
+ASP.NET Core Identity
 JWT
+Google OAuth
 ```
-
-### Pagos
-
-Para las operaciones realizadas mediante Culqi:
-
-- La tarjeta es tokenizada.
-- El backend no debe confiar en montos proporcionados por el frontend.
-- El precio final se calcula en el servidor.
-- Se validan los Webhooks.
-- Se controla la idempotencia de operaciones.
-- La reserva se confirma únicamente después de validar el pago.
-
-### Infraestructura
-
-Cloudflare proporciona una capa perimetral para:
-
-- CDN.
-- WAF.
-- Protección DDoS.
-- Gestión DNS.
-- TLS/HTTPS.
 
 ---
 
-# ⚡ Atributos de calidad
+## Autorización
 
-La arquitectura del sistema considera los siguientes atributos:
+RBAC:
 
-| Atributo | Estrategia |
-|---|---|
-| ⚡ **Rendimiento** | Caché y consultas optimizadas. |
-| 🌐 **Disponibilidad** | Procesos en background independientes del flujo HTTP. |
-| 📈 **Escalabilidad** | Backend stateless preparado para replicación. |
-| 🔐 **Seguridad** | JWT, RBAC, HTTPS, WAF y validación de integraciones. |
-| 🧩 **Mantenibilidad** | Clean Architecture y modularización. |
-| 🔄 **Integridad** | Transacciones ACID y control de concurrencia. |
-| 🔌 **Interoperabilidad** | API REST y contratos JSON. |
-| 📝 **Trazabilidad** | Auditoría de acciones críticas. |
-| 👨‍💻 **Usabilidad** | Información clara sobre reservas y pagos. |
+```text
+Roles
+├── client
+└── admin
+```
+
+Ejemplo:
+
+```text
+/api/v1/admin/*
+        |
+        v
+RequireRole("admin")
+```
+
+---
+
+## API
+
+Se aplicarán:
+
+- HTTPS;
+- JWT;
+- CORS restrictivo;
+- rate limiting;
+- validación de entrada;
+- autorización por recurso;
+- `ProblemDetails`;
+- logging estructurado;
+- `CorrelationId`;
+- OpenAPI;
+- protección de endpoints administrativos.
+
+---
+
+## Pagos
+
+El backend:
+
+- no confía en precios enviados por React;
+- no almacena datos sensibles completos de tarjetas;
+- valida eventos recibidos de Culqi;
+- aplica idempotencia;
+- conserva identificadores externos;
+- confirma reservas únicamente después del pago válido.
+
+---
+
+## Infraestructura
+
+Cloudflare aportará:
+
+- WAF;
+- TLS;
+- mitigación DDoS;
+- DNS;
+- reglas perimetrales.
+
+---
+
+# 🗄️ Persistencia y concurrencia
+
+La persistencia utilizará:
+
+```text
+ASP.NET Core
+     |
+Entity Framework Core
+     |
+Npgsql
+     |
+PostgreSQL / Supabase
+```
+
+React no accederá directamente a PostgreSQL.
+
+---
+
+## Control de concurrencia
+
+Los procesos de reserva deberán utilizar:
+
+- transacciones;
+- estrategia explícita de bloqueo;
+- restricciones de base de datos;
+- índices;
+- idempotencia;
+- rollback ante fallos.
+
+Ejemplo conceptual:
+
+```text
+BEGIN TRANSACTION
+
+Validar salida turística
+Bloquear / controlar inventario
+Validar cupos
+
+SI hay hotel:
+    validar rango de fechas
+    bloquear inventario por noche
+    validar disponibilidad
+
+calcular precio
+crear reserva
+crear componentes
+guardar snapshots
+
+COMMIT
+```
+
+Ante fallo:
+
+```text
+ROLLBACK
+```
+
+---
+
+# ☁️ Infraestructura y despliegue
+
+## Frontend
+
+```text
+dmgotravel.com
+www.dmgotravel.com
+        |
+        v
+      Vercel
+        |
+        v
+     React SPA
+```
+
+Cloudflare puede utilizarse como proveedor DNS para el dominio del frontend.
+
+---
+
+## API
+
+```text
+api.dmgotravel.com
+        |
+        v
+Cloudflare Proxy
+DNS / WAF / TLS / DDoS
+        |
+        v
+      Render
+        |
+        v
+ASP.NET Core REST API
+Monolito Modular
+```
+
+---
+
+## Datos e integraciones
+
+```text
+ASP.NET Core
+   |
+   +------> PostgreSQL / Supabase
+   |
+   +------> Cloudflare R2
+   |
+   +------> Culqi
+   |
+   +------> Resend
+   |
+   +------> Google OAuth
+```
+
+📄 [Arquitectura de despliegue](./arquitectura/arquitectura-de-despliegue.md)
 
 ---
 
 # 🗂️ Estructura del repositorio
 
+## Estado documental actual
+
 ```text
 DMGoTravell/
 │
+├── README.md
+│
 ├── analisis-de-sistema/
-│   ├── 01-actores_del_sistema.md
-│   ├── 02-historias-del-usuario.md
+│   ├── 01-actores-del-sistema.md
+│   ├── 02-historias-de-usuario.md
 │   ├── 03-requisitos-funcionales.md
 │   ├── 04-atributos-de-calidad.md
 │   ├── 05-restricciones.md
-│   ├── 06-driver-arquitectonicas.md
-│   └── 07-desiciones-arquitectonicas.md
+│   ├── 06-drivers-arquitectonicos.md
+│   └── 07-decisiones-arquitectonicas.md
+│
+└── arquitectura/
+    ├── README.md
+    ├── arquitectura-inicial.md
+    ├── estilo-arquitectonico.md
+    ├── arquitectura-de-despliegue.md
+    │
+    └── enfoque/
+        └── enfoque-arquitectonico.md
+```
+
+---
+
+## Estructura prevista para implementación
+
+```text
+DMGoTravell/
+│
+├── src/
+│   ├── DMGOTRAVEL.Api/
+│   ├── DMGOTRAVEL.Application/
+│   ├── DMGOTRAVEL.Domain/
+│   └── DMGOTRAVEL.Infrastructure/
+│
+├── tests/
+│   ├── DMGOTRAVEL.Domain.Tests/
+│   ├── DMGOTRAVEL.Application.Tests/
+│   ├── DMGOTRAVEL.IntegrationTests/
+│   └── DMGOTRAVEL.ArchitectureTests/
+│
+├── frontend/
+│
+├── analisis-de-sistema/
 │
 ├── arquitectura/
-│   ├── arquitectura-inicial.md
-│   ├── estilo-arquitectonico.md
-│   ├── enfoque/
-│   │   └── enfoque-arquitectonico.md
-│   └── imagenes/
-│       ├── DMGOTRAVEL-arquitectura-monolito.png
-│       └── DMGOTRAVEL-enfoque.png
+│
+├── .github/
+│   └── workflows/
+│
+├── Dockerfile
 │
 └── README.md
 ```
+
+> La estructura definitiva de código se documentará antes del inicio de la implementación.
 
 ---
 
 # 📚 Documentación
 
-## 📋 Análisis del sistema
+## Análisis del sistema
 
-| N.º | Documento | Descripción |
+| N.º | Documento | Contenido |
 |---:|---|---|
-| 01 | [Actores del sistema](./analisis-de-sistema/01-actores_del_sistema.md) | Define actores humanos, sistemas externos y procesos automáticos. |
-| 02 | [Historias de usuario](./analisis-de-sistema/02-historias-del-usuario.md) | Define necesidades y criterios de aceptación. |
-| 03 | [Requisitos funcionales](./analisis-de-sistema/03-requisitos-funcionales.md) | Define funcionalidades y reglas de negocio. |
-| 04 | [Atributos de calidad](./analisis-de-sistema/04-atributos-de-calidad.md) | Define características no funcionales de la solución. |
-| 05 | [Restricciones](./analisis-de-sistema/05-restricciones.md) | Define restricciones tecnológicas y arquitectónicas. |
-| 06 | [Drivers arquitectónicos](./analisis-de-sistema/06-driver-arquitectonicas.md) | Identifica necesidades que condicionan la arquitectura. |
-| 07 | [Decisiones arquitectónicas](./analisis-de-sistema/07-desiciones-arquitectonicas.md) | Registra las decisiones fundamentales del diseño. |
+| 01 | [Actores del sistema](./analisis-de-sistema/01-actores-del-sistema.md) | Usuarios, sistemas externos y procesos automáticos. |
+| 02 | [Historias de usuario](./analisis-de-sistema/02-historias-de-usuario.md) | Necesidades y criterios de aceptación. |
+| 03 | [Requisitos funcionales](./analisis-de-sistema/03-requisitos-funcionales.md) | Funcionalidades, reglas y trazabilidad. |
+| 04 | [Atributos de calidad](./analisis-de-sistema/04-atributos-de-calidad.md) | Rendimiento, seguridad, integridad y calidad. |
+| 05 | [Restricciones](./analisis-de-sistema/05-restricciones.md) | Restricciones tecnológicas y operativas. |
+| 06 | [Drivers arquitectónicos](./analisis-de-sistema/06-drivers-arquitectonicos.md) | Necesidades que condicionan la arquitectura. |
+| 07 | [Decisiones arquitectónicas](./analisis-de-sistema/07-decisiones-arquitectonicas.md) | ADR oficiales del proyecto. |
 
 ---
 
-## 🏗️ Arquitectura
+## Arquitectura
 
-| Documento | Descripción |
+| Documento | Contenido |
 |---|---|
-| [Arquitectura inicial](./arquitectura/arquitectura-inicial.md) | Vista general de componentes e infraestructura. |
-| [Estilo arquitectónico](./arquitectura/estilo-arquitectonico.md) | Describe Cliente-Servidor, Monolito Modular, Clean Architecture y CQRS. |
-| [Enfoque arquitectónico](./arquitectura/enfoque/enfoque-arquitectonico.md) | Describe la aplicación de Clean Architecture. |
+| [Arquitectura inicial](./arquitectura/arquitectura-inicial.md) | Vista general de componentes. |
+| [Estilo arquitectónico](./arquitectura/estilo-arquitectonico.md) | Cliente-Servidor, Monolito Modular, Clean Architecture y CQRS. |
+| [Enfoque arquitectónico](./arquitectura/enfoque/enfoque-arquitectonico.md) | Organización interna y dependencias. |
+| [Arquitectura de despliegue](./arquitectura/arquitectura-de-despliegue.md) | Cloudflare, Vercel, Render, Supabase y servicios externos. |
 
 ---
 
 # 🧭 Decisiones arquitectónicas
 
+Las principales decisiones son:
+
 | ADR | Decisión |
 |---|---|
-| **ADR-001** | Implementar un Monolito Modular en .NET. |
-| **ADR-002** | Utilizar Clean Architecture. |
-| **ADR-003** | Aplicar CQRS con MediatR. |
-| **ADR-004** | Utilizar PostgreSQL gestionado mediante Supabase. |
-| **ADR-005** | Utilizar Hangfire para tareas en segundo plano. |
-| **ADR-006** | Utilizar Cloudflare R2 para archivos multimedia. |
-| **ADR-007** | Validar criptográficamente las confirmaciones de Culqi. |
-| **ADR-008** | Utilizar Vercel y Cloudflare para la capa frontend y perimetral. |
-| **ADR-009** | Utilizar borrado lógico para conservar información histórica. |
+| **ADR-001** | Monolito Modular con ASP.NET Core. |
+| **ADR-002** | Clean Architecture. |
+| **ADR-003** | CQRS con MediatR. |
+| **ADR-004** | PostgreSQL + Supabase. |
+| **ADR-005** | Hangfire para Background Jobs. |
+| **ADR-006** | Cloudflare R2 para multimedia. |
+| **ADR-007** | Culqi como pasarela de pago. |
+| **ADR-008** | Resend para correo transaccional. |
+| **ADR-009** | ASP.NET Core Identity + JWT + Google OAuth. |
+| **ADR-010** | Borrado lógico. |
+| **ADR-011** | Snapshots de precios. |
+| **ADR-012** | React + Vercel. |
+| **ADR-013** | Docker + Render. |
+| **ADR-014** | Cloudflare como capa perimetral. |
+| **ADR-015** | OpenAPI. |
+| **ADR-016** | ProblemDetails. |
+| **ADR-017** | API Gateway independiente diferido / no adoptado inicialmente. |
 
-📄 [**Decisiones arquitectónicas completas**](./analisis-de-sistema/07-desiciones-arquitectonicas.md)
-
----
-
-# ☁️ Infraestructura propuesta
-
-```mermaid
-flowchart TB
-
-    USER["👤 Usuario"]
-    CF["☁️ Cloudflare<br/>DNS + CDN + WAF"]
-    VERCEL["▲ Vercel<br/>React SPA"]
-    RENDER["⚙️ Render<br/>ASP.NET Core<br/>Monolito Modular"]
-    SUPABASE[("🐘 Supabase<br/>PostgreSQL")]
-    R2[("☁️ Cloudflare R2<br/>Imágenes")]
-    CULQI["💳 Culqi<br/>Payment Gateway"]
-    RESEND["📧 Resend<br/>Email Service"]
-
-    USER --> CF
-    CF --> VERCEL
-    VERCEL -->|"HTTPS / REST / JWT"| RENDER
-    RENDER --> SUPABASE
-    RENDER --> R2
-    RENDER <--> CULQI
-    RENDER --> RESEND
-```
+📄 [Decisiones arquitectónicas completas](./analisis-de-sistema/07-decisiones-arquitectonicas.md)
 
 ---
 
-# 📊 Estado del proyecto
+# 🛣️ Roadmap
 
-> **Fase actual: Análisis y Diseño Arquitectónico**
+## Fase 1 — Análisis
 
-- [x] Identificación de actores.
+- [x] Actores.
 - [x] Historias de usuario.
 - [x] Criterios de aceptación.
 - [x] Requisitos funcionales.
 - [x] Reglas de negocio.
 - [x] Atributos de calidad.
 - [x] Restricciones.
-- [x] Drivers arquitectónicos.
-- [x] Decisiones arquitectónicas.
-- [x] Arquitectura inicial.
-- [x] Definición del estilo arquitectónico.
-- [x] Clean Architecture.
-- [x] CQRS.
-- [x] Arquitectura de despliegue.
-- [ ] Implementación del backend.
-- [ ] Implementación del frontend.
-- [ ] Persistencia PostgreSQL.
-- [ ] Integración Culqi.
-- [ ] Integración Resend.
-- [ ] Integración Cloudflare R2.
-- [ ] Pruebas unitarias.
-- [ ] Pruebas de integración.
-- [ ] Pruebas de concurrencia.
-- [ ] CI/CD.
-- [ ] Monitoreo.
-- [ ] Despliegue productivo.
 
 ---
 
-# 🛣️ Roadmap
-
-### Fase 1 — Análisis
-
-- [x] Actores.
-- [x] Historias de usuario.
-- [x] Requisitos.
-- [x] Reglas de negocio.
-- [x] Atributos de calidad.
-
-### Fase 2 — Arquitectura
+## Fase 2 — Arquitectura
 
 - [x] Drivers arquitectónicos.
 - [x] ADR.
 - [x] Monolito Modular.
 - [x] Clean Architecture.
+- [x] CQRS.
+- [x] Arquitectura inicial.
+- [x] Arquitectura de despliegue.
+
+---
+
+## Fase 3 — Diseño técnico
+
+- [ ] Modelo de dominio.
+- [ ] Modelo entidad-relación.
+- [ ] Diccionario de datos.
+- [ ] Diseño de disponibilidad turística.
+- [ ] Diseño de inventario hotelero.
+- [ ] Modelo de pagos.
+- [ ] Contrato REST / OpenAPI.
+- [ ] Estrategia de autenticación.
+- [ ] Estrategia de errores.
+- [ ] Estrategia de concurrencia.
+
+---
+
+## Fase 4 — Backend
+
+- [ ] Crear solución .NET.
+- [ ] Domain.
+- [ ] Application.
+- [ ] Infrastructure.
+- [ ] Presentation.
+- [ ] EF Core.
+- [ ] Identity.
+- [ ] JWT.
 - [ ] CQRS.
-- [ ] Infraestructura.
+- [ ] Hangfire.
+- [ ] OpenAPI.
 
-### Fase 3 — Backend
+---
 
-- [ ] Crear solución ASP.NET Core.
-- [ ] Implementar Domain.
-- [ ] Implementar Application.
-- [ ] Implementar Infrastructure.
-- [ ] Implementar Presentation.
-- [ ] Configurar Entity Framework Core.
-- [ ] Implementar JWT.
-- [ ] Implementar CQRS.
-- [ ] Implementar Hangfire.
+## Fase 5 — Frontend
 
-### Fase 4 — Frontend
-
-- [ ] Implementar React.
+- [ ] Crear aplicación React.
+- [ ] Diseño responsive.
 - [ ] Catálogo.
 - [ ] Hoteles.
-- [ ] Reservas.
-- [ ] Perfil de usuario.
+- [ ] Reserva.
+- [ ] Checkout.
+- [ ] Perfil.
+- [ ] Historial.
 - [ ] Panel administrativo.
 
-### Fase 5 — Integraciones
+---
+
+## Fase 6 — Integraciones
 
 - [ ] Culqi.
 - [ ] Resend.
 - [ ] Google OAuth.
 - [ ] Cloudflare R2.
 
-### Fase 6 — Calidad
+---
+
+## Fase 7 — Calidad
 
 - [ ] Pruebas unitarias.
 - [ ] Pruebas de integración.
-- [ ] Pruebas de seguridad.
+- [ ] Pruebas de arquitectura.
 - [ ] Pruebas de concurrencia.
+- [ ] Pruebas de seguridad.
 - [ ] Pruebas de rendimiento.
-
-### Fase 7 — Producción
-
-- [ ] Docker.
-- [ ] CI/CD.
-- [ ] Vercel.
-- [ ] Render.
-- [ ] Supabase.
-- [ ] Cloudflare.
-- [ ] Observabilidad.
-- [ ] Monitoreo.
 
 ---
 
-# 🔮 Evolución arquitectónica
+## Fase 8 — DevOps
 
-El proyecto inicia utilizando un **Monolito Modular**, debido a que proporciona:
+- [ ] Docker.
+- [ ] GitHub Actions.
+- [ ] Variables de entorno.
+- [ ] Health Checks.
+- [ ] Logging estructurado.
+- [ ] Monitoreo.
+- [ ] Backups.
+- [ ] Despliegue productivo.
 
-- Menor complejidad operativa.
-- Despliegue sencillo.
-- Menor latencia interna.
-- Menor costo de infraestructura.
-- Mayor facilidad de mantenimiento inicial.
-- Transacciones de negocio más sencillas.
+---
+
+# 🔮 Evolución futura
+
+La arquitectura inicial prioriza simplicidad y consistencia.
 
 ```text
-Monolito básico
-      │
-      ▼
 Monolito Modular
-      │
-      ▼
-Escalamiento horizontal
-      │
-      ▼
-Separación de Workers
-      │
-      ▼
+      |
+      v
+Escalado vertical
+      |
+      v
+Escalado horizontal
+      |
+      v
+Caché distribuida si es necesaria
+      |
+      v
+Workers separados si son necesarios
+      |
+      v
+API Gateway si existe una necesidad real
+      |
+      v
 Servicios independientes
-      │
-      ▼
+      |
+      v
 Microservicios
-(solo si existe una necesidad real)
+solo si existe justificación técnica
+```
+
+> DMGOTRAVEL no adopta microservicios ni API Gateway como objetivo inicial. La evolución arquitectónica debe responder a necesidades reales del sistema.
+
+---
+
+# 📐 Convenciones
+
+## API
+
+```text
+/api/v1/...
+```
+
+Ejemplos:
+
+```text
+/api/v1/auth
+/api/v1/catalog
+/api/v1/hotels
+/api/v1/reservations
+/api/v1/payments
+/api/v1/admin
+/api/v1/webhooks
 ```
 
 ---
 
-# 🤝 Contribución
+## Estados de reserva
 
-1. Crear una rama desde `main`.
-2. Realizar cambios relacionados con una responsabilidad específica.
-3. Mantener actualizados los requisitos afectados.
-4. Actualizar los ADR cuando exista una nueva decisión arquitectónica.
-5. Mantener sincronizados los diagramas y documentos.
-6. Crear un Pull Request explicando los cambios.
+```text
+pending
+confirmed
+completed
+cancelled
+```
+
+Ciclo principal:
+
+```mermaid
+stateDiagram-v2
+    [*] --> pending
+
+    pending --> confirmed: Pago validado
+    pending --> cancelled: Cliente cancela
+    pending --> cancelled: Reserva vencida
+
+    confirmed --> completed: Servicio finalizado
+    confirmed --> cancelled: Cancelación administrativa
+
+    completed --> [*]
+    cancelled --> [*]
+```
+
+---
+
+## Roles
+
+```text
+client
+admin
+```
+
+---
+
+## Base de datos
+
+- PostgreSQL.
+- Migraciones mediante EF Core.
+- Soft delete cuando corresponda.
+- UTC para fechas de servidor.
+- Restricciones e índices a nivel de base de datos.
+- Snapshots de precios para información histórica.
+
+---
+
+## Seguridad de secretos
+
+Los secretos se gestionarán mediante variables de entorno.
+
+Ejemplos:
+
+```text
+ConnectionStrings__DefaultConnection
+
+Jwt__Key
+Jwt__Issuer
+Jwt__Audience
+
+Culqi__PublicKey
+Culqi__SecretKey
+
+Resend__ApiKey
+
+Google__ClientId
+Google__ClientSecret
+
+R2__AccountId
+R2__AccessKeyId
+R2__SecretAccessKey
+R2__BucketName
+```
+
+> Nunca se deben almacenar secretos reales en GitHub.
+
+---
+
+# 🤝 Flujo de trabajo
+
+Convención sugerida:
 
 ```bash
-git checkout -b feature/nueva-funcionalidad
+git checkout -b feature/nombre-funcionalidad
 git add .
-git commit -m "docs: actualizar arquitectura"
-git push origin feature/nueva-funcionalidad
+git commit -m "feat: implementar funcionalidad"
+git push origin feature/nombre-funcionalidad
+```
+
+Tipos de commit recomendados:
+
+```text
+feat:
+fix:
+docs:
+refactor:
+test:
+chore:
+ci:
 ```
 
 ---
@@ -784,7 +1102,11 @@ git push origin feature/nueva-funcionalidad
 
 **Ingeniería de Sistemas**
 
-Arquitectura y diseño del sistema **DMGOTRAVEL**
+Arquitectura, análisis y desarrollo de **DMGOTRAVEL**
+
+<br>
+
+**Ayacucho — Perú**
 
 </div>
 
@@ -794,7 +1116,7 @@ Arquitectura y diseño del sistema **DMGOTRAVEL**
 
 Este repositorio corresponde a un proyecto académico y de desarrollo de software.
 
-El código, documentación, diagramas y demás recursos del proyecto deberán utilizarse respetando la autoría correspondiente.
+La documentación, código, diagramas y recursos del proyecto deben utilizarse respetando la autoría correspondiente.
 
 ---
 
@@ -804,16 +1126,12 @@ El código, documentación, diagramas y demás recursos del proyecto deberán ut
 
 ### Travel Management Platform
 
-**Clean Architecture · Modular Monolith · CQRS · ASP.NET Core · React · PostgreSQL**
+**React · ASP.NET Core · Modular Monolith · Clean Architecture · CQRS · PostgreSQL**
 
 <br>
 
 **Autor**
 
 ### Camilo Conde
-
-<br>
-
-⭐ Si este proyecto te resulta interesante, puedes marcar el repositorio con una estrella.
 
 </div>
