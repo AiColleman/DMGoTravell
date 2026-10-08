@@ -6,7 +6,8 @@ Este documento define la arquitectura inicial de **DMGOTRAVEL** a partir de las 
 
 La solución se implementará como una aplicación web con:
 
-- **Frontend:** React.
+- **Frontend:** React + TypeScript.
+- **Build tool frontend:** Vite.
 - **Backend:** ASP.NET Core.
 - **Estilo de backend:** Monolito Modular.
 - **Enfoque interno:** Clean Architecture.
@@ -18,7 +19,8 @@ La solución se implementará como una aplicación web con:
 - **Multimedia:** Cloudflare R2.
 - **Hosting frontend:** Vercel.
 - **Hosting backend:** Render.
-- **Capa perimetral:** Cloudflare.
+- **DNS:** Cloudflare.
+- **Perímetro de la API:** Cloudflare Proxy/WAF.
 - **API Gateway independiente:** no requerido en la primera versión.
 
 ---
@@ -29,7 +31,7 @@ DMGOTRAVEL se organiza en cuatro zonas principales:
 
 ```text
 1. Frontend
-2. Capa perimetral
+2. Capa perimetral de la API
 3. Backend monolítico
 4. Persistencia e integraciones externas
 ```
@@ -40,17 +42,23 @@ flowchart LR
     U["👤 Cliente / Administrador"]
 
     subgraph FRONT["Frontend"]
-        VERCEL["Vercel"]
-        REACT["React SPA"]
+        DNS["Cloudflare DNS<br/>DNS Only"]
+        VERCEL["Vercel<br/>Edge / CDN / Hosting"]
+        REACT["React + TypeScript<br/>Vite"]
+
+        DNS --> VERCEL
         VERCEL --> REACT
     end
 
-    subgraph EDGE["Capa perimetral de la API"]
-        CF["Cloudflare<br/>DNS + WAF + TLS + DDoS"]
+    subgraph EDGE["Perímetro API"]
+        CF["Cloudflare Proxy<br/>WAF + TLS + DDoS"]
     end
 
     subgraph BACK["Backend"]
+        RENDER["Render"]
         API["ASP.NET Core REST API<br/>Monolito Modular"]
+
+        RENDER --> API
     end
 
     subgraph DATA["Persistencia"]
@@ -61,12 +69,12 @@ flowchart LR
     subgraph EXT["Servicios externos"]
         CULQI["Culqi"]
         RESEND["Resend"]
-        GOOGLE["Google OAuth"]
+        GOOGLE["Google OAuth 2.0<br/>OpenID Connect"]
     end
 
-    U --> REACT
-    REACT -->|"HTTPS / JSON"| CF
-    CF --> API
+    U --> DNS
+    REACT -->|"HTTPS / REST / JSON"| CF
+    CF --> RENDER
 
     API --> DB
     API --> R2
@@ -81,24 +89,35 @@ flowchart LR
 
 ## 2.1 Frontend
 
-El frontend se publicará en Vercel.
+El frontend se publicará en:
 
 ```text
 https://dmgotravel.com
 https://www.dmgotravel.com
 ```
 
-Cloudflare podrá gestionar el DNS del dominio. Para evitar una capa de proxy innecesaria delante de Vercel, el dominio del frontend puede mantenerse como **DNS only** cuando corresponda.
+Flujo:
 
 ```text
 Usuario
    |
    v
-Vercel
+Cloudflare DNS
+DNS Only
    |
    v
-React SPA
+Vercel
+Edge / CDN / Hosting
+   |
+   v
+React + TypeScript
 ```
+
+Cloudflare administrará el DNS, pero no se añadirá inicialmente como proxy adicional delante de Vercel.
+
+Vercel será responsable del hosting y de su infraestructura Edge/CDN para el frontend.
+
+---
 
 ## 2.2 API
 
@@ -108,16 +127,21 @@ La API se publicará mediante:
 https://api.dmgotravel.com
 ```
 
+Flujo:
+
 ```text
-React
-  |
-  v
-Cloudflare
-DNS + WAF + TLS + DDoS
-  |
-  v
-ASP.NET Core REST API
+React + TypeScript
+        |
+        v
+Cloudflare Proxy
+WAF + TLS + DDoS
+        |
+        v
 Render
+        |
+        v
+ASP.NET Core REST API
+Monolito Modular
 ```
 
 En esta primera versión **no existe un API Gateway independiente**.
@@ -152,7 +176,7 @@ Esto corresponde a un **Monolito Modular**, no a microservicios.
 
 | Módulo | Responsabilidad |
 |---|---|
-| **Identity** | Usuarios, autenticación, roles y Google OAuth. |
+| **Identity** | Usuarios, autenticación, roles y Google OAuth/OIDC. |
 | **Catalog** | Tours, servicios, paquetes e imágenes. |
 | **Hotels** | Hoteles, tipos de habitación, tarifas e inventario. |
 | **Reservations** | Reservas, disponibilidad y ciclo de vida. |
@@ -200,14 +224,18 @@ Npgsql
 El backend será el único responsable de acceder a la base de datos.
 
 ```text
-React
-  |
+React + TypeScript
+        |
+        v
 REST API
-  |
+        |
+        v
 ASP.NET Core
-  |
+        |
+        v
 EF Core
-  |
+        |
+        v
 PostgreSQL
 ```
 
@@ -239,6 +267,18 @@ ASP.NET Core
   |
   v
 Cloudflare R2
+```
+
+## Google
+
+```text
+Usuario
+  |
+Google OAuth 2.0 / OpenID Connect
+  |
+ASP.NET Core
+  |
+JWT propio de DMGOTRAVEL
 ```
 
 ---
