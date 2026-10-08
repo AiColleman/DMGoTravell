@@ -2,23 +2,54 @@
 
 ## Propósito
 
-Este documento define los atributos de calidad que condicionan la arquitectura de DMGOTRAVEL.
+Este documento define los atributos de calidad que condicionan la arquitectura de **DMGOTRAVEL**.
 
 La arquitectura objetivo utiliza:
 
+### Frontend
+
 - React;
+- TypeScript;
+- Vite;
+- Vercel como hosting y Edge/CDN.
+
+### Backend
+
 - ASP.NET Core;
-- PostgreSQL;
-- Entity Framework Core;
+- C#;
+- Monolito Modular;
+- Clean Architecture;
 - MediatR;
 - FluentValidation;
-- Hangfire;
+- Hangfire.
+
+### Persistencia
+
+- PostgreSQL;
+- Supabase;
+- Entity Framework Core;
+- Npgsql.
+
+### Seguridad e identidad
+
+- ASP.NET Core Identity;
+- JWT;
+- Google OAuth 2.0 / OpenID Connect;
+- RBAC.
+
+### Integraciones
+
 - Culqi;
 - Resend;
-- Cloudflare R2;
-- Vercel;
+- Cloudflare R2.
+
+### Infraestructura
+
+- Docker;
 - Render;
-- Cloudflare.
+- Cloudflare como proveedor DNS;
+- Cloudflare Proxy/WAF para la API;
+- Vercel Edge/CDN para el frontend.
 
 ---
 
@@ -53,11 +84,13 @@ Mecanismos:
 - índices en PostgreSQL;
 - evitar carga innecesaria de relaciones;
 - `IMemoryCache` únicamente para datos seguros de cachear;
-- entrega de multimedia mediante R2/CDN.
+- almacenamiento multimedia fuera del backend mediante Cloudflare R2;
+- entrega del frontend mediante la infraestructura Edge/CDN de Vercel;
+- reglas de caché perimetral para recursos públicos únicamente cuando sea seguro y esté explícitamente configurado.
 
 ### Restricción de caché
 
-No se debe utilizar una caché en memoria como fuente de verdad para:
+No se debe utilizar una caché en memoria ni una caché perimetral como fuente de verdad para:
 
 - cupos;
 - inventario hotelero;
@@ -66,7 +99,7 @@ No se debe utilizar una caché en memoria como fuente de verdad para:
 
 La disponibilidad crítica debe consultarse o validarse contra PostgreSQL.
 
-Cuando exista escalado horizontal, una caché local no se comparte entre instancias; por lo tanto, la invalidación debe diseñarse cuidadosamente o migrarse a una solución distribuida.
+Cuando exista escalado horizontal, una caché local no se comparte entre instancias; por lo tanto, la invalidación debe diseñarse cuidadosamente o migrarse a una solución distribuida si aparece una necesidad real.
 
 ---
 
@@ -83,6 +116,8 @@ Mecanismos:
 
 Un fallo de Resend no debe revertir un pago ya confirmado.
 
+Un fallo temporal de un servicio externo no relacionado no debe bloquear funcionalidades independientes.
+
 ---
 
 ## AC03 — Escalabilidad
@@ -94,7 +129,12 @@ El backend se diseñará como servicio stateless:
 - persistir estado de negocio en PostgreSQL;
 - mantener archivos fuera del contenedor;
 - utilizar R2 para multimedia;
-- evitar dependencias de disco local.
+- evitar dependencias de disco local;
+- permitir múltiples instancias del backend sin cambiar las reglas de negocio.
+
+La escalabilidad no implica adoptar microservicios.
+
+La primera estrategia será escalar el Monolito Modular antes de considerar extracción de servicios.
 
 ---
 
@@ -104,17 +144,34 @@ Mecanismos:
 
 - ASP.NET Core Identity;
 - JWT;
+- Google OAuth 2.0 / OpenID Connect;
 - autorización basada en roles;
 - HTTPS;
-- Cloudflare WAF;
+- Cloudflare Proxy/WAF para la API;
 - CORS restrictivo en ASP.NET Core;
 - rate limiting en ASP.NET Core y, cuando corresponda, reglas adicionales en Cloudflare;
-- secretos mediante variables de entorno/plataforma;
+- secretos mediante variables de entorno o mecanismos seguros de la plataforma;
 - validación de Webhooks;
 - validación de archivos;
 - protección de endpoints administrativos;
 - protección del panel de Hangfire;
-- logging sin datos sensibles.
+- logging sin datos sensibles;
+- ausencia de secretos reales en el repositorio.
+
+### Separación de responsabilidades
+
+Cloudflare protege el perímetro de la API.
+
+ASP.NET Core sigue siendo responsable de:
+
+- autenticación;
+- autorización;
+- validaciones;
+- reglas de negocio;
+- control de acceso a recursos;
+- procesamiento de reservas;
+- pagos;
+- auditoría.
 
 ---
 
@@ -129,6 +186,8 @@ Reservation.UserId == CurrentUser.Id
 ```
 
 No se debe confiar en un `userId` enviado libremente por el frontend para determinar propiedad.
+
+Los endpoints administrativos deben estar protegidos explícitamente mediante autorización basada en roles.
 
 ---
 
@@ -154,17 +213,30 @@ Payments
 Notifications
 Reports
 Audit
+Background Jobs
 ```
 
 La lógica del dominio no debe depender de:
 
 - PostgreSQL;
+- Entity Framework Core;
 - Culqi;
 - Resend;
-- R2;
+- Cloudflare R2;
 - ASP.NET Core;
 - Render;
-- Vercel.
+- Vercel;
+- Cloudflare.
+
+El frontend utilizará:
+
+```text
+React
+TypeScript
+Vite
+```
+
+TypeScript debe favorecer contratos más claros, refactorizaciones seguras y una integración consistente con la API.
 
 ---
 
@@ -184,9 +256,20 @@ Las reservas deben implementar una estrategia explícita de concurrencia mediant
 - aislamiento adecuado;
 - bloqueo pesimista cuando sea necesario;
 - restricciones e índices en base de datos;
-- idempotencia.
+- idempotencia;
+- rollback ante fallos.
 
 Las pruebas de concurrencia son obligatorias para los flujos críticos.
+
+Casos mínimos:
+
+```text
+último cupo turístico
+última habitación disponible
+reserva compuesta tour + hotel
+Webhook duplicado
+trabajo Hangfire repetido
+```
 
 ---
 
@@ -200,7 +283,16 @@ La API debe:
 - documentarse mediante OpenAPI;
 - retornar códigos HTTP correctos;
 - manejar Webhooks en endpoints dedicados;
-- utilizar un formato de error estándar, preferentemente `ProblemDetails`.
+- utilizar un formato de error estándar basado en `ProblemDetails`.
+
+El contrato OpenAPI deberá servir como referencia entre:
+
+```text
+React + TypeScript
+        |
+        v
+ASP.NET Core REST API
+```
 
 ---
 
@@ -226,11 +318,13 @@ Request
   -> Notification
 ```
 
+Los logs técnicos y los registros de auditoría cumplen objetivos diferentes y no deben confundirse.
+
 ---
 
 ## AC10 — Usabilidad
 
-El frontend debe distinguir claramente estados como:
+El frontend React + TypeScript debe distinguir claramente estados como:
 
 ```text
 pending
@@ -247,6 +341,8 @@ y mostrar mensajes específicos frente a:
 - pago pendiente;
 - reserva expirada;
 - error temporal de terceros.
+
+La interfaz no debe mostrar como confirmada una operación hasta que el backend determine el estado correspondiente.
 
 ---
 
@@ -266,6 +362,16 @@ IClock
 
 Esto permitirá utilizar dobles de prueba.
 
+La solución deberá permitir:
+
+- pruebas unitarias de Domain;
+- pruebas unitarias de Application;
+- pruebas de integración con PostgreSQL;
+- pruebas de arquitectura;
+- pruebas de concurrencia;
+- pruebas de contratos HTTP;
+- pruebas de idempotencia.
+
 ---
 
 ## AC12 — Recuperabilidad
@@ -276,7 +382,10 @@ Consideraciones:
 - backups gestionados por PostgreSQL/Supabase según el plan contratado;
 - procedimientos de restauración documentados;
 - datos de infraestructura reproducibles;
-- secretos fuera del repositorio.
+- secretos fuera del repositorio;
+- archivos multimedia fuera del filesystem local de Render.
+
+El backend debe poder reconstruirse desde el código, configuración segura y persistencia externa sin depender del disco local del contenedor.
 
 ---
 
@@ -315,21 +424,51 @@ Antes de producción se debe validar:
 12. recuperación frente a fallos de base de datos;
 13. CORS y rate limiting;
 14. gestión segura de secretos;
-15. observabilidad y logs.
-
-
+15. observabilidad y logs;
+16. despliegue reproducible del backend mediante Docker;
+17. configuración correcta de Cloudflare para `api.dmgotravel.com`;
+18. configuración correcta de Vercel para el frontend;
+19. ausencia de acceso directo del frontend a PostgreSQL;
+20. validación del contrato OpenAPI entre frontend y backend.
 
 ---
 
-# 5. Capa perimetral y API REST
+# 5. Capa perimetral, frontend y API REST
 
-Cloudflare y ASP.NET Core cumplen responsabilidades diferentes:
+Cloudflare, Vercel y ASP.NET Core cumplen responsabilidades diferentes.
 
 | Capa | Responsabilidad |
 |---|---|
-| **Cloudflare** | DNS, CDN, WAF, TLS, mitigación DDoS y reglas perimetrales. |
+| **Cloudflare DNS** | Administrar los registros DNS del dominio. |
+| **Vercel Edge/CDN** | Hosting, distribución y entrega del frontend React + TypeScript. |
+| **Cloudflare Proxy/WAF para API** | Proteger `api.dmgotravel.com` mediante proxy, WAF, TLS, mitigación DDoS y reglas perimetrales. |
 | **ASP.NET Core API** | CORS, rate limiting de aplicación, autenticación, autorización, OpenAPI, errores, logging y reglas de negocio. |
 
-No se incorpora un API Gateway independiente en la primera versión porque existiría un único backend monolítico y varias de sus funciones se duplicarían con Cloudflare y ASP.NET Core.
+## Flujo del frontend
 
-Si la arquitectura evoluciona a múltiples backends, esta decisión podrá revisarse.
+```text
+Usuario
+   |
+Cloudflare DNS
+DNS Only
+   |
+Vercel Edge/CDN
+   |
+React + TypeScript
+```
+
+## Flujo de la API
+
+```text
+React + TypeScript
+        |
+Cloudflare Proxy/WAF
+        |
+Render
+        |
+ASP.NET Core REST API
+```
+
+No se incorpora un API Gateway independiente en la primera versión porque existe un único backend monolítico y varias de las responsabilidades de entrada ya están cubiertas por Cloudflare y ASP.NET Core.
+
+Si la arquitectura evoluciona a múltiples backends, BFF o servicios independientes, esta decisión podrá revisarse mediante una nueva ADR.
