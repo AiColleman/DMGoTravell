@@ -2,7 +2,7 @@
 
 ## Propósito
 
-Este documento define los requisitos funcionales y las reglas de negocio de DMGOTRAVEL. Los requisitos están alineados con las historias de usuario y con la arquitectura basada en **React + ASP.NET Core + PostgreSQL + Entity Framework Core**.
+Este documento define los requisitos funcionales y las reglas de negocio de **DMGOTRAVEL**. Los requisitos están alineados con las historias de usuario y con la arquitectura basada en **React + TypeScript + Vite**, **ASP.NET Core**, **PostgreSQL** y **Entity Framework Core**.
 
 ---
 
@@ -12,8 +12,8 @@ Este documento define los requisitos funcionales y las reglas de negocio de DMGO
 |---|---|
 | **RF01** | El sistema debe permitir consultar el catálogo público de ofertas turísticas activas sin autenticación. |
 | **RF02** | El sistema debe permitir consultar el detalle de una oferta activa, incluyendo información descriptiva, precio base, imágenes, itinerario y datos necesarios para consultar disponibilidad. |
-| **RF03** | El sistema debe permitir registrar clientes con rol `client` mediante correo y contraseña. |
-| **RF04** | El sistema debe permitir autenticar usuarios mediante credenciales locales y mediante Google OAuth, emitiendo los tokens propios definidos por DMGOTRAVEL. |
+| **RF03** | El sistema debe permitir registrar clientes con rol `client` mediante **correo electrónico y contraseña administrados por DMGOTRAVEL**. |
+| **RF04** | El sistema debe permitir autenticar usuarios mediante **correo electrónico y contraseña administrados por DMGOTRAVEL**, o mediante **Google OAuth 2.0 / OpenID Connect**, emitiendo posteriormente los tokens propios definidos por DMGOTRAVEL. |
 | **RF05** | El sistema debe permitir crear una reserva turística en estado `pending` cuando exista disponibilidad suficiente. |
 | **RF06** | El sistema debe calcular en el backend el subtotal turístico utilizando el precio vigente y la cantidad solicitada, conservando el valor utilizado como dato histórico. |
 | **RF07** | El sistema debe permitir procesar pagos mediante Culqi y registrar cada intento de pago asociado a una reserva. |
@@ -212,15 +212,16 @@ Los siguientes elementos se especificarán en documentos técnicos posteriores:
 - modelo de dominio;
 - modelo entidad-relación;
 - contratos de API;
-- estrategia de tokens y refresh tokens;
+- estrategia de access tokens y refresh tokens;
+- expiración, rotación y revocación de tokens;
+- recuperación de contraseña;
+- verificación de correo electrónico;
 - integración detallada de Culqi;
 - política de devolución;
 - formato del comprobante;
 - estrategia de almacenamiento en R2;
 - diseño de inventario hotelero;
 - diseño de salidas/fechas de tours.
-
-
 
 ---
 
@@ -233,7 +234,9 @@ El acceso externo se realizará inicialmente mediante:
 ```text
 Cliente
   |
-Cloudflare
+Cloudflare Proxy/WAF
+  |
+Render
   |
 ASP.NET Core REST API
 ```
