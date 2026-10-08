@@ -37,7 +37,7 @@ El frontend será desplegado en **Vercel**, mientras que el backend será desple
 - Consultar el catálogo público de ofertas turísticas activas.
 - Consultar hoteles, tipos de habitación, tarifas y disponibilidad.
 - Registrarse mediante correo y contraseña.
-- Iniciar sesión mediante correo electronico y contraseña administrados por DMGOTRAVEL.
+- Iniciar sesión mediante correo electrónico y contraseña administrados por DMGOTRAVEL.
 - Iniciar sesión mediante Google OAuth 2.0 / OpenID Connect.
 - Crear una reserva turística.
 - Agregar alojamiento de forma opcional.
