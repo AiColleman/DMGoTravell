@@ -2,14 +2,16 @@
 
 ## Propósito
 
-Este documento registra las decisiones arquitectónicas principales de DMGOTRAVEL.
+Este documento registra las decisiones arquitectónicas principales de **DMGOTRAVEL**.
 
 Una decisión arquitectónica debe ser consistente con:
 
 - requisitos funcionales;
 - atributos de calidad;
 - restricciones;
-- drivers arquitectónicos.
+- drivers arquitectónicos;
+- documentación de arquitectura;
+- futuras especificaciones generadas mediante Spec-Driven Development.
 
 ---
 
@@ -196,11 +198,11 @@ SQL Server no forma parte de la arquitectura inicial.
 
 ---
 
-# ADR-009 — ASP.NET Core Identity + JWT + Google OAuth
+# ADR-009 — ASP.NET Core Identity + JWT + Google OAuth 2.0 / OpenID Connect
 
 **Estado:** Aceptada.
 
-**Decisión:** La identidad se administrará con ASP.NET Core Identity; la API utilizará JWT y permitirá Google OAuth.
+**Decisión:** La identidad se administrará con ASP.NET Core Identity; la API utilizará JWT y permitirá autenticación social con Google mediante OAuth 2.0 / OpenID Connect.
 
 **Drivers:** DA03, DA09.
 
@@ -209,7 +211,8 @@ SQL Server no forma parte de la arquitectura inicial.
 - Laravel Sanctum no se utiliza;
 - Laravel Socialite no se utiliza;
 - no se utilizan sesiones PHP;
-- los tokens de DMGOTRAVEL se emiten únicamente después de autenticar correctamente al usuario.
+- los tokens de DMGOTRAVEL se emiten únicamente después de autenticar correctamente al usuario;
+- la política detallada de access tokens, refresh tokens, rotación y revocación se definirá antes de implementar Identity.
 
 ---
 
@@ -252,15 +255,61 @@ Evitar que cambios posteriores en el catálogo modifiquen:
 
 ---
 
-# ADR-012 — Frontend React en Vercel
+# ADR-012 — Frontend React + TypeScript + Vite en Vercel
 
 **Estado:** Aceptada.
 
-**Decisión:** El frontend React se desplegará inicialmente en Vercel.
+**Decisión:** El frontend de DMGOTRAVEL se implementará utilizando **React + TypeScript**, utilizará **Vite** para desarrollo y construcción, y será desplegado inicialmente en **Vercel**.
 
-**Drivers:** DA01, DA02, DA10.
+**Drivers:** DA01, DA02, DA09, DA10.
+
+### Justificación
+
+TypeScript se adopta como lenguaje oficial del frontend para:
+
+- disponer de tipado estático;
+- reducir errores de integración;
+- mejorar la mantenibilidad;
+- facilitar refactorizaciones;
+- definir contratos claros con la API;
+- mejorar la integración futura con OpenAPI;
+- favorecer un desarrollo asistido por IA más consistente.
+
+Vite se utilizará para:
+
+- entorno de desarrollo;
+- compilación;
+- empaquetado del frontend;
+- gestión del flujo de construcción para Vercel.
+
+### Stack frontend
+
+```text
+React
+TypeScript
+Vite
+Vercel
+```
+
+### Comunicación
 
 La aplicación se comunicará con la API exclusivamente mediante HTTPS.
+
+```text
+React + TypeScript
+        |
+        v
+HTTPS / REST / JSON
+        |
+        v
+ASP.NET Core REST API
+```
+
+### Restricciones
+
+- no se utilizará JavaScript sin tipado como lenguaje principal del frontend;
+- el frontend no accederá directamente a PostgreSQL;
+- el frontend no será la fuente oficial de precios o totales financieros.
 
 ---
 
@@ -281,21 +330,97 @@ La aplicación se comunicará con la API exclusivamente mediante HTTPS.
 
 ---
 
-# ADR-014 — Cloudflare como capa perimetral
+# ADR-014 — Cloudflare como proveedor DNS y capa perimetral de la API
 
 **Estado:** Aceptada.
 
-**Decisión:** Cloudflare gestionará DNS, CDN y WAF.
+**Decisión:** Cloudflare administrará el DNS del dominio de DMGOTRAVEL y actuará como capa perimetral de seguridad para la **API pública**. El frontend utilizará la infraestructura Edge/CDN nativa de Vercel.
 
-**Drivers:** DA01, DA03.
+**Drivers:** DA01, DA03, DA10.
 
-### Objetivos
+## Frontend
 
+La publicación del frontend seguirá este flujo:
+
+```text
+Usuario
+   |
+   v
+dmgotravel.com / www.dmgotravel.com
+   |
+   v
+Cloudflare DNS
+DNS Only
+   |
+   v
+Vercel
+Edge / CDN / Hosting
+   |
+   v
+React + TypeScript
+```
+
+### Decisiones para frontend
+
+- Cloudflare administrará DNS.
+- No se añadirá inicialmente un proxy Cloudflare delante de Vercel.
+- Vercel proporcionará hosting y Edge/CDN del frontend.
+- Esta separación evita una capa de proxy innecesaria para el sitio web.
+
+## API
+
+La API seguirá este flujo:
+
+```text
+React + TypeScript
+        |
+        v
+api.dmgotravel.com
+        |
+        v
+Cloudflare Proxy
+WAF / TLS / DDoS
+        |
+        v
+Render
+        |
+        v
+ASP.NET Core REST API
+Monolito Modular
+```
+
+### Responsabilidades de Cloudflare para la API
+
+- DNS;
+- proxy HTTP/HTTPS;
 - TLS;
-- protección perimetral;
-- mitigación de tráfico malicioso;
-- cacheo de contenido apropiado;
-- administración centralizada del dominio.
+- WAF;
+- mitigación DDoS;
+- filtrado de tráfico;
+- reglas perimetrales;
+- rate limiting perimetral cuando sea apropiado.
+
+### Responsabilidades que Cloudflare no asume
+
+Cloudflare no implementará:
+
+- lógica de negocio;
+- reglas de reservas;
+- autorización del dominio;
+- procesamiento de pagos;
+- acceso directo a PostgreSQL;
+- CQRS;
+- lógica de inventario.
+
+Estas responsabilidades permanecen en ASP.NET Core.
+
+### Consecuencias
+
+- el frontend utiliza directamente la infraestructura Edge/CDN de Vercel;
+- la API dispone de una capa perimetral independiente;
+- se mantiene un único backend de negocio;
+- no se introduce un API Gateway independiente;
+- se reduce duplicidad de infraestructura delante del frontend.
 
 ---
 
@@ -309,10 +434,11 @@ La aplicación se comunicará con la API exclusivamente mediante HTTPS.
 
 ### Objetivos
 
-- contrato claro entre React y ASP.NET Core;
+- contrato claro entre React + TypeScript y ASP.NET Core;
 - documentación de endpoints;
 - definición de DTOs;
-- facilitar pruebas e integración.
+- facilitar pruebas e integración;
+- permitir generación o tipado futuro de clientes a partir del contrato.
 
 ---
 
@@ -338,8 +464,6 @@ Ejemplo conceptual:
 
 ---
 
-
-
 # ADR-017 — API Gateway independiente
 
 **Estado:** Diferida / No adoptada en la primera versión.
@@ -350,7 +474,7 @@ Ejemplo conceptual:
 
 El sistema utiliza un único backend Monolito Modular en ASP.NET Core. Las capacidades que normalmente justificarían un Gateway ya están cubiertas por:
 
-- Cloudflare: WAF, DDoS, TLS, DNS y políticas perimetrales;
+- Cloudflare: WAF, DDoS, TLS, DNS y políticas perimetrales para la API;
 - ASP.NET Core: routing, JWT, autorización, CORS, rate limiting, logging, OpenAPI y middleware.
 
 Añadir YARP en esta fase duplicaría responsabilidades y aumentaría:
@@ -386,12 +510,12 @@ La decisión podrá revisarse si aparecen:
 | ADR-006 | Cloudflare R2 | Aceptada |
 | ADR-007 | Culqi | Aceptada |
 | ADR-008 | Resend | Aceptada |
-| ADR-009 | Identity + JWT + Google OAuth | Aceptada |
+| ADR-009 | Identity + JWT + Google OAuth 2.0 / OIDC | Aceptada |
 | ADR-010 | Soft delete | Aceptada |
 | ADR-011 | Snapshot de precios | Aceptada |
-| ADR-012 | React + Vercel | Aceptada |
+| ADR-012 | React + TypeScript + Vite + Vercel | Aceptada |
 | ADR-013 | Docker + Render | Aceptada |
-| ADR-014 | Cloudflare CDN/WAF | Aceptada |
+| ADR-014 | Cloudflare DNS + Proxy/WAF para API | Aceptada |
 | ADR-015 | OpenAPI | Aceptada |
 | ADR-016 | ProblemDetails | Aceptada |
 | ADR-017 | API Gateway independiente | Diferida / No adoptada |
@@ -403,6 +527,8 @@ La decisión podrá revisarse si aparecen:
 ```text
 Frontend
   React
+  TypeScript
+  Vite
   Vercel
 
 Backend
@@ -418,7 +544,7 @@ Backend
 Security
   ASP.NET Core Identity
   JWT
-  Google OAuth
+  Google OAuth 2.0 / OpenID Connect
   RBAC
 
 Persistence
@@ -435,7 +561,9 @@ Integrations
 Infrastructure
   Docker
   Render
-  Cloudflare CDN/WAF/DNS
+  Cloudflare DNS
+  Cloudflare Proxy/WAF para API
+  Vercel Edge/CDN para frontend
 ```
 
 ---
@@ -448,4 +576,5 @@ Si una decisión futura contradice una ADR aceptada, se deberá:
 2. marcar la anterior como `Superseded`;
 3. actualizar requisitos y restricciones afectados;
 4. actualizar README y diagramas;
-5. evitar mantener dos decisiones incompatibles como activas.
+5. actualizar las especificaciones de Spec Kit afectadas;
+6. evitar mantener dos decisiones incompatibles como activas.
