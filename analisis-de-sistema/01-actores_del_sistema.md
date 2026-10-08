@@ -4,7 +4,11 @@
 
 Este documento identifica los actores humanos, sistemas externos y procesos automatizados que interactúan con **DMGOTRAVEL**, delimitando sus responsabilidades y restricciones dentro del alcance del sistema.
 
-La solución se implementará con **React** en el frontend y **ASP.NET Core** en el backend. La propia aplicación ASP.NET Core expondrá la **API REST**, utilizará **JWT** para autenticación, **PostgreSQL** como motor relacional, **Entity Framework Core** como ORM y servicios externos como **Culqi**, **Resend**, **Google OAuth** y **Cloudflare R2**.
+La solución se implementará con **React + TypeScript** en el frontend, utilizando **Vite** como herramienta de desarrollo y construcción, y **ASP.NET Core** en el backend.
+
+La propia aplicación ASP.NET Core expondrá la **API REST**, utilizará **ASP.NET Core Identity + JWT** para autenticación, **PostgreSQL** como motor relacional, **Entity Framework Core + Npgsql** como mecanismo de persistencia y servicios externos como **Culqi**, **Resend**, **Google OAuth 2.0 / OpenID Connect** y **Cloudflare R2**.
+
+El frontend será desplegado en **Vercel**, mientras que el backend será desplegado en **Render**. Cloudflare administrará el DNS del dominio y actuará como **Proxy/WAF** para la API pública.
 
 ---
 
@@ -34,7 +38,7 @@ La solución se implementará con **React** en el frontend y **ASP.NET Core** en
 - Consultar hoteles, tipos de habitación, tarifas y disponibilidad.
 - Registrarse mediante correo y contraseña.
 - Iniciar sesión con credenciales locales.
-- Iniciar sesión mediante Google OAuth.
+- Iniciar sesión mediante Google OAuth 2.0 / OpenID Connect.
 - Crear una reserva turística.
 - Agregar alojamiento de forma opcional.
 - Consultar el precio total calculado por el backend.
@@ -117,7 +121,7 @@ El backend de DMGOTRAVEL debe:
 
 **Tipo:** Sistema externo, secundario.
 
-**Descripción:** Proveedor de identidad utilizado para autenticación social.
+**Descripción:** Proveedor de identidad utilizado para autenticación social mediante **OAuth 2.0 / OpenID Connect**.
 
 ### Responsabilidades
 
@@ -130,7 +134,7 @@ El backend de DMGOTRAVEL debe:
 - Validar correctamente la respuesta del proveedor.
 - Vincular la identidad externa con una cuenta local.
 - Evitar duplicación de usuarios por correo.
-- Emitir los tokens de acceso propios de DMGOTRAVEL después de validar la identidad.
+- Emitir los tokens propios de DMGOTRAVEL después de validar la identidad.
 
 ---
 
@@ -220,41 +224,94 @@ El backend de DMGOTRAVEL debe:
 
 ## Criterio de consistencia tecnológica
 
-A partir de este documento, toda la documentación del proyecto debe considerar como base:
+A partir de este documento, toda la documentación y las futuras especificaciones de implementación deben considerar como base:
 
 ```text
-Frontend        React
-Backend         ASP.NET Core / C#
-API             REST / JSON
-Autenticación   ASP.NET Core Identity + JWT
-OAuth           Google
-ORM             Entity Framework Core
-Base de datos   PostgreSQL / Supabase
-CQRS            MediatR
-Validación      FluentValidation
-Background      Hangfire
-Pagos           Culqi
-Correo          Resend
-Archivos        Cloudflare R2
-Hosting web     Vercel
-Hosting API     Render
-Edge            Cloudflare CDN / WAF
+Frontend          React + TypeScript
+Build frontend    Vite
+Hosting frontend  Vercel
+Frontend Edge     Vercel Edge/CDN
+
+Backend           ASP.NET Core / C#
+Arquitectura      Monolito Modular
+Enfoque           Clean Architecture
+API               REST / JSON
+CQRS              MediatR
+Validación        FluentValidation
+Background Jobs   Hangfire
+
+Autenticación     ASP.NET Core Identity + JWT
+OAuth / OIDC      Google OAuth 2.0 / OpenID Connect
+Autorización      RBAC
+
+ORM               Entity Framework Core + Npgsql
+Base de datos     PostgreSQL / Supabase
+
+Pagos             Culqi
+Correo            Resend
+Archivos          Cloudflare R2
+
+Hosting API       Render
+DNS               Cloudflare
+API Edge          Cloudflare Proxy/WAF
+Contenedores      Docker
+
+API Gateway       No requerido en V1
 ```
 
+---
+
+## Flujo de acceso de la primera versión
+
+### Frontend
+
+```text
+Usuario
+   |
+   v
+Cloudflare DNS
+DNS Only
+   |
+   v
+Vercel
+Edge / CDN / Hosting
+   |
+   v
+React + TypeScript
+```
+
+### API
+
+```text
+React + TypeScript
+        |
+        v
+api.dmgotravel.com
+        |
+        v
+Cloudflare Proxy/WAF
+        |
+        v
+Render
+        |
+        v
+ASP.NET Core REST API
+Monolito Modular
+```
 
 ---
 
 ## Evolución futura de entrada a la API
 
-La primera versión de DMGOTRAVEL no requiere un API Gateway independiente.
+La primera versión de DMGOTRAVEL **no requiere un API Gateway independiente**.
 
-La topología inicial será:
+La entrada pública de la API será:
 
 ```text
-Cliente
-  |
-Cloudflare
-  |
+Internet
+   |
+Cloudflare Proxy/WAF
+   |
 ASP.NET Core REST API
 ```
 
