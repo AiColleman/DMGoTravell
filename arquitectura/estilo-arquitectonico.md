@@ -1,39 +1,229 @@
-# 09. Estilo Arquitectónico
+# 09. Estilo arquitectónico
 
-La estructura global del sistema DMGOTRAVEL se define mediante una combinación de estilos arquitectónicos que abordan tanto la distribución física de los componentes (despliegue) como la organización interna del código fuente (diseño de software). 
+## Propósito
 
-El sistema adopta principalmente un estilo **Cliente-Servidor** distribuido a nivel de red, soportado por un backend estructurado como un **Monolito Modular** basado en los principios de la **Arquitectura Limpia (Clean Architecture)** y el patrón **CQRS**.
+DMGOTRAVEL combina estilos y patrones para resolver la distribución física y la organización interna del backend.
 
-## 1. Estilo Cliente-Servidor (Desacoplamiento físico)
+La arquitectura utiliza:
 
-La arquitectura divide claramente las responsabilidades de interfaz de usuario y procesamiento de negocio en dos nodos físicos distintos que se comunican exclusivamente a través de la red (HTTP/REST):
+1. **Cliente-Servidor**.
+2. **Monolito Modular**.
+3. **Clean Architecture**.
+4. **CQRS**.
 
-*   **Cliente (Frontend):** Una Single Page Application (SPA) en React. Es responsable de la renderización del lado del cliente, el enrutamiento de la interfaz, el manejo del estado global y la captura de eventos del usuario. Se despliega de forma independiente en una red de entrega de contenido (Vercel + Cloudflare).
-*   **Servidor (Backend API):** Un servicio centralizado en ASP.NET Core que expone endpoints RESTful. Es responsable de la validación de reglas de negocio, persistencia de datos, seguridad, integración con pasarelas (Culqi) y tareas asíncronas (Hangfire).
+---
 
-## 2. Monolito Modular (Estrategia de Despliegue)
+# 1. Cliente-Servidor
 
-A nivel de despliegue, el backend huye de la micro-segmentación (microservicios) para evitar latencias de red interna y complejidad operativa. Todo el código del servidor se compila y despliega en **un único proceso (Monolito)** dentro de un contenedor Docker en Render. 
+```text
+React SPA
+   |
+HTTPS / REST / JSON
+   |
+ASP.NET Core
+```
 
-Sin embargo, internamente el código está fuertemente cohesionado en **módulos lógicos** (Catálogo, Reservas, Pagos, Usuarios). Si en el futuro un módulo requiere escalar independientemente, la separación lógica ya existe, facilitando la extracción a un microservicio.
+## Cliente
 
-## 3. Clean Architecture (Estructura interna del Monolito)
+Responsabilidades:
 
-Para garantizar la mantenibilidad (ADR-002), el código fuente del backend en .NET se organiza en anillos concéntricos o capas con una **Regla de Dependencia estricta**: las capas exteriores dependen de las interiores, pero las interiores no saben nada de las exteriores.
+- interfaz;
+- navegación;
+- formularios;
+- estado visual;
+- consumo de la API.
 
-| Capa | Responsabilidad | Tecnologías y Patrones |
-| :--- | :--- | :--- |
-| **1. Dominio (Core)** | Contiene las reglas empresariales puras y universales. No tiene dependencias externas. | Entidades (Tour, Hotel, Reservation), Value Objects, Enums, Interfaces de Repositorios. |
-| **2. Aplicación** | Contiene los casos de uso específicos del sistema. Orquesta el flujo de datos usando las entidades del dominio. | Casos de uso (Handlers), Interfaces de servicios externos (Email, Storage), DTOs, Validaciones (FluentValidation). |
-| **3. Infraestructura** | Implementa los detalles técnicos, persistencia y comunicación externa definidos por las interfaces de la capa de Aplicación. | Entity Framework Core, Npgsql (Supabase), Hangfire, Clientes HTTP (Culqi, Resend), AWS SDK (Cloudflare R2). |
-| **4. Presentación** | Punto de entrada del sistema. Recibe peticiones HTTP, enruta y devuelve respuestas JSON estándar. | Controladores API REST (ASP.NET Core), Middleware de manejo de excepciones, Filtros de Autenticación (JWT). |
+Tecnología:
 
-## 4. Patrón CQRS (Segregación de Responsabilidades)
+```text
+React
+Vercel
+```
 
-Dentro de la capa de **Aplicación**, DMGOTRAVEL implementa el patrón *Command and Query Responsibility Segregation* utilizando la librería MediatR.
+## Servidor
 
-*   **Commands (Comandos):** Operaciones que mutan el estado del sistema (ej. `CrearReservaCommand`, `ConfirmarPagoCommand`). Utilizan el ORM para aplicar validaciones transaccionales y bloqueos de concurrencia.
-*   **Queries (Consultas):** Operaciones que solo leen datos (ej. `ObtenerCatalogoQuery`, `ObtenerHistorialReservasQuery`). Se optimizan para lecturas rápidas, apoyándose en la caché en memoria (`IMemoryCache`) y evitando la carga de relaciones innecesarias.
+Responsabilidades:
 
-## Diagrama de la Arquitectura Limpia (.NET)
-![Arquitectura del monolito DMGOTRAVEL](./imagenes/DMGOTRAVEL-arquitectura-monolito.png)
+- autenticación;
+- autorización;
+- reglas de negocio;
+- reservas;
+- disponibilidad;
+- pagos;
+- auditoría;
+- persistencia;
+- integraciones.
+
+Tecnología:
+
+```text
+ASP.NET Core
+C#
+Render
+```
+
+---
+
+# 2. Monolito Modular
+
+El backend se implementa como **una única aplicación desplegable**.
+
+```text
+DMGOTRAVEL MONOLITH
+|
++-- Identity
++-- Catalog
++-- Hotels
++-- Reservations
++-- Payments
++-- Notifications
++-- Reports
++-- Audit
+```
+
+Los módulos son separaciones lógicas, no servicios independientes.
+
+---
+
+# 3. Clean Architecture
+
+| Capa | Responsabilidad |
+|---|---|
+| **Domain** | Entidades, Value Objects y reglas del negocio. |
+| **Application** | Casos de uso, Commands, Queries, DTOs y contratos. |
+| **Infrastructure** | EF Core, PostgreSQL, Culqi, Resend, R2, Identity y Hangfire. |
+| **Presentation** | API REST, endpoints, middleware y HTTP. |
+
+---
+
+# 4. CQRS
+
+## Commands
+
+```text
+CreateReservationCommand
+CancelReservationCommand
+ConfirmPaymentCommand
+CreateHotelCommand
+UpdateOfferCommand
+```
+
+## Queries
+
+```text
+GetCatalogQuery
+GetOfferByIdQuery
+GetHotelsQuery
+GetMyReservationsQuery
+GetAdminReservationsQuery
+```
+
+CQRS no implica microservicios, múltiples bases de datos ni mensajería distribuida.
+
+---
+
+# 5. API REST
+
+La API REST forma parte de la capa Presentation del monolito.
+
+```text
+DMGOTRAVEL
+|
++-- Presentation
+|   +-- REST API
+|
++-- Application
++-- Domain
++-- Infrastructure
+```
+
+La API REST **no es otro sistema separado**.
+
+Rutas conceptuales:
+
+```text
+/api/v1/auth
+/api/v1/catalog
+/api/v1/hotels
+/api/v1/reservations
+/api/v1/payments
+/api/v1/admin
+/api/v1/webhooks
+```
+
+---
+
+# 6. Capa perimetral
+
+Cloudflare se utiliza delante de la API para:
+
+- DNS;
+- TLS;
+- WAF;
+- mitigación DDoS;
+- reglas perimetrales.
+
+```text
+Internet
+   |
+Cloudflare
+   |
+ASP.NET Core REST API
+```
+
+No se añade un API Gateway independiente en la primera versión.
+
+---
+
+# 7. Relación entre componentes
+
+```mermaid
+flowchart LR
+
+    React["React SPA"]
+    Cloudflare["Cloudflare"]
+    API["ASP.NET Core REST API"]
+
+    subgraph Monolith["DMGOTRAVEL Monolith"]
+        Presentation["Presentation"]
+        Application["Application"]
+        Domain["Domain"]
+        Infrastructure["Infrastructure"]
+
+        Presentation --> Application
+        Application --> Domain
+        Infrastructure --> Application
+        Infrastructure --> Domain
+    end
+
+    DB[("PostgreSQL")]
+    External["Culqi / Resend / R2 / Google"]
+
+    React --> Cloudflare
+    Cloudflare --> API
+    API --> Presentation
+    Infrastructure --> DB
+    Infrastructure --> External
+```
+
+---
+
+# 8. Evolución
+
+```text
+Monolito Modular
+      |
+      v
+Escalado del monolito
+      |
+      v
+Optimización de módulos
+      |
+      v
+Separación de workers si es necesario
+      |
+      v
+Extracción selectiva de servicios
+```
+
+La adopción de microservicios no se considera un objetivo por sí mismo.
