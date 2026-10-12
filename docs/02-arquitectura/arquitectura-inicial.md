@@ -85,6 +85,7 @@ flowchart LR
 
 ---
 
+![Diagrama de la arquitectura inicial](/img/DMGOTRAVEL-arquitectura-inicial.png)
 # 2. Flujo de acceso
 
 ## 2.1 Frontend

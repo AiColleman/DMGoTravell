@@ -380,6 +380,8 @@ flowchart LR
 
 ---
 
+![Diagrama de Estilo Arquitectónico](/img/DMGOTRAVEL-estilo-arquitectonico.png)
+
 # 8. Despliegue
 
 La primera versión utiliza:

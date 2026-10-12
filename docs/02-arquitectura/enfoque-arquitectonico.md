@@ -164,6 +164,8 @@ flowchart TB
 
 ---
 
+![Diagrama del enfoque Arquitectónico](/img/DMGOTRAVEL-enfoque-arquitectonico.png)
+
 # 7. Flujo de una solicitud
 
 ```text
