@@ -25,24 +25,51 @@ Los nombres y operaciones representan **diseño propuesto**, no código ejecutab
 
 ## 2. Diagrama de clases
 
-![Clases de Reservations y contratos de colaboración](../../img/nivel4-clases-reservations.png)
+## Estructura
 
+Se reproduce la organización visual de la referencia: cuatro columnas de Clean Architecture, módulos en franjas horizontales, clases con atributos y operaciones, interfaces y adaptadores concretos. Los puertos se ubican en **Application**, conforme a DMGOTRAVEL. No se trasladan puertos a Domain para imitar la referencia. La referencia usa Marketplace, Stripe y TypeScript; esta adaptación usa el dominio turístico, Culqi y convenciones C#.
 
-![Clases de Payments e integración](../../img/nivel4-clases-payments.png)
+## 1. Reservas y pagos
 
+![Reservas y pagos](../../img/01-reservas-pagos.png)
 
-Las figuras muestran relaciones seleccionadas. Los colaboradores adicionales, DTOs, validadores, métodos de consulta y clases de otros módulos se precisan en las tablas. No se interpreta una clase omitida en la figura como una responsabilidad ausente.
+Reserva pending → confirmed mediante evidencia validada; pending → cancelled por cancelación o vencimiento; confirmed → completed al finalizar el servicio. La cancelación de confirmadas requiere cerrar la política administrativa y de devolución. Payments utiliza IReservationPaymentPort, implementado en Application por ReservationPaymentService. Los puertos de tours y hoteles coordinan retenciones dentro de la transacción compartida. No hay llamadas HTTP internas.
+
+## 2. Identidad y catálogo
+
+![Identidad y catálogo](../../img/02-identidad-catalogo.png)
+
+Se omiten asociaciones secundarias para mantener legibilidad. Catalog incorpora Offer, TourDeparture, TourHold y MediaAsset. GoogleIdentityProvider y el servicio de tokens complementan Identity.
+
+## 3. Hoteles y notificaciones
+
+![Hoteles y notificaciones](../../img/03-hoteles-notificaciones.png)
+
+Hotels incluye Hotel, RoomType, RoomInventory, HotelHold y NightRate. Cada noche se valida antes de confirmar la retención completa. Notifications no tiene un controlador público: la nota indica ausencia de entrada HTTP, y su activación real procede de INotificationPort y Hangfire.
+
+## 4. Reportes y auditoría
+
+![Reportes y auditoría](../../img/04-reportes-auditoria.png)
+
+Los modelos de Reports son DTOs/proyecciones y no agregados de escritura. Audit tiene un contrato de escritura IAuditWriter y otro de consulta IAuditReadStore. No se expone modificación del historial.
+
+## Servicios transversales
+
+| Contrato / clase | Ubicación y función |
+|---|---|
+| IUnitOfWork / EfUnitOfWork | Application / Infrastructure; commit local compartido |
+| AppDbContext | Infrastructure; EF Core y Npgsql hacia PostgreSQL de Supabase |
+| ICurrentUser / IClock | Application; actor autenticado y tiempo controlable |
+| IObjectStorage / R2ObjectStorage | Application / Infrastructure; multimedia de Catalog y Hotels |
+| ExpireReservationsJob | Infrastructure; Hangfire invoca ExpirePendingReservationsHandler |
+| DispatchNotificationsJob | Infrastructure; invoca SendPendingNotificationsHandler |
+
+Background Jobs es ejecución técnica dentro del mismo monolito, no un agregado ni servicio desplegable independiente. La base de datos se representa en C4 nivel 2/3; estas vistas UML muestran las clases de acceso mediante repositorios y contexto.
+
 
 ### 2.1 Capas de Clean Architecture
 
-| Capa | Contiene | Regla |
-|---|---|---|
-| **Presentación** | Controllers, requests y traducción de resultados HTTP. | Invoca Application mediante MediatR; no calcula precios ni utiliza repositorios concretos. |
-| **Aplicación** | Commands, Queries, Handlers, DTOs, validadores e interfaces. | Coordina casos de uso, autorización y transacciones mediante contratos. Depende de Domain; no de Infrastructure. |
-| **Dominio** | Entidades, objetos de valor, enumeraciones e invariantes. | No depende de HTTP, EF Core, PostgreSQL, Culqi, Resend, Google ni R2. |
-| **Infraestructura** | Repositorios, adaptadores, mapeos EF Core y jobs. | Implementa contratos de Application con tecnologías concretas y utiliza entidades de Domain. |
-
-> **Regla de dependencia:** Presentation → Application → Domain; Infrastructure → Application y Domain. A diferencia del ejemplo Marketplace, los puertos de DMGOTRAVEL se ubican en **Application**, conforme a su enfoque arquitectónico. `Program.cs` compone las implementaciones; esta función no autoriza al resto de Presentation a depender de Infrastructure.
+Hotels incluye Hotel, RoomType, RoomInventory, HotelHold y NightRate. Cada noche se valida antes de confirmar la retención completa. Notifications no tiene un controlador público: la nota indica ausencia de entrada HTTP, y su activación real procede de INotificationPort y Hangfire.
 
 ### 2.2 Clases del módulo Reservations y colaboradores de negocio
 
