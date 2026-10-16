@@ -21,6 +21,9 @@ Abrir el contenedor **API DMGOTRAVEL** del nivel 2 y mostrar sus componentes: m√
 
 ## 2. Diagrama
 
+![Componentes de la API DMGOTRAVEL](../../img/diagrama-nivel3.png)
+
+---
 ![Componentes de la API DMGOTRAVEL](../../img/nivel3-componentes-dmgotravel.png)
 
 
