@@ -21,17 +21,13 @@ Abrir el contenedor **API DMGOTRAVEL** del nivel 2 y mostrar sus componentes: m�
 
 ## 2. Diagrama
 
-![Componentes de la API DMGOTRAVEL](../../img/diagrama-nivel3.png)
+![Diagrama de componentes de la API DMGOTRAVEL](/img/nivel3-diagrama-de-componentes.png)
 
----
-![Componentes de la API DMGOTRAVEL](../../img/nivel3-componentes-dmgotravel.png)
+La figura conserva la estructura de la referencia: aplicación web superior, API REST, módulos dentro del contenedor backend, recursos externos a la derecha y PostgreSQL en la parte inferior. Los componentes técnicos compartidos se muestran dentro del backend.
 
+Las flechas indican invocaciones o acceso a contratos, no dependencias entre proyectos ni una secuencia temporal. Las relaciones transversales de auditoría, reportes y persistencia se detallan en las tablas siguientes. Esta vista corresponde al diseño objetivo documentado.
 
-La vista principal muestra los componentes y sus colaboraciones funcionales principales. Para mantener legibilidad, las relaciones transversales de entrada HTTP, auditoría y persistencia se explican mediante las tablas y la vista complementaria; la ausencia de una flecha en la figura principal no implica que esa relación no exista.
-
-![Integraciones y persistencia de los componentes](../../img/nivel3-integraciones-dmgotravel.png)
-
-Las flechas indican llamadas o acceso a contratos; no representan dependencias entre proyectos `.csproj` ni una secuencia temporal. Los detalles de clases, interfaces y métodos corresponden al nivel 4. Los archivos y contratos enumerados a continuación constituyen una propuesta de implementación coherente con la arquitectura documentada.
+Mantener el PNG junto a este Markdown para visualizarlo mediante el enlace relativo.
 
 ---
 
@@ -123,3 +119,6 @@ El navegador participa en la autenticación Google y puede participar en la capt
 Los nombres de contratos y rutas de código son propuestas, no evidencia de clases existentes. Los detalles de sesiones, checkout Culqi, devoluciones, comprobantes, almacenamiento de jobs y política de multimedia siguen sujetos a definición técnica y de negocio.
 
 ---
+
+Fuentes: [documentación de DMGOTRAVEL](https://github.com/AiColleman/DMGoTravell/blob/main/docs/04-modelo-C4/Nivel3-Diagrama-de-Componentes.md) y [estructura de referencia Marketplace](https://github.com/AiColleman/Marketplace-arquitSoft-02/blob/main/docs/04-modelo-c4/Nivel3-Diagrama-de-Componentes.md).
+
