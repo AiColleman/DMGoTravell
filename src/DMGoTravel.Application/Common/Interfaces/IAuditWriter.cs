@@ -52,6 +52,21 @@ public static class AuditActions
     public const string ProfileConfirmEmailChange = "profile.confirmEmailChange";
     public const string ProfileRequestClosure = "profile.requestClosure";
 
+    public const string AdminMobilityCreate = "admin.mobility.create";
+    public const string AdminMobilityUpdate = "admin.mobility.update";
+    public const string AdminMobilityActivate = "admin.mobility.activate";
+    public const string AdminMobilityDeactivate = "admin.mobility.deactivate";
+
+    public const string AdminCatalogCreate = "admin.catalog.create";
+    public const string AdminCatalogUpdate = "admin.catalog.update";
+    public const string AdminCatalogActivate = "admin.catalog.activate";
+    public const string AdminCatalogDeactivate = "admin.catalog.deactivate";
+    public const string AdminCatalogCreateDeparture = "admin.catalog.createDeparture";
+    public const string AdminCatalogUpdateDeparture = "admin.catalog.updateDeparture";
+    public const string AdminCatalogUpdatePricing = "admin.catalog.updatePricing";
+    public const string AdminCatalogUpdateDeparturePricing = "admin.catalog.updateDeparturePricing";
+    public const string AdminCatalogUpdateItinerary = "admin.catalog.updateItinerary";
+
     public const string ActorHuman = "human";
     public const string ActorSystem = "system";
     public const string ActorUnidentified = "unidentified";

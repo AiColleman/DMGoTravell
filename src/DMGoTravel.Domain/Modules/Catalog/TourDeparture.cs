@@ -47,6 +47,54 @@ public class TourDeparture : Entity<long>
         return offerDefaultPrice;
     }
 
+    public void Update(
+        DateTime startsAtUtc,
+        DateTime endsAtUtc,
+        int capacityTotal,
+        Money priceNormal,
+        bool hasActiveReservations,
+        DateTime nowUtc)
+    {
+        if (endsAtUtc <= startsAtUtc)
+            throw new DomainException("La fecha de finalización debe ser posterior a la de inicio.");
+
+        if (capacityTotal <= 0)
+            throw new DomainException("La capacidad total debe ser mayor a cero.");
+
+        if (capacityTotal < CapacityCommitted)
+            throw new DomainException($"La capacidad no puede ser menor que los cupos comprometidos ({CapacityCommitted}).");
+
+        if (priceNormal.Amount <= 0)
+            throw new DomainException("El precio normal debe ser mayor a cero.");
+
+        if (PriceDiscounted is not null && PriceDiscounted.Amount >= priceNormal.Amount)
+            throw new DomainException("El precio normal debe ser mayor que el descuento vigente.");
+
+        if (hasActiveReservations && (StartsAtUtc != startsAtUtc || EndsAtUtc != endsAtUtc))
+            throw new DomainException("No se puede modificar la fecha u hora de una salida con reservas activas.");
+
+        StartsAtUtc = startsAtUtc;
+        EndsAtUtc = endsAtUtc;
+        CapacityTotal = capacityTotal;
+        PriceNormal = priceNormal.Copy();
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
+    public void UpdatePricing(Money priceNormal, Money? priceDiscounted, DateTime nowUtc)
+    {
+        if (priceNormal.Amount <= 0)
+            throw new DomainException("El precio normal debe ser mayor a cero.");
+
+        if (priceDiscounted is not null && (priceDiscounted.Amount <= 0 || priceDiscounted.Amount >= priceNormal.Amount))
+            throw new DomainException("El precio con descuento debe ser mayor a cero y menor que el precio normal.");
+
+        PriceNormal = priceNormal.Copy();
+        PriceDiscounted = priceDiscounted?.Copy();
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
     public void HoldSeats(int quantity)
     {
         if (quantity <= 0)

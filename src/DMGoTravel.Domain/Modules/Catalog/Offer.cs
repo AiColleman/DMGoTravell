@@ -68,7 +68,68 @@ public class Offer : Entity<long>
         };
     }
 
-    public void Activate()
+    public void Update(
+        string name,
+        string description,
+        int durationValue,
+        DurationUnit durationUnit,
+        Money priceNormal,
+        string conditions,
+        DateTime nowUtc)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("El nombre de la oferta es obligatorio.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new DomainException("La descripción de la oferta es obligatoria.");
+
+        if (durationValue <= 0)
+            throw new DomainException("La duración debe ser mayor a cero.");
+
+        if (priceNormal.Amount <= 0)
+            throw new DomainException("El precio normal debe ser mayor a cero.");
+
+        if (PriceDiscounted is not null && PriceDiscounted.Amount >= priceNormal.Amount)
+            throw new DomainException("El precio normal debe ser mayor que el precio con descuento actual.");
+
+        Name = name.Trim();
+        NormalizedKey = name.Trim().ToUpperInvariant();
+        Description = description.Trim();
+        DurationValue = durationValue;
+        DurationUnit = durationUnit;
+        PriceNormal = priceNormal.Copy();
+        Conditions = (conditions ?? string.Empty).Trim();
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
+    public void UpdatePricing(Money priceNormal, Money? priceDiscounted, DateTime nowUtc)
+    {
+        if (priceNormal.Amount <= 0)
+            throw new DomainException("El precio normal debe ser mayor a cero.");
+
+        if (priceDiscounted is not null && (priceDiscounted.Amount <= 0 || priceDiscounted.Amount >= priceNormal.Amount))
+            throw new DomainException("El precio con descuento debe ser mayor a cero y menor que el precio normal.");
+
+        PriceNormal = priceNormal.Copy();
+        PriceDiscounted = priceDiscounted?.Copy();
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
+    public void ReplaceItinerary(IEnumerable<OfferItineraryDay> days, DateTime nowUtc)
+    {
+        var list = days.ToList();
+        if (list.Count == 0)
+            throw new DomainException("El itinerario debe contener al menos un día.");
+
+        _itinerary.Clear();
+        _itinerary.AddRange(list);
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
+    public void Activate(DateTime? nowUtc = null)
     {
         if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Description) ||
             string.IsNullOrWhiteSpace(Conditions) || PriceNormal.Amount <= 0)
@@ -81,14 +142,21 @@ public class Offer : Entity<long>
             throw new DomainException("La oferta debe tener al menos un día de itinerario para ser activada.");
         }
 
+        if (_images.Count == 0)
+        {
+            throw new DomainException("La oferta debe tener al menos una imagen para ser activada.");
+        }
+
         IsActive = true;
-        UpdatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = nowUtc ?? DateTime.UtcNow;
+        RowVersion++;
     }
 
-    public void Deactivate()
+    public void Deactivate(DateTime? nowUtc = null)
     {
         IsActive = false;
-        UpdatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = nowUtc ?? DateTime.UtcNow;
+        RowVersion++;
     }
 
     public void AddItineraryDay(OfferItineraryDay day)

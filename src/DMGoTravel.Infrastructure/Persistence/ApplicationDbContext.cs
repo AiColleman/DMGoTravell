@@ -5,6 +5,7 @@ using DMGoTravel.Domain.Modules.Catalog;
 using DMGoTravel.Domain.Modules.Exports;
 using DMGoTravel.Domain.Modules.Hotels;
 using DMGoTravel.Domain.Modules.Identity;
+using DMGoTravel.Domain.Modules.Mobility;
 using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reservations;
 using DMGoTravel.Infrastructure.Persistence.Idempotency;
@@ -55,6 +56,9 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
 
     // Exports
     public DbSet<ExportJob> ExportJobs => Set<ExportJob>();
+
+    // Mobility
+    public DbSet<MobilityItem> MobilityItems => Set<MobilityItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

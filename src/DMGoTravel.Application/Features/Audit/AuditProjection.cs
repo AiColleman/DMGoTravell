@@ -32,7 +32,20 @@ public static class AuditProjection
             [AuditActions.ProfileUpdate] = "Actualización de perfil",
             [AuditActions.ProfileRequestEmailChange] = "Solicitud de cambio de correo",
             [AuditActions.ProfileConfirmEmailChange] = "Confirmación de cambio de correo",
-            [AuditActions.ProfileRequestClosure] = "Baja lógica de cuenta"
+            [AuditActions.ProfileRequestClosure] = "Baja lógica de cuenta",
+            [AuditActions.AdminMobilityCreate] = "Creación de movilidad",
+            [AuditActions.AdminMobilityUpdate] = "Actualización de movilidad",
+            [AuditActions.AdminMobilityActivate] = "Activación de movilidad",
+            [AuditActions.AdminMobilityDeactivate] = "Desactivación de movilidad",
+            [AuditActions.AdminCatalogCreate] = "Creación de oferta",
+            [AuditActions.AdminCatalogUpdate] = "Actualización de oferta",
+            [AuditActions.AdminCatalogActivate] = "Activación de oferta",
+            [AuditActions.AdminCatalogDeactivate] = "Desactivación de oferta",
+            [AuditActions.AdminCatalogCreateDeparture] = "Creación de salida",
+            [AuditActions.AdminCatalogUpdateDeparture] = "Actualización de salida",
+            [AuditActions.AdminCatalogUpdatePricing] = "Actualización de precio de oferta",
+            [AuditActions.AdminCatalogUpdateDeparturePricing] = "Actualización de precio de salida",
+            [AuditActions.AdminCatalogUpdateItinerary] = "Actualización de itinerario"
         };
 
     private static readonly IReadOnlyDictionary<string, string> ReasonLabels =
@@ -246,6 +259,28 @@ public static class AuditProjection
                         break;
                     case "refundRequired" when property.Value.ValueKind is JsonValueKind.True:
                         facts.Add("devolución total requerida");
+                        break;
+                    case "mobilityStatus" when property.Value.ValueKind is JsonValueKind.String &&
+                                               property.Value.GetString() is "active" or "inactive":
+                        facts.Add($"movilidad {property.Value.GetString()}");
+                        break;
+                    case "offerStatus" when property.Value.ValueKind is JsonValueKind.String &&
+                                            property.Value.GetString() is "active" or "inactive":
+                        facts.Add($"oferta {property.Value.GetString()}");
+                        break;
+                    case "offerType" when property.Value.ValueKind is JsonValueKind.String &&
+                                          property.Value.GetString() is "tour" or "package":
+                        facts.Add($"tipo {property.Value.GetString()}");
+                        break;
+                    case "capacity" when property.Value.ValueKind is JsonValueKind.Number &&
+                                         property.Value.TryGetInt32(out var capacity) &&
+                                         capacity > 0:
+                        facts.Add($"capacidad {capacity}");
+                        break;
+                    case "itineraryDays" when property.Value.ValueKind is JsonValueKind.Number &&
+                                              property.Value.TryGetInt32(out var itineraryDays) &&
+                                              itineraryDays > 0:
+                        facts.Add($"días de itinerario {itineraryDays}");
                         break;
                 }
             }
