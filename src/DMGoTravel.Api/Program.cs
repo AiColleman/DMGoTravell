@@ -116,6 +116,7 @@ app.MapAdminReservationEndpoints();
 app.MapAdminClientEndpoints();
 app.MapAuditEndpoints();
 app.MapAdminExportEndpoints();
+app.MapAdminReportEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

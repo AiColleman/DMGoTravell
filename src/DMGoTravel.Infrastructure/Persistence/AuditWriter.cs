@@ -35,8 +35,8 @@ public sealed class AuditWriter : IAuditWriter
             entry.Action,
             entry.EntityType,
             entry.EntityId,
-            _clock.UtcNow,
-            _correlation.CorrelationId,
+            entry.OccurredAtUtc ?? _clock.UtcNow,
+            entry.CorrelationIdOverride ?? _correlation.CorrelationId,
             entry.Result,
             entry.ChangesJson));
     }

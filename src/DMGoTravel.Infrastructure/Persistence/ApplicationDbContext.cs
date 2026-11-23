@@ -7,6 +7,7 @@ using DMGoTravel.Domain.Modules.Hotels;
 using DMGoTravel.Domain.Modules.Identity;
 using DMGoTravel.Domain.Modules.Mobility;
 using DMGoTravel.Domain.Modules.Payments;
+using DMGoTravel.Domain.Modules.Reports;
 using DMGoTravel.Domain.Modules.Reservations;
 using DMGoTravel.Infrastructure.Persistence.Idempotency;
 using Microsoft.EntityFrameworkCore;
@@ -53,9 +54,13 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
 
     // Audit
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<PendingAuditEntry> PendingAuditEntries => Set<PendingAuditEntry>();
 
     // Exports
     public DbSet<ExportJob> ExportJobs => Set<ExportJob>();
+
+    // Reports
+    public DbSet<ReportSnapshot> ReportSnapshots => Set<ReportSnapshot>();
 
     // Mobility
     public DbSet<MobilityItem> MobilityItems => Set<MobilityItem>();

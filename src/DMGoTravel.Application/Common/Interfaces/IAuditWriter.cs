@@ -22,7 +22,9 @@ public sealed record AuditEntry(
     string EntityType,
     string EntityId,
     string Result,
-    string? ChangesJson = null);
+    string? ChangesJson = null,
+    DateTime? OccurredAtUtc = null,
+    string? CorrelationIdOverride = null);
 
 /// <summary>
 /// Identificadores técnicos de auditoría. <see cref="Action"/> reutiliza el

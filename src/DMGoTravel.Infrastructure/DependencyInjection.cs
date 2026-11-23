@@ -56,12 +56,15 @@ public static class DependencyInjection
         services.AddScoped<IIdempotencyStore, IdempotencyStore>();
         services.AddScoped<IAuditWriter, AuditWriter>();
         services.AddScoped<IAuditRepository, AuditRepository>();
+        services.AddScoped<IPendingAuditRepository, PendingAuditRepository>();
         services.AddScoped<IExportRepository, ExportRepository>();
+        services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IMobilityRepository, MobilityRepository>();
         services.AddScoped<IHotelRepository, HotelRepository>();
         services.AddHostedService<IdempotencyCleanupService>();
         services.AddHostedService<ExportCleanupService>();
         services.AddHostedService<ReservationExpiryWorker>();
+        services.AddHostedService<PendingAuditRecoveryWorker>();
 
         return services;
     }

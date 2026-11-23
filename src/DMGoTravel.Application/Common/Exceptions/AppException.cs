@@ -120,3 +120,19 @@ public sealed class AccountClosureBlockedAppException : AppException
         Blockers = blockers;
     }
 }
+
+public sealed class ReportExpiredAppException : AppException
+{
+    public ReportExpiredAppException()
+        : base(410, "report_expired", "La referencia del reporte expiró; genere una nueva consulta.")
+    {
+    }
+}
+
+public sealed class ReportNotReadyAppException : AppException
+{
+    public ReportNotReadyAppException()
+        : base(409, "report_not_ready", "El PDF del reporte aún no ha sido generado; solicítelo primero.")
+    {
+    }
+}
