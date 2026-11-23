@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DMGoTravel.Api/DMGoTravel.Api.csproj" />
+    <Project Path="src/DMGoTravel.Application/DMGoTravel.Application.csproj" />
+    <Project Path="src/DMGoTravel.Domain/DMGoTravel.Domain.csproj" />
+    <Project Path="src/DMGoTravel.Infrastructure/DMGoTravel.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DMGoTravel.Api.IntegrationTests/DMGoTravel.Api.IntegrationTests.csproj" />
+    <Project Path="tests/DMGoTravel.ArchitectureTests/DMGoTravel.ArchitectureTests.csproj" />
+    <Project Path="tests/DMGoTravel.Domain.Tests/DMGoTravel.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

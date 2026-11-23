@@ -1,0 +1,43 @@
+using DMGoTravel.Application.Common.Interfaces;
+using DMGoTravel.Domain.Modules.Payments;
+using Microsoft.EntityFrameworkCore;
+
+namespace DMGoTravel.Infrastructure.Persistence.Repositories;
+
+public sealed class PaymentRepository : IPaymentRepository
+{
+    private readonly ApplicationDbContext _db;
+
+    public PaymentRepository(ApplicationDbContext db)
+    {
+        _db = db;
+    }
+
+    public Task AddAsync(PaymentAttempt payment, CancellationToken cancellationToken = default) =>
+        _db.PaymentAttempts.AddAsync(payment, cancellationToken).AsTask();
+
+    public Task AddExternalAsync(ExternalPayment payment, CancellationToken cancellationToken = default) =>
+        _db.ExternalPayments.AddAsync(payment, cancellationToken).AsTask();
+
+    public Task<PaymentAttempt?> GetByPublicIdForAccountAsync(
+        Guid publicId,
+        long accountId,
+        CancellationToken cancellationToken = default) =>
+        (from payment in _db.PaymentAttempts
+         join reservation in _db.Reservations on payment.ReservationId equals reservation.Id
+         where payment.PublicId == publicId && reservation.AccountId == accountId
+         select payment)
+        .SingleOrDefaultAsync(cancellationToken);
+
+    public Task<PaymentAttempt?> GetActiveByReservationIdAsync(
+        long reservationId,
+        CancellationToken cancellationToken = default) =>
+        _db.PaymentAttempts
+            .Where(payment =>
+                payment.ReservationId == reservationId &&
+                (payment.Status == PaymentStatus.Created ||
+                 payment.Status == PaymentStatus.Sent ||
+                 payment.Status == PaymentStatus.Unknown))
+            .OrderByDescending(payment => payment.CreatedAtUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+}

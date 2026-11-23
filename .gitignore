@@ -1,0 +1,36 @@
+## .NET
+bin/
+obj/
+App_Data/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+## Visual Studio Code
+.ionide/
+
+## Node / Frontend
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+## Docker & Local DB
+postgres_data/
+
+## Secrets & Local Environment
+.env
+*.local
+appsettings.Local.json
+appsettings.Production.json
+
+## OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

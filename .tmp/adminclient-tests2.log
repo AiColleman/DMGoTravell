@@ -1,0 +1,1164 @@
+xUnit.net v3 In-Process Runner v1.1.0+7ad077d852 (64-bit .NET 10.0.15)
+  Discovering: DMGoTravel.Api.IntegrationTests
+  Discovered:  DMGoTravel.Api.IntegrationTests
+  Starting:    DMGoTravel.Api.IntegrationTests
+fail: Microsoft.EntityFrameworkCore.Database.Command[20102]
+      Failed executing DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20261111202423_InitialCreate'.
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20261113004006_AddIdempotencyRecords'.
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20261113021233_AddPasswordResetToken'.
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20261115005813_AddExportJobs'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (15ms) [Parameters=[@p0='?', @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?', @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = Boolean), @p7='?', @p8='?', @p9='?' (DbType = Guid), @p10='?' (DbType = Int64), @p11='?' (DbType = Int32), @p12='?' (DbType = DateTime), @p13='?' (DbType = Decimal), @p14='?', @p15='?' (DbType = DateTime), @p16='?' (DbType = DateTime), @p17='?', @p18='?' (DbType = Int32), @p19='?' (DbType = Int32), @p20='?' (DbType = Boolean), @p21='?', @p22='?', @p23='?' (DbType = Guid), @p24='?' (DbType = Int64), @p25='?' (DbType = Int32), @p26='?' (DbType = DateTime), @p27='?' (DbType = Decimal), @p28='?' (DbType = DateTime), @p29='?' (DbType = DateTime), @p30='?', @p31='?' (DbType = DateTime), @p32='?', @p33='?' (DbType = Boolean), @p34='?', @p35='?', @p36='?' (DbType = DateTime), @p37='?', @p38='?' (DbType = Guid), @p39='?', @p40='?' (DbType = Int64), @p41='?' (DbType = Int32), @p42='?' (DbType = Int32), @p43='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO offer ("Conditions", "CreatedAtUtc", "DeletedAtUtc", "Description", "DurationUnit", "DurationValue", "IsActive", "Name", "NormalizedKey", "PublicId", "RowVersion", "Type", "UpdatedAtUtc", price_normal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13)
+      RETURNING "Id";
+      INSERT INTO offer ("Conditions", "CreatedAtUtc", "DeletedAtUtc", "Description", "DurationUnit", "DurationValue", "IsActive", "Name", "NormalizedKey", "PublicId", "RowVersion", "Type", "UpdatedAtUtc", price_normal)
+      VALUES (@p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27)
+      RETURNING "Id";
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p28, @p29, @p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41, @p42, @p43)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p44='?', @p45='?' (DbType = DateTime), @p46='?' (DbType = Int64), @p47='?' (DbType = Int64), @p48='?', @p49='?' (DbType = Int64), @p50='?' (DbType = Int32), @p51='?' (DbType = Guid), @p52='?', @p53='?' (DbType = Int64), @p54='?' (DbType = Int64), @p55='?' (DbType = DateTime), @p56='?', @p57='?', @p58='?' (DbType = DateTime), @p59='?' (DbType = Int64), @p60='?' (DbType = Int64), @p61='?', @p62='?' (DbType = Int64), @p63='?' (DbType = Int32), @p64='?' (DbType = Guid), @p65='?', @p66='?' (DbType = Int64), @p67='?' (DbType = Int64), @p68='?' (DbType = DateTime), @p69='?', @p70='?' (DbType = Int32), @p71='?' (DbType = Int32), @p72='?' (DbType = DateTime), @p73='?' (DbType = DateTime), @p74='?' (DbType = DateTime), @p75='?' (DbType = Boolean), @p76='?' (DbType = Int64), @p77='?' (DbType = Guid), @p78='?' (DbType = Int64), @p79='?' (DbType = DateTime), @p80='?' (DbType = DateTime), @p81='?' (DbType = Decimal), @p82='?' (DbType = Int32), @p83='?' (DbType = Int32), @p84='?' (DbType = DateTime), @p85='?' (DbType = DateTime), @p86='?' (DbType = DateTime), @p87='?' (DbType = Boolean), @p88='?' (DbType = Int64), @p89='?' (DbType = Guid), @p90='?' (DbType = Int64), @p91='?' (DbType = DateTime), @p92='?' (DbType = DateTime), @p93='?' (DbType = Decimal), @p94='?', @p95='?' (DbType = DateTime), @p96='?' (DbType = Int32), @p97='?' (DbType = Int64), @p98='?' (DbType = Guid), @p99='?' (DbType = Int64), @p100='?', @p101='?' (DbType = DateTime), @p102='?', @p103='?' (DbType = DateTime), @p104='?' (DbType = Int32), @p105='?' (DbType = Int64), @p106='?' (DbType = Guid), @p107='?' (DbType = Int64), @p108='?', @p109='?' (DbType = DateTime), @p110='?', @p111='?' (DbType = DateTime), @p112='?' (DbType = Int32), @p113='?' (DbType = Int64), @p114='?' (DbType = Guid), @p115='?' (DbType = Int64), @p116='?', @p117='?' (DbType = DateTime), @p118='?' (DbType = DateTime), @p119='?', @p120='?', @p121='?' (DbType = Guid), @p122='?' (DbType = Int64), @p123='?' (DbType = DateTime), @p124='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO media_asset ("ContentType", "CreatedAtUtc", "FileSizeBytes", "HotelId", "ObjectKey", "OfferId", "Position", "PublicId", "Role", "RoomTypeId", "RowVersion", "UpdatedAtUtc", "Url")
+      VALUES (@p44, @p45, @p46, @p47, @p48, @p49, @p50, @p51, @p52, @p53, @p54, @p55, @p56)
+      RETURNING "Id";
+      INSERT INTO media_asset ("ContentType", "CreatedAtUtc", "FileSizeBytes", "HotelId", "ObjectKey", "OfferId", "Position", "PublicId", "Role", "RoomTypeId", "RowVersion", "UpdatedAtUtc", "Url")
+      VALUES (@p57, @p58, @p59, @p60, @p61, @p62, @p63, @p64, @p65, @p66, @p67, @p68, @p69)
+      RETURNING "Id";
+      INSERT INTO offer_departure ("CapacityCommitted", "CapacityTotal", "CreatedAtUtc", "DeletedAtUtc", "EndsAtUtc", "IsActive", "OfferId", "PublicId", "RowVersion", "StartsAtUtc", "UpdatedAtUtc", price_normal)
+      VALUES (@p70, @p71, @p72, @p73, @p74, @p75, @p76, @p77, @p78, @p79, @p80, @p81)
+      RETURNING "Id";
+      INSERT INTO offer_departure ("CapacityCommitted", "CapacityTotal", "CreatedAtUtc", "DeletedAtUtc", "EndsAtUtc", "IsActive", "OfferId", "PublicId", "RowVersion", "StartsAtUtc", "UpdatedAtUtc", price_normal)
+      VALUES (@p82, @p83, @p84, @p85, @p86, @p87, @p88, @p89, @p90, @p91, @p92, @p93)
+      RETURNING "Id";
+      INSERT INTO offer_itinerary_day ("Activities", "CreatedAtUtc", "DayNumber", "OfferId", "PublicId", "RowVersion", "Title", "UpdatedAtUtc")
+      VALUES (@p94, @p95, @p96, @p97, @p98, @p99, @p100, @p101)
+      RETURNING "Id";
+      INSERT INTO offer_itinerary_day ("Activities", "CreatedAtUtc", "DayNumber", "OfferId", "PublicId", "RowVersion", "Title", "UpdatedAtUtc")
+      VALUES (@p102, @p103, @p104, @p105, @p106, @p107, @p108, @p109)
+      RETURNING "Id";
+      INSERT INTO offer_itinerary_day ("Activities", "CreatedAtUtc", "DayNumber", "OfferId", "PublicId", "RowVersion", "Title", "UpdatedAtUtc")
+      VALUES (@p110, @p111, @p112, @p113, @p114, @p115, @p116, @p117)
+      RETURNING "Id";
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p118, @p119, @p120, @p121, @p122, @p123, @p124)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      DELETE FROM idempotency_record WHERE expires_at_utc <= @p0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      DELETE FROM export_job WHERE "ExpiresAtUtc" <= @p0
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api
+warn: LuckyPennySoftware.MediatR.License[0]
+      You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM user_account AS u
+          WHERE u."NormalizedEmail" = @normalizedEmail)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[@p0='?', @p1='?' (DbType = Int64), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?', @p11='?' (DbType = Guid), @p12='?' (DbType = DateTime), @p13='?', @p14='?' (DbType = Int64), @p15='?' (DbType = DateTime), @p16='?' (DbType = DateTime), @p17='?' (DbType = DateTime), @p18='?', @p19='?' (DbType = DateTime), @p20='?', @p21='?' (DbType = Boolean), @p22='?', @p23='?', @p24='?' (DbType = DateTime), @p25='?', @p26='?' (DbType = Guid), @p27='?', @p28='?' (DbType = Int64), @p29='?' (DbType = Int32), @p30='?' (DbType = Int32), @p31='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO audit_record ("Action", "ActorId", "ActorType", "ChangesJson", "CorrelationId", "CreatedAtUtc", "EntityId", "EntityType", "OccurredAtUtc", "OperationId", "Origin", "PublicId", "RecordedAtUtc", "Result", "RowVersion", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p32='?' (DbType = DateTime), @p33='?' (DbType = DateTime), @p34='?' (DbType = DateTime), @p35='?' (DbType = DateTime), @p36='?' (DbType = Guid), @p37='?' (DbType = DateTime), @p38='?' (DbType = Guid), @p39='?', @p40='?' (DbType = DateTime), @p41='?' (DbType = Int64), @p42='?' (DbType = Int64), @p43='?', @p44='?' (DbType = DateTime), @p45='?' (DbType = Int64), @p46='?' (DbType = DateTime), @p47='?', @p48='?', @p49='?' (DbType = Guid), @p50='?' (DbType = Int64), @p51='?' (DbType = DateTime), @p52='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO refresh_token ("ConsumedAtUtc", "CreatedAtUtc", "ExpiresAtUtc", "FamilyExpiresAtUtc", "FamilyId", "IssuedAtUtc", "PublicId", "ReplacedByTokenHash", "RevokedAtUtc", "RowVersion", "SecurityVersion", "TokenHash", "UpdatedAtUtc", "UserId")
+      VALUES (@p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41, @p42, @p43, @p44, @p45)
+      RETURNING "Id";
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p46, @p47, @p48, @p49, @p50, @p51, @p52)
+      RETURNING "Id";
+     Warning:
+     The component "Fluent Assertions" is governed by the rules defined in the Xceed License Agreement and
+     the Xceed Fluent Assertions Community License. You may use Fluent Assertions free of charge for
+     non-commercial use only. An active subscription is required to use Fluent Assertions for commercial use.
+
+     Please contact Xceed Sales mailto:sales@xceed.com to acquire a subscription at a very low cost.
+
+     A paid commercial license supports the development and continued increasing support of
+     Fluent Assertions users under both commercial and community licenses. Help us
+     keep Fluent Assertions at the forefront of unit testing.
+
+     For more information, visit https://xceed.com/products/unit-testing/fluent-assertions/
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@tokenHash='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."EmailVerificationTokenHash" = @tokenHash
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?', @p1='?' (DbType = Int64), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?', @p11='?' (DbType = Guid), @p12='?' (DbType = DateTime), @p13='?', @p14='?' (DbType = Int64), @p15='?' (DbType = DateTime), @p21='?' (DbType = Int64), @p16='?' (DbType = DateTime), @p17='?', @p18='?' (DbType = Boolean), @p19='?' (DbType = Int64), @p22='?' (DbType = Int64), @p20='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO audit_record ("Action", "ActorId", "ActorType", "ChangesJson", "CorrelationId", "CreatedAtUtc", "EntityId", "EntityType", "OccurredAtUtc", "OperationId", "Origin", "PublicId", "RecordedAtUtc", "Result", "RowVersion", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+      UPDATE user_account SET "EmailVerificationExpiresAtUtc" = @p16, "EmailVerificationTokenHash" = @p17, "IsEmailVerified" = @p18, "RowVersion" = @p19, "UpdatedAtUtc" = @p20
+      WHERE "Id" = @p21 AND "RowVersion" = @p22;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?', @p1='?' (DbType = Int64), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?', @p11='?' (DbType = Guid), @p12='?' (DbType = DateTime), @p13='?', @p14='?' (DbType = Int64), @p15='?' (DbType = DateTime), @p16='?' (DbType = DateTime), @p17='?' (DbType = DateTime), @p18='?' (DbType = DateTime), @p19='?' (DbType = DateTime), @p20='?' (DbType = Guid), @p21='?' (DbType = DateTime), @p22='?' (DbType = Guid), @p23='?', @p24='?' (DbType = DateTime), @p25='?' (DbType = Int64), @p26='?' (DbType = Int64), @p27='?', @p28='?' (DbType = DateTime), @p29='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO audit_record ("Action", "ActorId", "ActorType", "ChangesJson", "CorrelationId", "CreatedAtUtc", "EntityId", "EntityType", "OccurredAtUtc", "OperationId", "Origin", "PublicId", "RecordedAtUtc", "Result", "RowVersion", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+      INSERT INTO refresh_token ("ConsumedAtUtc", "CreatedAtUtc", "ExpiresAtUtc", "FamilyExpiresAtUtc", "FamilyId", "IssuedAtUtc", "PublicId", "ReplacedByTokenHash", "RevokedAtUtc", "RowVersion", "SecurityVersion", "TokenHash", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El rol no permite esta operaci├│n.
+      DMGoTravel.Application.Common.Exceptions.ForbiddenAppException: El rol no permite esta operaci├│n.
+         at DMGoTravel.Application.Common.Security.AdminAccessGuard.EnsureAdminAsync(CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Security\IAdminAccessGuard.cs:line 49
+         at DMGoTravel.Application.Features.Clients.ListClients.ListClientsQueryHandler.Handle(ListClientsQuery request, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Features\Clients\ListClients\ListClientsQuery.cs:line 57
+         at DMGoTravel.Application.Common.Behaviors.IdempotencyBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\IdempotencyBehavior.cs:line 33
+         at DMGoTravel.Application.Common.Behaviors.ValidationBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\ValidationBehavior.cs:line 35
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_0>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 38
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?', @p1='?' (DbType = Int64), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?', @p11='?' (DbType = Guid), @p12='?' (DbType = DateTime), @p13='?', @p14='?' (DbType = Int64), @p15='?' (DbType = DateTime), @p16='?' (DbType = DateTime), @p17='?' (DbType = DateTime), @p18='?' (DbType = DateTime), @p19='?' (DbType = DateTime), @p20='?' (DbType = Guid), @p21='?' (DbType = DateTime), @p22='?' (DbType = Guid), @p23='?', @p24='?' (DbType = DateTime), @p25='?' (DbType = Int64), @p26='?' (DbType = Int64), @p27='?', @p28='?' (DbType = DateTime), @p29='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO audit_record ("Action", "ActorId", "ActorType", "ChangesJson", "CorrelationId", "CreatedAtUtc", "EntityId", "EntityType", "OccurredAtUtc", "OperationId", "Origin", "PublicId", "RecordedAtUtc", "Result", "RowVersion", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+      INSERT INTO refresh_token ("ConsumedAtUtc", "CreatedAtUtc", "ExpiresAtUtc", "FamilyExpiresAtUtc", "FamilyId", "IssuedAtUtc", "PublicId", "ReplacedByTokenHash", "RevokedAtUtc", "RowVersion", "SecurityVersion", "TokenHash", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p2='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client'
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p2 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El rol no permite esta operaci├│n.
+      DMGoTravel.Application.Common.Exceptions.ForbiddenAppException: El rol no permite esta operaci├│n.
+         at DMGoTravel.Application.Common.Security.AdminAccessGuard.EnsureAdminAsync(CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Security\IAdminAccessGuard.cs:line 49
+         at DMGoTravel.Application.Features.Clients.GetClient.GetClientQueryHandler.Handle(GetClientQuery request, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Features\Clients\GetClient\GetClientQuery.cs:line 37
+         at DMGoTravel.Application.Common.Behaviors.IdempotencyBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\IdempotencyBehavior.cs:line 33
+         at DMGoTravel.Application.Common.Behaviors.ValidationBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\ValidationBehavior.cs:line 35
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_1>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 47
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?', @p1='?' (DbType = Int64), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?', @p11='?' (DbType = Guid), @p12='?' (DbType = DateTime), @p13='?', @p14='?' (DbType = Int64), @p15='?' (DbType = DateTime), @p16='?' (DbType = DateTime), @p17='?' (DbType = DateTime), @p18='?' (DbType = DateTime), @p19='?' (DbType = DateTime), @p20='?' (DbType = Guid), @p21='?' (DbType = DateTime), @p22='?' (DbType = Guid), @p23='?', @p24='?' (DbType = DateTime), @p25='?' (DbType = Int64), @p26='?' (DbType = Int64), @p27='?', @p28='?' (DbType = DateTime), @p29='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO audit_record ("Action", "ActorId", "ActorType", "ChangesJson", "CorrelationId", "CreatedAtUtc", "EntityId", "EntityType", "OccurredAtUtc", "OperationId", "Origin", "PublicId", "RecordedAtUtc", "Result", "RowVersion", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+      INSERT INTO refresh_token ("ConsumedAtUtc", "CreatedAtUtc", "ExpiresAtUtc", "FamilyExpiresAtUtc", "FamilyId", "IssuedAtUtc", "PublicId", "ReplacedByTokenHash", "RevokedAtUtc", "RowVersion", "SecurityVersion", "TokenHash", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El n├║mero de p├ígina debe ser mayor o igual a 1.
+      DMGoTravel.Application.Common.Exceptions.InvalidPageAppException: El n├║mero de p├ígina debe ser mayor o igual a 1.
+         at DMGoTravel.Api.Contracts.Pagination.ParsePage(String raw) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Contracts\Pagination.cs:line 21
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_0>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 28
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El tama├▒o de p├ígina debe estar entre 1 y 100.
+      DMGoTravel.Application.Common.Exceptions.InvalidFilterAppException: El tama├▒o de p├ígina debe estar entre 1 y 100.
+         at DMGoTravel.Api.Contracts.AuditQueryParameters.ParsePageSize(String raw) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Contracts\AuditQueryParameters.cs:line 34
+         at DMGoTravel.Api.Contracts.ClientQueryParameters.ParsePageSize(String raw) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Contracts\ClientQueryParameters.cs:line 22
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_0>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 28
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El filtro 'id' debe ser un identificador UUID v├ílido.
+      DMGoTravel.Application.Common.Exceptions.InvalidFilterAppException: El filtro 'id' debe ser un identificador UUID v├ílido.
+         at DMGoTravel.Api.Contracts.ClientQueryParameters.ParseId(String raw) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Contracts\ClientQueryParameters.cs:line 34
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_0>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 28
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El filtro 'status' debe ser 'active', 'suspended' o 'closed'.
+      DMGoTravel.Application.Common.Exceptions.InvalidFilterAppException: El filtro 'status' debe ser 'active', 'suspended' o 'closed'.
+         at DMGoTravel.Api.Contracts.ClientQueryParameters.ParseStatus(String raw) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Contracts\ClientQueryParameters.cs:line 51
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_0>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 28
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El par├ímetro 'registeredFrom' debe usar el formato YYYY-MM-DD.
+      DMGoTravel.Application.Common.Exceptions.InvalidRangeAppException: El par├ímetro 'registeredFrom' debe usar el formato YYYY-MM-DD.
+         at DMGoTravel.Api.Contracts.AuditQueryParameters.ParseDate(String raw, String parameterName) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Contracts\AuditQueryParameters.cs:line 55
+         at DMGoTravel.Api.Contracts.ClientQueryParameters.ParseDate(String raw, String parameterName) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Contracts\ClientQueryParameters.cs:line 59
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_0>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 28
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El rango no es v├ílido.
+      DMGoTravel.Application.Common.Exceptions.InvalidRangeAppException: El rango no es v├ílido.
+         at DMGoTravel.Application.Features.Clients.ListClients.ListClientsQueryHandler.Handle(ListClientsQuery request, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Features\Clients\ListClients\ListClientsQuery.cs:line 63
+         at DMGoTravel.Application.Common.Behaviors.IdempotencyBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\IdempotencyBehavior.cs:line 33
+         at DMGoTravel.Application.Common.Behaviors.ValidationBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\ValidationBehavior.cs:line 35
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_0>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 38
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p4='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p4 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?', @p1='?' (DbType = Int64), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?', @p11='?' (DbType = Guid), @p12='?' (DbType = DateTime), @p13='?', @p14='?' (DbType = Int64), @p15='?' (DbType = DateTime), @p16='?' (DbType = DateTime), @p17='?' (DbType = DateTime), @p18='?' (DbType = DateTime), @p19='?' (DbType = DateTime), @p20='?' (DbType = Guid), @p21='?' (DbType = DateTime), @p22='?' (DbType = Guid), @p23='?', @p24='?' (DbType = DateTime), @p25='?' (DbType = Int64), @p26='?' (DbType = Int64), @p27='?', @p28='?' (DbType = DateTime), @p29='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO audit_record ("Action", "ActorId", "ActorType", "ChangesJson", "CorrelationId", "CreatedAtUtc", "EntityId", "EntityType", "OccurredAtUtc", "OperationId", "Origin", "PublicId", "RecordedAtUtc", "Result", "RowVersion", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+      INSERT INTO refresh_token ("ConsumedAtUtc", "CreatedAtUtc", "ExpiresAtUtc", "FamilyExpiresAtUtc", "FamilyId", "IssuedAtUtc", "PublicId", "ReplacedByTokenHash", "RevokedAtUtc", "RowVersion", "SecurityVersion", "TokenHash", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p1='?' (DbType = Int64), @p0='?' (DbType = DateTime), @p2='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      UPDATE user_account SET "CreatedAtUtc" = @p0
+      WHERE "Id" = @p1 AND "RowVersion" = @p2;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p1='?' (DbType = Int64), @p0='?' (DbType = DateTime), @p2='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      UPDATE user_account SET "CreatedAtUtc" = @p0
+      WHERE "Id" = @p1 AND "RowVersion" = @p2;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p1='?' (DbType = Int64), @p0='?' (DbType = DateTime), @p2='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      UPDATE user_account SET "CreatedAtUtc" = @p0
+      WHERE "Id" = @p1 AND "RowVersion" = @p2;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p1='?' (DbType = Int64), @p0='?' (DbType = DateTime), @p2='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      UPDATE user_account SET "CreatedAtUtc" = @p0
+      WHERE "Id" = @p1 AND "RowVersion" = @p2;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = Date), @p32='?' (DbType = Guid), @p33='?' (DbType = Int32), @p34='?' (DbType = DateTime), @p35='?' (DbType = Int64), @p36='?' (DbType = Int64), @p37='?', @p38='?' (DbType = Int64), @p39='?', @p40='?' (DbType = DateTime), @p41='?' (DbType = DateTime), @p42='?' (DbType = DateTime), @p43='?' (DbType = DateTime), @p44='?', @p45='?', @p46='?' (DbType = Guid), @p47='?' (DbType = Int64), @p48='?' (DbType = Int64), @p49='?' (DbType = Int32), @p50='?' (DbType = DateTime), @p51='?' (DbType = Decimal), @p52='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p41, @p42, @p43, @p44, @p45, @p46, @p47, @p48, @p49, @p50, @p51, @p52)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p4='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p4 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p4='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p4 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@name_contains='?', @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL AND lower(u0."FullName") LIKE @name_contains AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@name_contains='?', @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p5='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u."PublicId", CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 THEN u."Email"
+      END, u."Status", u."DeletedAtUtc" IS NOT NULL OR u."Status" = 3, u."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL AND lower(u0."FullName") LIKE @name_contains AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+      ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+      LIMIT @p5 OFFSET @p
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@email_contains='?', @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND lower(u."Email") LIKE @email_contains AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@email_contains='?', @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p5='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND lower(u."Email") LIKE @email_contains AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p5 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_Id_Value='?' (DbType = Guid), @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."PublicId" = @filter_Id_Value AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@filter_Id_Value='?' (DbType = Guid), @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p5='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."PublicId" = @filter_Id_Value AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p5 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_Status_Value='?' (DbType = Int32), @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."Status" = @filter_Status_Value AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@filter_Status_Value='?' (DbType = Int32), @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p5='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."Status" = @filter_Status_Value AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p5 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_Status_Value='?' (DbType = Int32), @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."Status" = @filter_Status_Value AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_Status_Value='?' (DbType = Int32), @filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p5='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."Status" = @filter_Status_Value AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p5 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@filter_RegisteredFromUtc_Value='?' (DbType = DateTime), @filter_RegisteredToUtcExclusive_Value='?' (DbType = DateTime), @p4='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."CreatedAtUtc" >= @filter_RegisteredFromUtc_Value AND u."CreatedAtUtc" < @filter_RegisteredToUtcExclusive_Value
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p4 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@name_contains='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL AND lower(u0."FullName") LIKE @name_contains
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@name_contains='?', @p3='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u."PublicId", CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 THEN u."Email"
+      END, u."Status", u."DeletedAtUtc" IS NOT NULL OR u."Status" = 3, u."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL AND lower(u0."FullName") LIKE @name_contains
+      ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+      LIMIT @p3 OFFSET @p
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@email_contains='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM user_account AS u
+      WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND lower(u."Email") LIKE @email_contains
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@email_contains='?', @p3='?' (DbType = Int32), @p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT u1."PublicId", CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u1."DeletedAtUtc" IS NULL AND u1."Status" <> 3 THEN u1."Email"
+      END, u1."Status", u1."DeletedAtUtc" IS NOT NULL OR u1."Status" = 3, u1."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u1."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM (
+          SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."PublicId", u."Status"
+          FROM user_account AS u
+          WHERE u."Role" = 'client' AND u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND lower(u."Email") LIKE @email_contains
+          ORDER BY u."CreatedAtUtc" DESC, u."Id" DESC
+          LIMIT @p3 OFFSET @p
+      ) AS u1
+      LEFT JOIN user_profile AS u0 ON u1."Id" = u0."UserId"
+      ORDER BY u1."CreatedAtUtc" DESC, u1."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@normalizedEmail='?'], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."NormalizedEmail" = @normalizedEmail
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p0='?', @p1='?' (DbType = Int64), @p2='?', @p3='?', @p4='?', @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?', @p11='?' (DbType = Guid), @p12='?' (DbType = DateTime), @p13='?', @p14='?' (DbType = Int64), @p15='?' (DbType = DateTime), @p16='?' (DbType = DateTime), @p17='?' (DbType = DateTime), @p18='?' (DbType = DateTime), @p19='?' (DbType = DateTime), @p20='?' (DbType = Guid), @p21='?' (DbType = DateTime), @p22='?' (DbType = Guid), @p23='?', @p24='?' (DbType = DateTime), @p25='?' (DbType = Int64), @p26='?' (DbType = Int64), @p27='?', @p28='?' (DbType = DateTime), @p29='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO audit_record ("Action", "ActorId", "ActorType", "ChangesJson", "CorrelationId", "CreatedAtUtc", "EntityId", "EntityType", "OccurredAtUtc", "OperationId", "Origin", "PublicId", "RecordedAtUtc", "Result", "RowVersion", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+      INSERT INTO refresh_token ("ConsumedAtUtc", "CreatedAtUtc", "ExpiresAtUtc", "FamilyExpiresAtUtc", "FamilyId", "IssuedAtUtc", "PublicId", "ReplacedByTokenHash", "RevokedAtUtc", "RowVersion", "SecurityVersion", "TokenHash", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p1='?' (DbType = Int64), @p0='?' (DbType = DateTime), @p2='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      UPDATE user_account SET "CreatedAtUtc" = @p0
+      WHERE "Id" = @p1 AND "RowVersion" = @p2;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int64), @p1='?' (DbType = Int32), @p2='?', @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?' (DbType = DateTime), @p6='?' (DbType = DateTime), @p7='?' (DbType = Int64), @p8='?' (DbType = Int64), @p9='?' (DbType = DateTime), @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = DateTime), @p15='?' (DbType = DateTime), @p16='?' (DbType = Decimal), @p17='?' (DbType = Decimal), @p18='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation ("AccountId", "CancellationOrigin", "CancellationReason", "CancelledAtUtc", "CompletedAtUtc", "ConfirmedAtUtc", "CreatedAtUtc", "DepartureId", "OfferId", "PaymentDeadlineAtUtc", "PublicId", "ReservationNumber", "RowVersion", "Status", "UpdatedAtUtc", "ValidationDeadlineAtUtc", lodging_subtotal, total, tourist_subtotal)
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p19='?' (DbType = DateTime), @p20='?' (DbType = Date), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = DateTime), @p24='?' (DbType = Int64), @p25='?' (DbType = Int64), @p26='?', @p27='?' (DbType = Int64), @p28='?', @p29='?' (DbType = DateTime), @p30='?' (DbType = DateTime), @p31='?' (DbType = DateTime), @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Guid), @p36='?' (DbType = Int64), @p37='?' (DbType = Int64), @p38='?' (DbType = Int32), @p39='?' (DbType = DateTime), @p40='?' (DbType = Decimal), @p41='?' (DbType = Decimal)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO reservation_hold ("CreatedAtUtc", "PeriodDate", "PublicId", "Quantity", "ReleasedAtUtc", "ReservationId", "ResourceId", "ResourceType", "RowVersion", "State", "UpdatedAtUtc")
+      VALUES (@p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29)
+      RETURNING "Id";
+      INSERT INTO reservation_offer_snapshot ("CreatedAtUtc", "DepartureEndsAtUtc", "DepartureStartsAtUtc", "OfferName", "OfferType", "PublicId", "ReservationId", "RowVersion", "Travelers", "UpdatedAtUtc", price_per_person, subtotal)
+      VALUES (@p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = DateTime), @p1='?' (DbType = DateTime), @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?' (DbType = Boolean), @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = Int64), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_account ("CreatedAtUtc", "DeletedAtUtc", "Email", "EmailVerificationExpiresAtUtc", "EmailVerificationTokenHash", "IsEmailVerified", "NormalizedEmail", "PasswordHash", "PasswordResetExpiresAtUtc", "PasswordResetTokenHash", "PublicId", "Role", "RowVersion", "SecurityVersion", "Status", "UpdatedAtUtc")
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p16='?' (DbType = DateTime), @p17='?', @p18='?', @p19='?' (DbType = Guid), @p20='?' (DbType = Int64), @p21='?' (DbType = DateTime), @p22='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      INSERT INTO user_profile ("CreatedAtUtc", "FullName", "Phone", "PublicId", "RowVersion", "UpdatedAtUtc", "UserId")
+      VALUES (@p16, @p17, @p18, @p19, @p20, @p21, @p22)
+      RETURNING "Id";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p1='?' (DbType = Int64), @p0='?' (DbType = DateTime), @p2='?' (DbType = Int64)], CommandType='Text', CommandTimeout='30']
+      UPDATE user_account SET "CreatedAtUtc" = @p0
+      WHERE "Id" = @p1 AND "RowVersion" = @p2;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."PublicId", CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 THEN u."Email"
+      END, u."Status", u."DeletedAtUtc" IS NOT NULL OR u."Status" = 3, u."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId AND u."Role" = 'client'
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."PublicId", CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 THEN u."Email"
+      END, u."Status", u."DeletedAtUtc" IS NOT NULL OR u."Status" = 3, u."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId AND u."Role" = 'client'
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."PublicId", CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 THEN u."Email"
+      END, u."Status", u."DeletedAtUtc" IS NOT NULL OR u."Status" = 3, u."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId AND u."Role" = 'client'
+      LIMIT 2
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El cliente no existe.
+      DMGoTravel.Application.Common.Exceptions.NotFoundAppException: El cliente no existe.
+         at DMGoTravel.Application.Features.Clients.GetClient.GetClientQueryHandler.Handle(GetClientQuery request, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Features\Clients\GetClient\GetClientQuery.cs:line 42
+         at DMGoTravel.Application.Common.Behaviors.IdempotencyBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\IdempotencyBehavior.cs:line 33
+         at DMGoTravel.Application.Common.Behaviors.ValidationBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\ValidationBehavior.cs:line 35
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_1>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 47
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."Id", u."CreatedAtUtc", u."DeletedAtUtc", u."Email", u."EmailVerificationExpiresAtUtc", u."EmailVerificationTokenHash", u."IsEmailVerified", u."NormalizedEmail", u."PasswordHash", u."PasswordResetExpiresAtUtc", u."PasswordResetTokenHash", u."PublicId", u."Role", u."RowVersion", u."SecurityVersion", u."Status", u."UpdatedAtUtc", u0."Id", u0."CreatedAtUtc", u0."FullName", u0."Phone", u0."PublicId", u0."RowVersion", u0."UpdatedAtUtc", u0."UserId"
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@familyId='?' (DbType = Guid), @userId='?' (DbType = Int64), @nowUtc='?' (DbType = DateTime)], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM refresh_token AS r
+          WHERE r."FamilyId" = @familyId AND r."UserId" = @userId AND r."RevokedAtUtc" IS NULL AND r."ExpiresAtUtc" > @nowUtc)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@publicId='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']
+      SELECT u."PublicId", CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 AND u0."Id" IS NOT NULL THEN u0."FullName"
+      END, CASE
+          WHEN u."DeletedAtUtc" IS NULL AND u."Status" <> 3 THEN u."Email"
+      END, u."Status", u."DeletedAtUtc" IS NOT NULL OR u."Status" = 3, u."CreatedAtUtc", (
+          SELECT count(*)::int
+          FROM reservation AS r
+          WHERE r."AccountId" = u."Id" AND r."Status" IN (1, 2, 3, 4))
+      FROM user_account AS u
+      LEFT JOIN user_profile AS u0 ON u."Id" = u0."UserId"
+      WHERE u."PublicId" = @publicId AND u."Role" = 'client'
+      LIMIT 2
+warn: DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware[0]
+      Solicitud rechazada: El cliente no existe.
+      DMGoTravel.Application.Common.Exceptions.NotFoundAppException: El cliente no existe.
+         at DMGoTravel.Application.Features.Clients.GetClient.GetClientQueryHandler.Handle(GetClientQuery request, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Features\Clients\GetClient\GetClientQuery.cs:line 42
+         at DMGoTravel.Application.Common.Behaviors.IdempotencyBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\IdempotencyBehavior.cs:line 33
+         at DMGoTravel.Application.Common.Behaviors.ValidationBehavior`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Application\Common\Behaviors\ValidationBehavior.cs:line 35
+         at DMGoTravel.Api.Endpoints.AdminClientEndpoints.<>c.<<MapAdminClientEndpoints>b__0_1>d.MoveNext() in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Endpoints\AdminClientEndpoints.cs:line 47
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+         at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+         at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+         at DMGoTravel.Api.Middlewares.ProblemDetailsMiddleware.InvokeAsync(HttpContext context) in C:\Users\Asus TUF\Desktop\DMGoTravelll\src\DMGoTravel.Api\Middlewares\ProblemDetailsMiddleware.cs:line 28
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+  Finished:    DMGoTravel.Api.IntegrationTests
+=== TEST EXECUTION SUMMARY ===
+   DMGoTravel.Api.IntegrationTests  Total: 4, Errors: 0, Failed: 0, Skipped: 0, Not Run: 0, Time: 5,211s
