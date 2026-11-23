@@ -22,6 +22,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Role).HasMaxLength(50).IsRequired();
         builder.Property(u => u.EmailVerificationTokenHash).HasMaxLength(128);
         builder.Property(u => u.PasswordResetTokenHash).HasMaxLength(128);
+        builder.Property(u => u.PendingEmail).HasMaxLength(256);
+        builder.Property(u => u.PendingNormalizedEmail).HasMaxLength(256);
+        builder.Property(u => u.EmailChangeTokenHash).HasMaxLength(128);
+        builder.HasIndex(u => u.EmailChangeTokenHash);
         builder.Property(u => u.RowVersion).IsConcurrencyToken();
 
         builder.HasOne(u => u.Profile)

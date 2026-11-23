@@ -140,6 +140,19 @@ if (app.Environment.IsDevelopment())
     })
     .AllowAnonymous()
     .WithTags("Dev");
+
+    // Herramienta local para obtener el token de cambio de correo sin enviar correo real.
+    app.MapGet("/api/v1/profile/dev/email-change-token", (string email, IDevEmailTokenStore store) =>
+    {
+        if (store.TryGetEmailChange(email, out var token) && token is not null)
+        {
+            return Results.Ok(new { token });
+        }
+
+        return Results.NotFound();
+    })
+    .AllowAnonymous()
+    .WithTags("Dev");
 }
 
 if (app.Environment.IsDevelopment())

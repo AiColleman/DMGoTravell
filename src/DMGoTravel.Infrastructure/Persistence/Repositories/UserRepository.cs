@@ -33,6 +33,11 @@ public sealed class UserRepository : IUserRepository
             .Include(user => user.Profile)
             .SingleOrDefaultAsync(user => user.PasswordResetTokenHash == tokenHash, cancellationToken);
 
+    public Task<User?> GetByEmailChangeHashAsync(string tokenHash, CancellationToken cancellationToken = default) =>
+        _db.Users
+            .Include(user => user.Profile)
+            .SingleOrDefaultAsync(user => user.EmailChangeTokenHash == tokenHash, cancellationToken);
+
     public Task<bool> EmailExistsAsync(string normalizedEmail, CancellationToken cancellationToken = default) =>
         _db.Users.AnyAsync(user => user.NormalizedEmail == normalizedEmail, cancellationToken);
 

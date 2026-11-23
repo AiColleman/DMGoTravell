@@ -58,4 +58,16 @@ public sealed class ReservationRepository : IReservationRepository
         _db.Reservations.AnyAsync(
             reservation => reservation.ReservationNumber == reservationNumber,
             cancellationToken);
+
+    public async Task<IReadOnlyList<Reservation>> GetBlockingForClosureAsync(
+        long accountId,
+        CancellationToken cancellationToken = default) =>
+        await _db.Reservations
+            .AsNoTracking()
+            .Where(reservation =>
+                reservation.AccountId == accountId &&
+                (reservation.Status == ReservationStatus.Pending ||
+                 reservation.Status == ReservationStatus.Confirmed))
+            .OrderByDescending(reservation => reservation.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
 }

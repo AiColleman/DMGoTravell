@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DMGoTravel.Application.Common.Exceptions;
 using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
@@ -42,6 +43,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
     private readonly ReservationDtoFactory _dtoFactory;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuditWriter _audit;
 
     public CancelReservationCommandHandler(
         ICurrentUser currentUser,
@@ -50,7 +52,8 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         IOfferRepository offers,
         ReservationDtoFactory dtoFactory,
         IDateTimeProvider clock,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IAuditWriter audit)
     {
         _currentUser = currentUser;
         _users = users;
@@ -59,6 +62,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         _dtoFactory = dtoFactory;
         _clock = clock;
         _unitOfWork = unitOfWork;
+        _audit = audit;
     }
 
     public async Task<ReservationDto> Handle(CancelReservationCommand request, CancellationToken cancellationToken)
@@ -97,6 +101,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
                 "Solo se puede cancelar una reserva pendiente.");
         }
 
+        var releasedSeats = 0;
         var departure = await _offers.GetDepartureByIdAsync(reservation.DepartureId, cancellationToken);
         if (departure is not null)
         {
@@ -104,10 +109,29 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
             if (travelers > 0)
             {
                 departure.ReleaseSeats(travelers);
+                releasedSeats = travelers;
             }
         }
 
         reservation.CancelByClient(_clock.UtcNow);
+
+        _audit.Record(new AuditEntry(
+            AuditActions.ReservationCancel,
+            AuditActions.ReservationCancel,
+            AuditActions.ActorHuman,
+            user.Id,
+            "reservation",
+            reservation.PublicId.ToString(),
+            AuditActions.Success,
+            JsonSerializer.Serialize(new
+            {
+                reservationNumber = reservation.ReservationNumber,
+                previousStatus = ReservationStatus.Pending.ToString().ToLowerInvariant(),
+                status = reservation.Status.ToString().ToLowerInvariant(),
+                cancellationOrigin = CancellationOrigin.Client.ToString().ToLowerInvariant(),
+                releasedSeats
+            })));
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return await _dtoFactory.CreateAsync(reservation, cancellationToken);

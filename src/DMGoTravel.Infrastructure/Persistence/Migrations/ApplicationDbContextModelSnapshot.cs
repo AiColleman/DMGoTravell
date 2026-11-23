@@ -692,6 +692,16 @@ namespace DMGoTravel.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<DateTime?>("EmailChangeExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EmailChangeRequestedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EmailChangeTokenHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
                     b.Property<DateTime?>("EmailVerificationExpiresAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -718,6 +728,14 @@ namespace DMGoTravel.Infrastructure.Persistence.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
+                    b.Property<string>("PendingEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PendingNormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<Guid>("PublicId")
                         .HasColumnType("uuid");
 
@@ -740,6 +758,8 @@ namespace DMGoTravel.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmailChangeTokenHash");
 
                     b.HasIndex("NormalizedEmail")
                         .IsUnique();

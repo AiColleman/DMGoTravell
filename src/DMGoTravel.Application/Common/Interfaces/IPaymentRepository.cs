@@ -8,4 +8,5 @@ public interface IPaymentRepository
     Task AddExternalAsync(ExternalPayment payment, CancellationToken cancellationToken = default);
     Task<PaymentAttempt?> GetByPublicIdForAccountAsync(Guid publicId, long accountId, CancellationToken cancellationToken = default);
     Task<PaymentAttempt?> GetActiveByReservationIdAsync(long reservationId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PaymentAttempt>> GetUnresolvedForClosureAsync(long accountId, CancellationToken cancellationToken = default);
 }

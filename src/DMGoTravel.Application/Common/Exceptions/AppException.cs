@@ -107,3 +107,16 @@ public sealed class ExportExpiredAppException : AppException
     {
     }
 }
+
+public sealed record ClosureBlocker(string Type, string Reference, string Status);
+
+public sealed class AccountClosureBlockedAppException : AppException
+{
+    public IReadOnlyCollection<ClosureBlocker> Blockers { get; }
+
+    public AccountClosureBlockedAppException(IReadOnlyCollection<ClosureBlocker> blockers)
+        : base(409, "account_closure_blocked", "Existen operaciones activas que impiden la baja.")
+    {
+        Blockers = blockers;
+    }
+}

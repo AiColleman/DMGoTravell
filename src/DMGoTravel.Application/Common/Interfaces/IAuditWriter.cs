@@ -25,8 +25,8 @@ public sealed record AuditEntry(
     string? ChangesJson = null);
 
 /// <summary>
-/// Identificadores técnicos de auditoría de identidad. <see cref="Action"/> reutiliza
-/// el <c>operationId</c> estable del OpenAPI; el catálogo oficial de acciones de 010
+/// Identificadores técnicos de auditoría. <see cref="Action"/> reutiliza el
+/// <c>operationId</c> estable del OpenAPI; el catálogo oficial de acciones de 010
 /// sigue pendiente de ratificación y no se declara cerrado por estas constantes.
 /// </summary>
 public static class AuditActions
@@ -39,6 +39,15 @@ public static class AuditActions
     public const string ResendVerification = "auth.resendVerification";
     public const string ForgotPassword = "auth.forgotPassword";
     public const string ResetPassword = "auth.resetPassword";
+
+    public const string ReservationCreate = "reservations.create";
+    public const string ReservationCancel = "reservations.cancel";
+    public const string PaymentStart = "payments.start";
+
+    public const string ProfileUpdate = "profile.update";
+    public const string ProfileRequestEmailChange = "profile.requestEmailChange";
+    public const string ProfileConfirmEmailChange = "profile.confirmEmailChange";
+    public const string ProfileRequestClosure = "profile.requestClosure";
 
     public const string ActorHuman = "human";
     public const string ActorSystem = "system";

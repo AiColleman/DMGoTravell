@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text.Json;
 using DMGoTravel.Application.Common.Exceptions;
 using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
@@ -7,6 +9,7 @@ using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reservations;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace DMGoTravel.Application.Features.Payments.StartPayment;
 
@@ -45,6 +48,8 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
     private readonly IPaymentGateway _gateway;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuditWriter _audit;
+    private readonly ILogger<StartPaymentCommandHandler> _logger;
 
     public StartPaymentCommandHandler(
         ICurrentUser currentUser,
@@ -53,7 +58,9 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
         IPaymentRepository payments,
         IPaymentGateway gateway,
         IDateTimeProvider clock,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IAuditWriter audit,
+        ILogger<StartPaymentCommandHandler> logger)
     {
         _currentUser = currentUser;
         _users = users;
@@ -62,6 +69,8 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
         _gateway = gateway;
         _clock = clock;
         _unitOfWork = unitOfWork;
+        _audit = audit;
+        _logger = logger;
     }
 
     public async Task<PaymentStartResponseDto> Handle(StartPaymentCommand request, CancellationToken cancellationToken)
@@ -154,6 +163,42 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
         else
         {
             attempt.MarkRejected();
+        }
+
+        // Tras un resultado del proveedor externo, un fallo al anexar auditoría no debe
+        // revertir el cobro ya aplicado ni provocar un segundo intento (010/RF-38-RF-41).
+        try
+        {
+            _audit.Record(new AuditEntry(
+                AuditActions.PaymentStart,
+                AuditActions.PaymentStart,
+                AuditActions.ActorHuman,
+                user.Id,
+                "payment",
+                attempt.PublicId.ToString(),
+                gatewayResult.Approved ? AuditActions.Success : AuditActions.Failure,
+                JsonSerializer.Serialize(new
+                {
+                    reservationId = reservation.PublicId,
+                    reservationNumber = reservation.ReservationNumber,
+                    paymentStatus = attempt.Status.ToString().ToLowerInvariant(),
+                    reservationStatus = reservation.Status.ToString().ToLowerInvariant(),
+                    method = attempt.Method,
+                    amount = reservation.Total.Amount.ToString("0.00", CultureInfo.InvariantCulture),
+                    currency = reservation.Total.Currency,
+                    provider = gatewayResult.Provider,
+                    providerReference = gatewayResult.ProviderReference
+                })));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Fallo al registrar auditoría tras resultado de pago externo. ReservationId={ReservationId}, PaymentId={PaymentId}, Status={PaymentStatus}, ProviderReference={ProviderReference}",
+                reservation.PublicId,
+                attempt.PublicId,
+                attempt.Status,
+                gatewayResult.ProviderReference);
         }
 
         try

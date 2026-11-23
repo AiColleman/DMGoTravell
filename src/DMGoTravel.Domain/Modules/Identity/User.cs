@@ -19,6 +19,12 @@ public class User : Entity<long>
     public string? PasswordResetTokenHash { get; private set; }
     public DateTime? PasswordResetExpiresAtUtc { get; private set; }
 
+    public string? PendingEmail { get; private set; }
+    public string? PendingNormalizedEmail { get; private set; }
+    public string? EmailChangeTokenHash { get; private set; }
+    public DateTime? EmailChangeRequestedAtUtc { get; private set; }
+    public DateTime? EmailChangeExpiresAtUtc { get; private set; }
+
     public UserProfile? Profile { get; private set; }
 
     private User() { }
@@ -102,10 +108,93 @@ public class User : Entity<long>
         RowVersion++;
     }
 
-    public void SoftDelete()
+    public void UpdateProfile(string? fullName, bool hasPhone, string? phone, DateTime updatedAtUtc)
     {
-        Status = UserStatus.Closed;
-        DeletedAtUtc = DateTime.UtcNow;
-        SecurityVersion++;
+        if (Profile is null)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+                throw new DomainException("El nombre completo es obligatorio.");
+
+            Profile = new UserProfile(Id, fullName, hasPhone ? NormalizePhone(phone) : null);
+        }
+        else
+        {
+            var nextFullName = fullName ?? Profile.FullName;
+            var nextPhone = hasPhone ? NormalizePhone(phone) : Profile.Phone;
+            Profile.Update(nextFullName, nextPhone);
+        }
+
+        UpdatedAtUtc = updatedAtUtc;
+        RowVersion++;
     }
+
+    public void RequestEmailChange(
+        string newEmail,
+        string tokenHash,
+        DateTime requestedAtUtc,
+        DateTime expiresAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(newEmail))
+            throw new DomainException("El nuevo correo electrónico es obligatorio.");
+
+        if (string.IsNullOrWhiteSpace(tokenHash))
+            throw new DomainException("El hash de cambio de correo es obligatorio.");
+
+        PendingEmail = newEmail.Trim().ToLowerInvariant();
+        PendingNormalizedEmail = newEmail.Trim().ToUpperInvariant();
+        EmailChangeTokenHash = tokenHash;
+        EmailChangeRequestedAtUtc = requestedAtUtc;
+        EmailChangeExpiresAtUtc = expiresAtUtc;
+        UpdatedAtUtc = requestedAtUtc;
+        RowVersion++;
+    }
+
+    public void ConfirmEmailChange(DateTime confirmedAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(PendingEmail) || string.IsNullOrWhiteSpace(PendingNormalizedEmail))
+            throw new DomainException("No existe una solicitud vigente de cambio de correo.");
+
+        Email = PendingEmail;
+        NormalizedEmail = PendingNormalizedEmail;
+        IsEmailVerified = true;
+
+        PendingEmail = null;
+        PendingNormalizedEmail = null;
+        EmailChangeTokenHash = null;
+        EmailChangeRequestedAtUtc = null;
+        EmailChangeExpiresAtUtc = null;
+
+        EmailVerificationTokenHash = null;
+        EmailVerificationExpiresAtUtc = null;
+        PasswordResetTokenHash = null;
+        PasswordResetExpiresAtUtc = null;
+
+        SecurityVersion++;
+        UpdatedAtUtc = confirmedAtUtc;
+        RowVersion++;
+    }
+
+    public void SoftDelete(DateTime? deletedAtUtc = null)
+    {
+        var now = deletedAtUtc ?? DateTime.UtcNow;
+        Status = UserStatus.Closed;
+        DeletedAtUtc = now;
+
+        PendingEmail = null;
+        PendingNormalizedEmail = null;
+        EmailChangeTokenHash = null;
+        EmailChangeRequestedAtUtc = null;
+        EmailChangeExpiresAtUtc = null;
+        EmailVerificationTokenHash = null;
+        EmailVerificationExpiresAtUtc = null;
+        PasswordResetTokenHash = null;
+        PasswordResetExpiresAtUtc = null;
+
+        SecurityVersion++;
+        UpdatedAtUtc = now;
+        RowVersion++;
+    }
+
+    private static string? NormalizePhone(string? phone) =>
+        string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
 }

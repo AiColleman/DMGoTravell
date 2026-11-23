@@ -10,4 +10,6 @@ public interface IDevEmailTokenStore
     bool TryGet(string email, out string? token);
     void SetPasswordReset(string email, string token);
     bool TryGetPasswordReset(string email, out string? token);
+    void SetEmailChange(string newEmail, string token);
+    bool TryGetEmailChange(string newEmail, out string? token);
 }

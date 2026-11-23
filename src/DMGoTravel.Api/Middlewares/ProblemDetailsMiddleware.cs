@@ -52,9 +52,17 @@ public sealed class ProblemDetailsMiddleware
         string title;
         string detail = exception.Message;
         IReadOnlyCollection<FieldError>? errors = null;
+        IReadOnlyCollection<ClosureBlocker>? blockers = null;
 
         switch (exception)
         {
+            case AccountClosureBlockedAppException closureBlocked:
+                status = closureBlocked.StatusCode;
+                code = closureBlocked.Code;
+                title = TitleForStatus(closureBlocked.StatusCode);
+                blockers = closureBlocked.Blockers;
+                break;
+
             case AppException appEx:
                 status = appEx.StatusCode;
                 code = appEx.Code;
@@ -111,6 +119,12 @@ public sealed class ProblemDetailsMiddleware
                 field = error.Field,
                 message = error.Message,
                 code = error.Code
+            }),
+            blockers = blockers?.Select(blocker => new
+            {
+                type = blocker.Type,
+                reference = blocker.Reference,
+                status = blocker.Status
             })
         };
 

@@ -40,4 +40,17 @@ public sealed class PaymentRepository : IPaymentRepository
                  payment.Status == PaymentStatus.Unknown))
             .OrderByDescending(payment => payment.CreatedAtUtc)
             .FirstOrDefaultAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<PaymentAttempt>> GetUnresolvedForClosureAsync(
+        long accountId,
+        CancellationToken cancellationToken = default) =>
+        await _db.PaymentAttempts
+            .AsNoTracking()
+            .Where(payment =>
+                payment.AccountId == accountId &&
+                (payment.Status == PaymentStatus.Created ||
+                 payment.Status == PaymentStatus.Sent ||
+                 payment.Status == PaymentStatus.Unknown))
+            .OrderByDescending(payment => payment.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
 }

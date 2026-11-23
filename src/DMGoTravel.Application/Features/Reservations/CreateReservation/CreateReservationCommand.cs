@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Security.Cryptography;
+using System.Text.Json;
 using DMGoTravel.Application.Common.Exceptions;
 using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
@@ -53,6 +55,7 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
     private readonly ReservationDtoFactory _dtoFactory;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuditWriter _audit;
 
     public CreateReservationCommandHandler(
         ICurrentUser currentUser,
@@ -61,7 +64,8 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
         IReservationRepository reservations,
         ReservationDtoFactory dtoFactory,
         IDateTimeProvider clock,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IAuditWriter audit)
     {
         _currentUser = currentUser;
         _users = users;
@@ -70,6 +74,7 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
         _dtoFactory = dtoFactory;
         _clock = clock;
         _unitOfWork = unitOfWork;
+        _audit = audit;
     }
 
     public async Task<ReservationDto> Handle(CreateReservationCommand request, CancellationToken cancellationToken)
@@ -146,6 +151,24 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
         }
 
         await _reservations.AddAsync(reservation, cancellationToken);
+
+        _audit.Record(new AuditEntry(
+            AuditActions.ReservationCreate,
+            AuditActions.ReservationCreate,
+            AuditActions.ActorHuman,
+            user.Id,
+            "reservation",
+            reservation.PublicId.ToString(),
+            AuditActions.Success,
+            JsonSerializer.Serialize(new
+            {
+                reservationNumber = reservation.ReservationNumber,
+                status = reservation.Status.ToString().ToLowerInvariant(),
+                travelers = request.Travelers,
+                total = reservation.Total.Amount.ToString("0.00", CultureInfo.InvariantCulture),
+                currency = reservation.Total.Currency,
+                departureId = departure.PublicId
+            })));
 
         try
         {
