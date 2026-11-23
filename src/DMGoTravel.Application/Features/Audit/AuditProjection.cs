@@ -26,6 +26,8 @@ public static class AuditProjection
             [AuditActions.ReservationCreate] = "Creación de reserva",
             [AuditActions.ReservationCancel] = "Cancelación de reserva",
             [AuditActions.ReservationAutoCancelled] = "Cancelación automática por vencimiento",
+            [AuditActions.AdminReservationCancel] = "Cancelación administrativa de reserva",
+            [AuditActions.AdminReservationComplete] = "Finalización administrativa de reserva",
             [AuditActions.PaymentStart] = "Inicio de pago",
             [AuditActions.ProfileUpdate] = "Actualización de perfil",
             [AuditActions.ProfileRequestEmailChange] = "Solicitud de cambio de correo",
@@ -241,6 +243,9 @@ public static class AuditProjection
                         facts.Add(property.Value.GetString() == "payment_deadline"
                             ? "límite de pago vencido"
                             : "límite de validación vencido");
+                        break;
+                    case "refundRequired" when property.Value.ValueKind is JsonValueKind.True:
+                        facts.Add("devolución total requerida");
                         break;
                 }
             }

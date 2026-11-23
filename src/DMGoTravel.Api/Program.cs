@@ -109,6 +109,7 @@ app.MapCatalogEndpoints();
 app.MapReservationEndpoints();
 app.MapPaymentEndpoints();
 app.MapProfileEndpoints();
+app.MapAdminReservationEndpoints();
 app.MapAdminClientEndpoints();
 app.MapAuditEndpoints();
 app.MapAdminExportEndpoints();

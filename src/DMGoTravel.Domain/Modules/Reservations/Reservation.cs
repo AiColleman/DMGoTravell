@@ -133,14 +133,42 @@ public class Reservation : Entity<long>
         return true;
     }
 
-    public void CancelByAdmin(string reason, DateTime nowUtc)
+    public void CompleteByAdmin(DateTime nowUtc)
     {
-        if (Status != ReservationStatus.Confirmed && Status != ReservationStatus.Pending)
+        if (Status != ReservationStatus.Confirmed)
         {
-            throw new DomainException($"No se puede cancelar administrativamente una reserva en estado '{Status}'.");
+            throw new DomainException($"Solo se puede completar una reserva confirmada; estado actual '{Status}'.");
         }
 
-        Cancel(Reservations.CancellationOrigin.Admin, reason, nowUtc);
+        if (OfferSnapshot is not null && nowUtc < OfferSnapshot.DepartureEndsAtUtc)
+        {
+            throw new DomainException("Solo se puede completar una reserva una vez finalizado el servicio.");
+        }
+
+        Status = ReservationStatus.Completed;
+        CompletedAtUtc = nowUtc;
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
+    public void CancelByAdmin(string reason, DateTime nowUtc)
+    {
+        if (Status != ReservationStatus.Confirmed)
+        {
+            throw new DomainException($"El administrador solo puede cancelar reservas confirmadas; estado actual '{Status}'.");
+        }
+
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new DomainException("El motivo de cancelación administrativa es obligatorio.");
+        }
+
+        if (OfferSnapshot is not null && nowUtc >= OfferSnapshot.DepartureStartsAtUtc)
+        {
+            throw new DomainException("No se puede cancelar administrativamente una reserva cuyo servicio ya inició.");
+        }
+
+        Cancel(Reservations.CancellationOrigin.Admin, reason.Trim(), nowUtc);
     }
 
     private void Cancel(CancellationOrigin origin, string reason, DateTime nowUtc)

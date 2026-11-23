@@ -43,6 +43,8 @@ public static class AuditActions
     public const string ReservationCreate = "reservations.create";
     public const string ReservationCancel = "reservations.cancel";
     public const string ReservationAutoCancelled = "reservation.auto_cancelled";
+    public const string AdminReservationCancel = "admin.reservations.cancel";
+    public const string AdminReservationComplete = "admin.reservations.complete";
     public const string PaymentStart = "payments.start";
 
     public const string ProfileUpdate = "profile.update";

@@ -51,6 +51,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IOfferRepository, OfferRepository>();
         services.AddScoped<IReservationRepository, ReservationRepository>();
+        services.AddScoped<IAdminReservationRepository, AdminReservationRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IIdempotencyStore, IdempotencyStore>();
         services.AddScoped<IAuditWriter, AuditWriter>();
