@@ -53,4 +53,19 @@ public sealed class PaymentRepository : IPaymentRepository
                  payment.Status == PaymentStatus.Unknown))
             .OrderByDescending(payment => payment.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+
+    public Task<bool> HasTimelyPaymentInProgressAsync(
+        long reservationId,
+        DateTime paymentDeadlineAtUtc,
+        CancellationToken cancellationToken = default) =>
+        _db.PaymentAttempts
+            .AsNoTracking()
+            .AnyAsync(
+                payment =>
+                    payment.ReservationId == reservationId &&
+                    payment.CreatedAtUtc < paymentDeadlineAtUtc &&
+                    (payment.Status == PaymentStatus.Created ||
+                     payment.Status == PaymentStatus.Sent ||
+                     payment.Status == PaymentStatus.Unknown),
+                cancellationToken);
 }

@@ -25,6 +25,7 @@ public static class AuditProjection
             [AuditActions.ResetPassword] = "Restablecimiento de contraseña",
             [AuditActions.ReservationCreate] = "Creación de reserva",
             [AuditActions.ReservationCancel] = "Cancelación de reserva",
+            [AuditActions.ReservationAutoCancelled] = "Cancelación automática por vencimiento",
             [AuditActions.PaymentStart] = "Inicio de pago",
             [AuditActions.ProfileUpdate] = "Actualización de perfil",
             [AuditActions.ProfileRequestEmailChange] = "Solicitud de cambio de correo",
@@ -234,6 +235,12 @@ public static class AuditProjection
                         break;
                     case "accountClosed" when property.Value.ValueKind is JsonValueKind.True:
                         facts.Add("cuenta dada de baja");
+                        break;
+                    case "deadlineType" when property.Value.ValueKind is JsonValueKind.String &&
+                                             property.Value.GetString() is "payment_deadline" or "validation_deadline":
+                        facts.Add(property.Value.GetString() == "payment_deadline"
+                            ? "límite de pago vencido"
+                            : "límite de validación vencido");
                         break;
                 }
             }

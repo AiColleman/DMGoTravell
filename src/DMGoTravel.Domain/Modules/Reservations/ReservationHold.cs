@@ -34,9 +34,16 @@ public class ReservationHold : Entity<long>
         CreatedAtUtc = DateTime.UtcNow
     };
 
-    public void Release()
+    public bool IsHeld => string.Equals(State, "held", StringComparison.Ordinal);
+
+    public void Release(DateTime? releasedAtUtc = null)
     {
+        if (!IsHeld)
+        {
+            return;
+        }
+
         State = "released";
-        ReleasedAtUtc = DateTime.UtcNow;
+        ReleasedAtUtc = releasedAtUtc ?? DateTime.UtcNow;
     }
 }

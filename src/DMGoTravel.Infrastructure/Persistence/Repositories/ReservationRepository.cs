@@ -70,4 +70,19 @@ public sealed class ReservationRepository : IReservationRepository
                  reservation.Status == ReservationStatus.Confirmed))
             .OrderByDescending(reservation => reservation.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<Reservation>> GetPendingExpiredCandidatesAsync(
+        DateTime nowUtc,
+        int batchSize = 50,
+        CancellationToken cancellationToken = default) =>
+        await _db.Reservations
+            .Include(reservation => reservation.OfferSnapshot)
+            .Include(reservation => reservation.LodgingSnapshot)
+            .Include(reservation => reservation.Holds)
+            .Where(reservation =>
+                reservation.Status == ReservationStatus.Pending &&
+                reservation.PaymentDeadlineAtUtc <= nowUtc)
+            .OrderBy(reservation => reservation.PaymentDeadlineAtUtc)
+            .Take(batchSize)
+            .ToListAsync(cancellationToken);
 }

@@ -77,10 +77,30 @@ public class Reservation : Entity<long>
             throw new DomainException($"No se puede confirmar una reserva en estado '{Status}'.");
         }
 
+        if (confirmedAtUtc >= ValidationDeadlineAtUtc)
+        {
+            throw new DomainException("La ventana de validación de pago venció; la reserva no puede confirmarse.");
+        }
+
         Status = ReservationStatus.Confirmed;
         ConfirmedAtUtc = confirmedAtUtc;
         RowVersion++;
     }
+
+    public bool IsExpiredAt(DateTime nowUtc, bool hasTimelyPaymentInProgress)
+    {
+        if (Status != ReservationStatus.Pending)
+        {
+            return false;
+        }
+
+        return hasTimelyPaymentInProgress
+            ? nowUtc >= ValidationDeadlineAtUtc
+            : nowUtc >= PaymentDeadlineAtUtc;
+    }
+
+    public static string GetApplicableDeadlineType(bool hasTimelyPaymentInProgress) =>
+        hasTimelyPaymentInProgress ? "validation_deadline" : "payment_deadline";
 
     public void CancelByClient(DateTime nowUtc)
     {
@@ -99,9 +119,18 @@ public class Reservation : Entity<long>
 
     public void CancelByExpiry(DateTime nowUtc)
     {
-        if (Status != ReservationStatus.Pending) return;
+        TryCancelByExpiry(nowUtc);
+    }
+
+    public bool TryCancelByExpiry(DateTime nowUtc)
+    {
+        if (Status != ReservationStatus.Pending)
+        {
+            return false;
+        }
 
         Cancel(Reservations.CancellationOrigin.Expiry, "Cancelación automática por vencimiento del plazo de pago.", nowUtc);
+        return true;
     }
 
     public void CancelByAdmin(string reason, DateTime nowUtc)
@@ -123,7 +152,7 @@ public class Reservation : Entity<long>
 
         foreach (var hold in _holds)
         {
-            hold.Release();
+            hold.Release(nowUtc);
         }
 
         RowVersion++;

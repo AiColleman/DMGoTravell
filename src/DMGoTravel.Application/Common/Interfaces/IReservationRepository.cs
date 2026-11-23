@@ -14,4 +14,8 @@ public interface IReservationRepository
         CancellationToken cancellationToken = default);
     Task<bool> ReservationNumberExistsAsync(string reservationNumber, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Reservation>> GetBlockingForClosureAsync(long accountId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Reservation>> GetPendingExpiredCandidatesAsync(
+        DateTime nowUtc,
+        int batchSize = 50,
+        CancellationToken cancellationToken = default);
 }

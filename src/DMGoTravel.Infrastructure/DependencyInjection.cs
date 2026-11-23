@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<IExportRepository, ExportRepository>();
         services.AddHostedService<IdempotencyCleanupService>();
         services.AddHostedService<ExportCleanupService>();
+        services.AddHostedService<ReservationExpiryWorker>();
 
         return services;
     }
