@@ -26,4 +26,24 @@ public class LodgingProposal : Entity<long>
         IsActive = true;
         CreatedAtUtc = DateTime.UtcNow;
     }
+
+    public void Update(long departureId, long hotelId, DateOnly checkInDate, DateOnly checkOutDate, DateTime nowUtc)
+    {
+        if (checkOutDate <= checkInDate)
+            throw new DomainException("La fecha de check-out debe ser posterior a la de check-in.");
+
+        DepartureId = departureId;
+        HotelId = hotelId;
+        CheckInDate = checkInDate;
+        CheckOutDate = checkOutDate;
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
+    public void Deactivate(DateTime nowUtc)
+    {
+        IsActive = false;
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
 }

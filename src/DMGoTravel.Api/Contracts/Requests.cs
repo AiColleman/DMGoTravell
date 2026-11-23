@@ -10,7 +10,7 @@ public sealed record ForgotPasswordRequest(string Email);
 
 public sealed record ResetPasswordRequest(string Token, string NewPassword);
 
-public sealed record LodgingRequest(Guid ProposalId, Guid RoomTypeId);
+public sealed record LodgingRequest(Guid? ProposalId, Guid? RoomTypeId);
 
 public sealed record CreateReservationRequest(
     Guid DepartureId,

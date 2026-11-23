@@ -36,6 +36,32 @@ public class Hotel : Entity<long>
         };
     }
 
+    public void Update(string name, string description, IEnumerable<string> services, DateTime nowUtc)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("El nombre del hotel es obligatorio.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new DomainException("La descripción del hotel es obligatoria.");
+
+        Name = name.Trim();
+        NormalizedKey = name.Trim().ToUpperInvariant();
+        Description = description.Trim();
+
+        _services.Clear();
+        var position = 1;
+        foreach (var service in services)
+        {
+            if (!string.IsNullOrWhiteSpace(service))
+            {
+                _services.Add(new HotelService(position++, service));
+            }
+        }
+
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
     public void AddService(string text)
     {
         _services.Add(new HotelService(_services.Count + 1, text));
@@ -46,7 +72,9 @@ public class Hotel : Entity<long>
         _roomTypes.Add(roomType);
     }
 
-    public void Activate()
+    public void Activate() => Activate(hasImage: true, DateTime.UtcNow);
+
+    public void Activate(bool hasImage, DateTime nowUtc)
     {
         if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Description))
             throw new DomainException("El hotel debe tener nombre y descripción para activarse.");
@@ -54,16 +82,21 @@ public class Hotel : Entity<long>
         if (_services.Count == 0)
             throw new DomainException("El hotel debe tener al menos un servicio registrado para activarse.");
 
-        if (_roomTypes.Count == 0 || !_roomTypes.Any(r => r.IsActive))
+        if (!hasImage)
+            throw new DomainException("El hotel debe tener al menos una imagen para activarse.");
+
+        if (_roomTypes.Count == 0 || !_roomTypes.Any(r => r.IsActive && r.DeletedAtUtc is null))
             throw new DomainException("El hotel debe tener al menos un tipo de habitación activo para activarse.");
 
         IsActive = true;
-        UpdatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
     }
 
-    public void Deactivate()
+    public void Deactivate(DateTime? nowUtc = null)
     {
         IsActive = false;
-        UpdatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = nowUtc ?? DateTime.UtcNow;
+        RowVersion++;
     }
 }

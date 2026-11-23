@@ -67,6 +67,16 @@ public static class AuditActions
     public const string AdminCatalogUpdateDeparturePricing = "admin.catalog.updateDeparturePricing";
     public const string AdminCatalogUpdateItinerary = "admin.catalog.updateItinerary";
 
+    public const string AdminHotelsCreate = "admin.hotels.create";
+    public const string AdminHotelsUpdate = "admin.hotels.update";
+    public const string AdminHotelsActivate = "admin.hotels.activate";
+    public const string AdminHotelsDeactivate = "admin.hotels.deactivate";
+    public const string AdminHotelsCreateRoomType = "admin.hotels.createRoomType";
+    public const string AdminHotelsUpdateRoomType = "admin.hotels.updateRoomType";
+    public const string AdminHotelsUpdateInventory = "admin.hotels.updateInventory";
+    public const string AdminHotelsCreateProposal = "admin.hotels.createLodgingProposal";
+    public const string AdminHotelsUpdateProposal = "admin.hotels.updateLodgingProposal";
+
     public const string ActorHuman = "human";
     public const string ActorSystem = "system";
     public const string ActorUnidentified = "unidentified";

@@ -45,7 +45,16 @@ public static class AuditProjection
             [AuditActions.AdminCatalogUpdateDeparture] = "Actualización de salida",
             [AuditActions.AdminCatalogUpdatePricing] = "Actualización de precio de oferta",
             [AuditActions.AdminCatalogUpdateDeparturePricing] = "Actualización de precio de salida",
-            [AuditActions.AdminCatalogUpdateItinerary] = "Actualización de itinerario"
+            [AuditActions.AdminCatalogUpdateItinerary] = "Actualización de itinerario",
+            [AuditActions.AdminHotelsCreate] = "Creación de hotel",
+            [AuditActions.AdminHotelsUpdate] = "Actualización de hotel",
+            [AuditActions.AdminHotelsActivate] = "Activación de hotel",
+            [AuditActions.AdminHotelsDeactivate] = "Desactivación de hotel",
+            [AuditActions.AdminHotelsCreateRoomType] = "Creación de tipo de habitación",
+            [AuditActions.AdminHotelsUpdateRoomType] = "Actualización de tipo de habitación",
+            [AuditActions.AdminHotelsUpdateInventory] = "Actualización de inventario hotelero",
+            [AuditActions.AdminHotelsCreateProposal] = "Creación de propuesta de alojamiento",
+            [AuditActions.AdminHotelsUpdateProposal] = "Actualización de propuesta de alojamiento"
         };
 
     private static readonly IReadOnlyDictionary<string, string> ReasonLabels =
@@ -281,6 +290,20 @@ public static class AuditProjection
                                               property.Value.TryGetInt32(out var itineraryDays) &&
                                               itineraryDays > 0:
                         facts.Add($"días de itinerario {itineraryDays}");
+                        break;
+                    case "hotelStatus" when property.Value.ValueKind is JsonValueKind.String &&
+                                            property.Value.GetString() is "active" or "inactive":
+                        facts.Add($"hotel {property.Value.GetString()}");
+                        break;
+                    case "quantity" when property.Value.ValueKind is JsonValueKind.Number &&
+                                         property.Value.TryGetInt32(out var quantity) &&
+                                         quantity >= 0:
+                        facts.Add($"cantidad {quantity}");
+                        break;
+                    case "nights" when property.Value.ValueKind is JsonValueKind.Number &&
+                                       property.Value.TryGetInt32(out var nights) &&
+                                       nights > 0:
+                        facts.Add($"noches {nights}");
                         break;
                 }
             }

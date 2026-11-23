@@ -25,6 +25,18 @@ public class RoomInventoryNight
         QuantityCommitted = 0;
     }
 
+    public void UpdateQuantityTotal(int quantityTotal)
+    {
+        if (quantityTotal < 0)
+            throw new DomainException("La cantidad total de habitaciones no puede ser negativa.");
+
+        if (quantityTotal < QuantityCommitted)
+            throw new DomainException($"No se puede reducir el inventario por debajo de las habitaciones comprometidas ({QuantityCommitted}).");
+
+        QuantityTotal = quantityTotal;
+        RowVersion++;
+    }
+
     public void HoldRoom(int quantity = 1)
     {
         if (AvailableQuantity < quantity)

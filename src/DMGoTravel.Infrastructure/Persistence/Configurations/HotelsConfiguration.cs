@@ -17,6 +17,7 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
         builder.Property(h => h.Name).HasMaxLength(200).IsRequired();
         builder.Property(h => h.NormalizedKey).HasMaxLength(200).IsRequired();
         builder.Property(h => h.Description).IsRequired();
+        builder.Property(h => h.RowVersion).IsConcurrencyToken();
 
         builder.HasMany(h => h.Services)
             .WithOne()
@@ -54,6 +55,7 @@ public class RoomTypeConfiguration : IEntityTypeConfiguration<RoomType>
 
         builder.Property(r => r.Name).HasMaxLength(150).IsRequired();
         builder.Property(r => r.NormalizedKey).HasMaxLength(150).IsRequired();
+        builder.Property(r => r.RowVersion).IsConcurrencyToken();
 
         builder.OwnsOne(r => r.BaseRate, p =>
         {
@@ -70,6 +72,7 @@ public class RoomInventoryNightConfiguration : IEntityTypeConfiguration<RoomInve
         builder.ToTable("room_inventory_night");
 
         builder.HasKey(r => new { r.RoomTypeId, r.StayDate });
+        builder.Property(r => r.RowVersion).IsConcurrencyToken();
     }
 }
 
@@ -82,5 +85,6 @@ public class LodgingProposalConfiguration : IEntityTypeConfiguration<LodgingProp
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).UseIdentityAlwaysColumn();
         builder.HasIndex(p => p.PublicId).IsUnique();
+        builder.Property(p => p.RowVersion).IsConcurrencyToken();
     }
 }

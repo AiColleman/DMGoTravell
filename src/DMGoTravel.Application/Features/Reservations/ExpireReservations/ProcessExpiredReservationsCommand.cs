@@ -26,6 +26,7 @@ public sealed class ProcessExpiredReservationsCommandHandler
     private readonly IReservationRepository _reservations;
     private readonly IPaymentRepository _payments;
     private readonly IOfferRepository _offers;
+    private readonly IHotelRepository _hotels;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
@@ -35,6 +36,7 @@ public sealed class ProcessExpiredReservationsCommandHandler
         IReservationRepository reservations,
         IPaymentRepository payments,
         IOfferRepository offers,
+        IHotelRepository hotels,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IAuditWriter audit,
@@ -43,6 +45,7 @@ public sealed class ProcessExpiredReservationsCommandHandler
         _reservations = reservations;
         _payments = payments;
         _offers = offers;
+        _hotels = hotels;
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
@@ -78,6 +81,13 @@ public sealed class ProcessExpiredReservationsCommandHandler
                 .Where(hold => hold.IsHeld && string.Equals(hold.ResourceType, "departure", StringComparison.Ordinal))
                 .Sum(hold => hold.Quantity);
 
+            var heldHotelNights = reservation.Holds
+                .Where(hold => hold.IsHeld &&
+                               string.Equals(hold.ResourceType, "room_night", StringComparison.Ordinal) &&
+                               hold.PeriodDate.HasValue)
+                .Select(hold => (hold.ResourceId, StayDate: hold.PeriodDate!.Value, hold.Quantity))
+                .ToList();
+
             if (!reservation.TryCancelByExpiry(now))
             {
                 skipped++;
@@ -88,6 +98,12 @@ public sealed class ProcessExpiredReservationsCommandHandler
             {
                 var departure = await _offers.GetDepartureByIdAsync(reservation.DepartureId, cancellationToken);
                 departure?.ReleaseSeats(releasedSeats);
+            }
+
+            foreach (var held in heldHotelNights)
+            {
+                var night = await _hotels.GetInventoryNightAsync(held.ResourceId, held.StayDate, cancellationToken);
+                night?.ReleaseRoom(held.Quantity);
             }
 
             var deadlineType = Reservation.GetApplicableDeadlineType(hasTimelyPayment);

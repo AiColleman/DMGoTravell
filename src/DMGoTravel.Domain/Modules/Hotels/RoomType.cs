@@ -33,4 +33,30 @@ public class RoomType : Entity<long>
         IsActive = true;
         CreatedAtUtc = DateTime.UtcNow;
     }
+
+    public void Update(string name, int capacity, Money baseRate, DateTime nowUtc)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("El nombre del tipo de habitación es obligatorio.");
+
+        if (capacity <= 0)
+            throw new DomainException("La capacidad de la habitación debe ser mayor a cero.");
+
+        if (baseRate.Amount <= 0)
+            throw new DomainException("La tarifa base debe ser mayor a cero.");
+
+        Name = name.Trim();
+        NormalizedKey = name.Trim().ToUpperInvariant();
+        Capacity = capacity;
+        BaseRate = baseRate.Copy();
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
+    public void Deactivate(DateTime nowUtc)
+    {
+        IsActive = false;
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
 }

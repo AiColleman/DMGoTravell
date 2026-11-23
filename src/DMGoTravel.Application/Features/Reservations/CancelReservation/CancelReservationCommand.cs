@@ -40,6 +40,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
     private readonly IUserRepository _users;
     private readonly IReservationRepository _reservations;
     private readonly IOfferRepository _offers;
+    private readonly IHotelRepository _hotels;
     private readonly ReservationDtoFactory _dtoFactory;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
@@ -50,6 +51,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         IUserRepository users,
         IReservationRepository reservations,
         IOfferRepository offers,
+        IHotelRepository hotels,
         ReservationDtoFactory dtoFactory,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
@@ -59,6 +61,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         _users = users;
         _reservations = reservations;
         _offers = offers;
+        _hotels = hotels;
         _dtoFactory = dtoFactory;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -111,6 +114,13 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
                 departure.ReleaseSeats(travelers);
                 releasedSeats = travelers;
             }
+        }
+
+        foreach (var hold in reservation.Holds.Where(h =>
+                     h.IsHeld && string.Equals(h.ResourceType, "room_night", StringComparison.Ordinal) && h.PeriodDate.HasValue))
+        {
+            var night = await _hotels.GetInventoryNightAsync(hold.ResourceId, hold.PeriodDate!.Value, cancellationToken);
+            night?.ReleaseRoom(hold.Quantity);
         }
 
         reservation.CancelByClient(_clock.UtcNow);

@@ -102,16 +102,24 @@ public sealed class SliceEndToEndTests : ApiTestBase
         packageProblem.GetProperty("code").GetString().Should().Be("reservation_unavailable");
 
         var (_, tourDepartureId) = await GetTourAsync();
-        var lodgingReservation = await CreateReservationAsync(
+        var incompleteLodging = await CreateReservationAsync(
+            user.AccessToken,
+            tourDepartureId,
+            travelers: 1,
+            lodging: new { proposalId = Guid.NewGuid(), roomTypeId = (Guid?)null });
+        incompleteLodging.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var lodgingProblem = await ReadJsonAsync(incompleteLodging);
+        lodgingProblem.GetProperty("code").GetString().Should().Be("validation_failed");
+        lodgingProblem.GetProperty("errors").EnumerateArray()
+            .Should().Contain(error => error.GetProperty("field").GetString() == "lodging");
+
+        var unknownLodging = await CreateReservationAsync(
             user.AccessToken,
             tourDepartureId,
             travelers: 1,
             lodging: new { proposalId = Guid.NewGuid(), roomTypeId = Guid.NewGuid() });
-        lodgingReservation.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var lodgingProblem = await ReadJsonAsync(lodgingReservation);
-        lodgingProblem.GetProperty("code").GetString().Should().Be("validation_failed");
-        lodgingProblem.GetProperty("errors").EnumerateArray()
-            .Should().Contain(error => error.GetProperty("field").GetString() == "lodging");
+        unknownLodging.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        (await ReadJsonAsync(unknownLodging)).GetProperty("code").GetString().Should().Be("reservation_unavailable");
     }
 
     [Fact(DisplayName = "Un perfil sin token devuelve problem+json no autenticado")]

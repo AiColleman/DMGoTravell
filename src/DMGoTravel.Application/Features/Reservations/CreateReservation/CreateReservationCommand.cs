@@ -40,8 +40,10 @@ public sealed class CreateReservationCommandValidator : AbstractValidator<Create
         RuleFor(command => command.IdempotencyKey).ValidIdempotencyKey();
 
         RuleFor(command => command)
-            .Must(command => command.ProposalId is null && command.RoomTypeId is null)
-            .WithMessage("El alojamiento no está disponible en esta entrega.")
+            .Must(command =>
+                (command.ProposalId is null && command.RoomTypeId is null) ||
+                (command.ProposalId is not null && command.RoomTypeId is not null))
+            .WithMessage("Debe indicar tanto la propuesta como el tipo de habitación para agregar alojamiento.")
             .WithName("lodging");
     }
 }
@@ -51,6 +53,7 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
     private readonly ICurrentUser _currentUser;
     private readonly IUserRepository _users;
     private readonly IOfferRepository _offers;
+    private readonly IHotelRepository _hotels;
     private readonly IReservationRepository _reservations;
     private readonly ReservationDtoFactory _dtoFactory;
     private readonly IDateTimeProvider _clock;
@@ -61,6 +64,7 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
         ICurrentUser currentUser,
         IUserRepository users,
         IOfferRepository offers,
+        IHotelRepository hotels,
         IReservationRepository reservations,
         ReservationDtoFactory dtoFactory,
         IDateTimeProvider clock,
@@ -70,6 +74,7 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
         _currentUser = currentUser;
         _users = users;
         _offers = offers;
+        _hotels = hotels;
         _reservations = reservations;
         _dtoFactory = dtoFactory;
         _clock = clock;
@@ -126,7 +131,71 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
             request.Travelers,
             departure.GetEffectivePrice(offer.PriceNormal));
 
-        var hold = ReservationHold.CreateForTour(departure.Id, request.Travelers);
+        var holds = new List<ReservationHold>
+        {
+            ReservationHold.CreateForTour(departure.Id, request.Travelers)
+        };
+
+        ReservationLodgingSnapshot? lodgingSnapshot = null;
+        var heldNights = new List<DMGoTravel.Domain.Modules.Hotels.RoomInventoryNight>();
+
+        if (request.ProposalId.HasValue && request.RoomTypeId.HasValue)
+        {
+            var proposal = await _hotels.GetProposalByPublicIdAsync(request.ProposalId.Value, cancellationToken);
+            if (proposal is null || !proposal.IsActive || proposal.DepartureId != departure.Id)
+            {
+                throw new ConflictAppException(
+                    "reservation_unavailable",
+                    "La propuesta de alojamiento no existe o no corresponde a la salida.");
+            }
+
+            var hotel = await _hotels.GetByIdAsync(proposal.HotelId, cancellationToken);
+            if (hotel is null || !hotel.IsActive)
+            {
+                throw new ConflictAppException(
+                    "reservation_unavailable",
+                    "El hotel asociado a la propuesta no está disponible.");
+            }
+
+            var roomType = hotel.RoomTypes.SingleOrDefault(r =>
+                r.PublicId == request.RoomTypeId.Value && r.IsActive && r.DeletedAtUtc is null);
+            if (roomType is null || request.Travelers > roomType.Capacity)
+            {
+                throw new ConflictAppException(
+                    "reservation_unavailable",
+                    "El tipo de habitación no está disponible o no cubre la cantidad de viajeros.");
+            }
+
+            var expectedNights = proposal.Nights;
+            var nights = await _hotels.GetInventoryNightsAsync(
+                roomType.Id,
+                proposal.CheckInDate,
+                proposal.CheckOutDate,
+                cancellationToken);
+
+            if (nights.Count != expectedNights || nights.Any(n => n.AvailableQuantity < 1))
+            {
+                throw new ConflictAppException(
+                    "reservation_unavailable",
+                    "No hay disponibilidad hotelera en todas las noches de la propuesta.");
+            }
+
+            heldNights.AddRange(nights);
+            lodgingSnapshot = new ReservationLodgingSnapshot(
+                proposal.Id,
+                hotel.Name,
+                roomType.Name,
+                roomType.Capacity,
+                proposal.CheckInDate,
+                proposal.CheckOutDate,
+                roomType.BaseRate);
+
+            foreach (var night in heldNights)
+            {
+                holds.Add(ReservationHold.CreateForHotel(roomType.Id, night.StayDate, 1));
+            }
+        }
+
         var reservationNumber = await CreateUniqueReservationNumberAsync(cancellationToken);
 
         var reservation = Reservation.Create(
@@ -135,19 +204,23 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
             departure.Id,
             offer.Id,
             snapshot,
-            lodgingSnapshot: null,
-            new[] { hold },
+            lodgingSnapshot,
+            holds,
             now);
 
         try
         {
             departure.HoldSeats(request.Travelers);
+            foreach (var night in heldNights)
+            {
+                night.HoldRoom(1);
+            }
         }
         catch (DomainException)
         {
             throw new ConflictAppException(
                 "reservation_unavailable",
-                "La salida no está disponible para la cantidad de viajeros solicitada.");
+                "La disponibilidad turística u hotelera es insuficiente para esta reserva.");
         }
 
         await _reservations.AddAsync(reservation, cancellationToken);

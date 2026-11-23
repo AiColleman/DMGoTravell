@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<IAuditRepository, AuditRepository>();
         services.AddScoped<IExportRepository, ExportRepository>();
         services.AddScoped<IMobilityRepository, MobilityRepository>();
+        services.AddScoped<IHotelRepository, HotelRepository>();
         services.AddHostedService<IdempotencyCleanupService>();
         services.AddHostedService<ExportCleanupService>();
         services.AddHostedService<ReservationExpiryWorker>();
