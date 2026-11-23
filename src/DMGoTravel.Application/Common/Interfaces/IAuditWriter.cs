@@ -79,6 +79,15 @@ public static class AuditActions
     public const string AdminHotelsCreateProposal = "admin.hotels.createLodgingProposal";
     public const string AdminHotelsUpdateProposal = "admin.hotels.updateLodgingProposal";
 
+    public const string AdminRefundAuthorize = "admin.refundCases.authorize";
+    public const string AdminRefundRetry = "admin.refundCases.retry";
+    public const string WebhookCulqiProcessed = "webhooks.culqi";
+    public const string WebhookResendProcessed = "webhooks.resend";
+    public const string AdminNotificationResend = "admin.notifications.resend";
+    public const string AdminMediaUpload = "admin.media.upload";
+    public const string AdminMediaReplace = "admin.media.replace";
+    public const string AdminMediaDelete = "admin.media.delete";
+
     public const string ActorHuman = "human";
     public const string ActorSystem = "system";
     public const string ActorUnidentified = "unidentified";

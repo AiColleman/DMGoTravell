@@ -54,7 +54,15 @@ public static class AuditProjection
             [AuditActions.AdminHotelsUpdateRoomType] = "Actualización de tipo de habitación",
             [AuditActions.AdminHotelsUpdateInventory] = "Actualización de inventario hotelero",
             [AuditActions.AdminHotelsCreateProposal] = "Creación de propuesta de alojamiento",
-            [AuditActions.AdminHotelsUpdateProposal] = "Actualización de propuesta de alojamiento"
+            [AuditActions.AdminHotelsUpdateProposal] = "Actualización de propuesta de alojamiento",
+            [AuditActions.AdminRefundAuthorize] = "Autorización de devolución",
+            [AuditActions.AdminRefundRetry] = "Reintento de devolución",
+            [AuditActions.WebhookCulqiProcessed] = "Conciliación webhook Culqi",
+            [AuditActions.WebhookResendProcessed] = "Conciliación webhook Resend",
+            [AuditActions.AdminNotificationResend] = "Reenvío manual de notificación",
+            [AuditActions.AdminMediaUpload] = "Carga de imagen",
+            [AuditActions.AdminMediaReplace] = "Reemplazo de imagen",
+            [AuditActions.AdminMediaDelete] = "Eliminación de imagen"
         };
 
     private static readonly IReadOnlyDictionary<string, string> ReasonLabels =

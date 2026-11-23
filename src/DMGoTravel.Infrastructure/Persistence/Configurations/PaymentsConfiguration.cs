@@ -53,3 +53,50 @@ public class ExternalPaymentConfiguration : IEntityTypeConfiguration<ExternalPay
         });
     }
 }
+
+public class RefundCaseConfiguration : IEntityTypeConfiguration<RefundCase>
+{
+    public void Configure(EntityTypeBuilder<RefundCase> builder)
+    {
+        builder.ToTable("refund_case");
+
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).UseIdentityAlwaysColumn();
+
+        builder.HasIndex(r => r.PublicId).IsUnique();
+        builder.HasIndex(r => r.ExternalPaymentId).IsUnique();
+        builder.HasIndex(r => r.ReservationId);
+        builder.HasIndex(r => r.Status);
+        builder.HasIndex(r => r.ExecutedAtUtc);
+        builder.HasIndex(r => r.ProviderRefundId);
+
+        builder.Property(r => r.Status).HasMaxLength(50).IsRequired();
+        builder.Property(r => r.Reason).HasMaxLength(2000).IsRequired();
+        builder.Property(r => r.Provider).HasMaxLength(50).IsRequired();
+        builder.Property(r => r.ProviderRefundId).HasMaxLength(200);
+        builder.Property(r => r.LastError).HasMaxLength(1000);
+        builder.Property(r => r.RowVersion).IsConcurrencyToken();
+
+        builder.OwnsOne(r => r.Amount, m =>
+        {
+            m.Property(x => x.Amount).HasColumnName("amount").HasPrecision(14, 2).IsRequired();
+            m.Ignore(x => x.Currency);
+        });
+    }
+}
+
+public class ProcessedWebhookEventConfiguration : IEntityTypeConfiguration<ProcessedWebhookEvent>
+{
+    public void Configure(EntityTypeBuilder<ProcessedWebhookEvent> builder)
+    {
+        builder.ToTable("processed_webhook_event");
+
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).UseIdentityAlwaysColumn();
+
+        builder.HasIndex(e => new { e.Provider, e.ExternalEventId }).IsUnique();
+        builder.Property(e => e.Provider).HasMaxLength(50).IsRequired();
+        builder.Property(e => e.ExternalEventId).HasMaxLength(200).IsRequired();
+        builder.Property(e => e.EventType).HasMaxLength(100).IsRequired();
+    }
+}

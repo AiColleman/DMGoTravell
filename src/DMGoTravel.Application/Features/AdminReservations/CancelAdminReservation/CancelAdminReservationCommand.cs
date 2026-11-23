@@ -6,6 +6,7 @@ using DMGoTravel.Application.Common.Security;
 using DMGoTravel.Application.Common.Validation;
 using DMGoTravel.Application.Features.AdminReservations.Dtos;
 using DMGoTravel.Application.Features.Reservations;
+using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reservations;
 using FluentValidation;
 using MediatR;
@@ -52,6 +53,8 @@ public sealed class CancelAdminReservationCommandHandler
     private readonly IAdminReservationRepository _adminReservations;
     private readonly IOfferRepository _offers;
     private readonly IHotelRepository _hotels;
+    private readonly IPaymentRepository _payments;
+    private readonly IRefundRepository _refunds;
     private readonly ReservationDtoFactory _reservationDtoFactory;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
@@ -64,6 +67,8 @@ public sealed class CancelAdminReservationCommandHandler
         IAdminReservationRepository adminReservations,
         IOfferRepository offers,
         IHotelRepository hotels,
+        IPaymentRepository payments,
+        IRefundRepository refunds,
         ReservationDtoFactory reservationDtoFactory,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
@@ -75,6 +80,8 @@ public sealed class CancelAdminReservationCommandHandler
         _adminReservations = adminReservations;
         _offers = offers;
         _hotels = hotels;
+        _payments = payments;
+        _refunds = refunds;
         _reservationDtoFactory = reservationDtoFactory;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -135,6 +142,30 @@ public sealed class CancelAdminReservationCommandHandler
 
         reservation.CancelByAdmin(request.Reason, now);
 
+        Guid? openedRefundCaseId = null;
+        var approvedExternal = await _payments.GetApprovedExternalPaymentByReservationIdAsync(reservation.Id, cancellationToken);
+        if (approvedExternal is not null)
+        {
+            var existingRefund = await _refunds.GetByExternalPaymentIdAsync(approvedExternal.Id, cancellationToken);
+            if (existingRefund is null)
+            {
+                var refundCase = RefundCase.Open(
+                    reservation.Id,
+                    approvedExternal.AttemptId,
+                    approvedExternal.Id,
+                    approvedExternal.Amount,
+                    request.Reason,
+                    approvedExternal.Provider,
+                    now);
+                await _refunds.AddAsync(refundCase, cancellationToken);
+                openedRefundCaseId = refundCase.PublicId;
+            }
+            else
+            {
+                openedRefundCaseId = existingRefund.PublicId;
+            }
+        }
+
         _audit.Record(new AuditEntry(
             AuditActions.AdminReservationCancel,
             AuditActions.AdminReservationCancel,
@@ -150,7 +181,8 @@ public sealed class CancelAdminReservationCommandHandler
                 status = reservation.Status.ToString().ToLowerInvariant(),
                 cancellationOrigin = CancellationOrigin.Admin.ToString().ToLowerInvariant(),
                 releasedSeats,
-                refundRequired = true
+                refundRequired = true,
+                refundCaseId = openedRefundCaseId
             })));
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

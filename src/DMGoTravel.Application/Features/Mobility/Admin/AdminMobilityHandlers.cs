@@ -268,6 +268,7 @@ public sealed class ActivateAdminMobilityCommandHandler
     private readonly ICurrentUser _currentUser;
     private readonly IUserRepository _users;
     private readonly IMobilityRepository _mobility;
+    private readonly IMediaRepository _media;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
@@ -277,6 +278,7 @@ public sealed class ActivateAdminMobilityCommandHandler
         ICurrentUser currentUser,
         IUserRepository users,
         IMobilityRepository mobility,
+        IMediaRepository media,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IAuditWriter audit)
@@ -285,6 +287,7 @@ public sealed class ActivateAdminMobilityCommandHandler
         _currentUser = currentUser;
         _users = users;
         _mobility = mobility;
+        _media = media;
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
@@ -321,6 +324,8 @@ public sealed class ActivateAdminMobilityCommandHandler
         {
             throw new ConflictAppException("incomplete_mobility", ex.Message);
         }
+
+        await _media.MarkPublishedForMobilityAsync(item.Id, _clock.UtcNow, cancellationToken);
 
         _audit.Record(new AuditEntry(
             AuditActions.AdminMobilityActivate,

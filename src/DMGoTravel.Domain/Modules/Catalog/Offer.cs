@@ -173,4 +173,9 @@ public class Offer : Entity<long>
     {
         _images.Add(image);
     }
+
+    public void RemoveImage(MediaAsset image)
+    {
+        _images.Remove(image);
+    }
 }

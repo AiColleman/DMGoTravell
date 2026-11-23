@@ -276,6 +276,7 @@ public sealed class ActivateAdminOfferCommandHandler : IRequestHandler<ActivateA
     private readonly ICurrentUser _currentUser;
     private readonly IUserRepository _users;
     private readonly IOfferRepository _offers;
+    private readonly IMediaRepository _media;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
@@ -285,6 +286,7 @@ public sealed class ActivateAdminOfferCommandHandler : IRequestHandler<ActivateA
         ICurrentUser currentUser,
         IUserRepository users,
         IOfferRepository offers,
+        IMediaRepository media,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IAuditWriter audit)
@@ -293,6 +295,7 @@ public sealed class ActivateAdminOfferCommandHandler : IRequestHandler<ActivateA
         _currentUser = currentUser;
         _users = users;
         _offers = offers;
+        _media = media;
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
@@ -321,6 +324,8 @@ public sealed class ActivateAdminOfferCommandHandler : IRequestHandler<ActivateA
         {
             throw new ConflictAppException("incomplete_offer", ex.Message);
         }
+
+        await _media.MarkPublishedForOfferAsync(offer.Id, _clock.UtcNow, cancellationToken);
 
         _audit.Record(new AuditEntry(
             AuditActions.AdminCatalogActivate,

@@ -1,4 +1,5 @@
 using DMGoTravel.Application.Common.Interfaces;
+using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reports;
 using DMGoTravel.Domain.Modules.Reservations;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ public sealed class ReportRepository : IReportRepository
         _db = db;
     }
 
-    public async Task<(IReadOnlyList<ReportReservationSourceRow> Reservations, IReadOnlyList<ReportPaymentSourceRow> Payments)> CaptureSourcesAsync(
+    public async Task<(IReadOnlyList<ReportReservationSourceRow> Reservations, IReadOnlyList<ReportPaymentSourceRow> Payments, IReadOnlyList<ReportRefundSourceRow> Refunds)> CaptureSourcesAsync(
         DateTime fromUtc,
         DateTime toUtcExclusive,
         Guid? offerId,
@@ -129,7 +130,40 @@ public sealed class ReportRepository : IReportRepository
                 DateTime.SpecifyKind(x.ext.OccurredAtUtc, DateTimeKind.Utc)))
             .ToListAsync(cancellationToken);
 
-        return (reservationRows, payments);
+        // Devoluciones ejecutadas cuya fecha de ejecución está en el período (011/RF-22-23).
+        var refundsQuery =
+            from rf in _db.RefundCases.AsNoTracking()
+            join r in _db.Reservations.AsNoTracking() on rf.ReservationId equals r.Id
+            where rf.Status == RefundCase.StatusExecuted &&
+                  rf.ExecutedAtUtc.HasValue &&
+                  rf.ExecutedAtUtc.Value >= fromUtc &&
+                  rf.ExecutedAtUtc.Value < toUtcExclusive
+            select new { rf, r };
+
+        if (offerId.HasValue)
+        {
+            refundsQuery = refundsQuery.Where(x =>
+                _db.Offers.Any(o => o.Id == x.r.OfferId && o.PublicId == offerId.Value));
+        }
+
+        if (hotelId.HasValue)
+        {
+            refundsQuery = refundsQuery.Where(x =>
+                x.r.LodgingSnapshot != null &&
+                _db.LodgingProposals.Any(p =>
+                    p.Id == x.r.LodgingSnapshot.ProposalId &&
+                    _db.Hotels.Any(h => h.Id == p.HotelId && h.PublicId == hotelId.Value)));
+        }
+
+        var refunds = await refundsQuery
+            .Select(x => new ReportRefundSourceRow(
+                x.rf.PublicId,
+                x.rf.Amount.Amount,
+                x.rf.Amount.Currency,
+                DateTime.SpecifyKind(x.rf.ExecutedAtUtc!.Value, DateTimeKind.Utc)))
+            .ToListAsync(cancellationToken);
+
+        return (reservationRows, payments, refunds);
     }
 
     public Task AddAsync(ReportSnapshot snapshot, CancellationToken cancellationToken = default) =>

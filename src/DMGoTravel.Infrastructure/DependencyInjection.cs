@@ -1,6 +1,7 @@
 using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Infrastructure.Auth;
+using DMGoTravel.Infrastructure.Integrations;
 using DMGoTravel.Infrastructure.Payments;
 using DMGoTravel.Infrastructure.Persistence;
 using DMGoTravel.Infrastructure.Persistence.Exports;
@@ -22,7 +23,38 @@ public static class DependencyInjection
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
         services.AddSingleton<IPasswordHasher, PasswordHasherService>();
         services.AddSingleton<IPaymentGateway, SimulatedPaymentGateway>();
+        services.AddSingleton<IRefundGateway, SimulatedRefundGateway>();
+        services.AddSingleton<IEmailSender, SimulatedEmailSender>();
+        services.AddSingleton<IWebhookSignatureVerifier, HmacWebhookSignatureVerifier>();
+        services.AddSingleton<IMediaStorage, LocalSandboxMediaStorage>();
         services.AddSingleton<IDevEmailTokenStore, DevEmailTokenStore>();
+
+        services.Configure<ExternalProviderOptions>(options =>
+        {
+            var culqiSecret = configuration["Culqi:WebhookSecret"];
+            if (!string.IsNullOrWhiteSpace(culqiSecret))
+            {
+                options.CulqiWebhookSecret = culqiSecret;
+            }
+
+            var resendSecret = configuration["Resend:WebhookSecret"];
+            if (!string.IsNullOrWhiteSpace(resendSecret))
+            {
+                options.ResendWebhookSecret = resendSecret;
+            }
+
+            var fromEmail = configuration["Resend:FromEmail"];
+            if (!string.IsNullOrWhiteSpace(fromEmail))
+            {
+                options.ResendFromEmail = fromEmail;
+            }
+
+            var mediaRoot = configuration["R2:LocalStoragePath"];
+            if (!string.IsNullOrWhiteSpace(mediaRoot))
+            {
+                options.LocalMediaRootPath = mediaRoot;
+            }
+        });
 
         services.Configure<IdempotencyOptions>(options =>
         {
@@ -61,10 +93,15 @@ public static class DependencyInjection
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IMobilityRepository, MobilityRepository>();
         services.AddScoped<IHotelRepository, HotelRepository>();
+        services.AddScoped<IRefundRepository, RefundRepository>();
+        services.AddScoped<IWebhookEventRepository, WebhookEventRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IMediaRepository, MediaRepository>();
         services.AddHostedService<IdempotencyCleanupService>();
         services.AddHostedService<ExportCleanupService>();
         services.AddHostedService<ReservationExpiryWorker>();
         services.AddHostedService<PendingAuditRecoveryWorker>();
+        services.AddHostedService<NotificationDispatchWorker>();
 
         return services;
     }

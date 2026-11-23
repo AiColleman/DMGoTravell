@@ -28,9 +28,15 @@ public sealed record ReportPaymentSourceRow(
     string Status,
     DateTime ConfirmedAtUtc);
 
+public sealed record ReportRefundSourceRow(
+    Guid RefundPublicId,
+    decimal Amount,
+    string Currency,
+    DateTime ExecutedAtUtc);
+
 public interface IReportRepository
 {
-    Task<(IReadOnlyList<ReportReservationSourceRow> Reservations, IReadOnlyList<ReportPaymentSourceRow> Payments)> CaptureSourcesAsync(
+    Task<(IReadOnlyList<ReportReservationSourceRow> Reservations, IReadOnlyList<ReportPaymentSourceRow> Payments, IReadOnlyList<ReportRefundSourceRow> Refunds)> CaptureSourcesAsync(
         DateTime fromUtc,
         DateTime toUtcExclusive,
         Guid? offerId,

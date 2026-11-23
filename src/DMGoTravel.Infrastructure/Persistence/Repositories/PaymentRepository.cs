@@ -19,6 +19,28 @@ public sealed class PaymentRepository : IPaymentRepository
     public Task AddExternalAsync(ExternalPayment payment, CancellationToken cancellationToken = default) =>
         _db.ExternalPayments.AddAsync(payment, cancellationToken).AsTask();
 
+    public Task<PaymentAttempt?> GetByPublicIdAsync(Guid publicId, CancellationToken cancellationToken = default) =>
+        _db.PaymentAttempts.SingleOrDefaultAsync(p => p.PublicId == publicId, cancellationToken);
+
+    public Task<PaymentAttempt?> GetByProviderRequestRefAsync(string providerRequestRef, CancellationToken cancellationToken = default) =>
+        _db.PaymentAttempts
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .FirstOrDefaultAsync(p => p.ProviderRequestRef == providerRequestRef, cancellationToken);
+
+    public Task<ExternalPayment?> GetApprovedExternalPaymentByReservationIdAsync(
+        long reservationId,
+        CancellationToken cancellationToken = default) =>
+        _db.ExternalPayments
+            .Where(e => e.ReservationId == reservationId && e.Status == "approved")
+            .OrderByDescending(e => e.OccurredAtUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+
+    public Task<ExternalPayment?> GetExternalByProviderTransactionIdAsync(
+        string providerTransactionId,
+        CancellationToken cancellationToken = default) =>
+        _db.ExternalPayments
+            .FirstOrDefaultAsync(e => e.ProviderTransactionId == providerTransactionId, cancellationToken);
+
     public Task<PaymentAttempt?> GetByPublicIdForAccountAsync(
         Guid publicId,
         long accountId,

@@ -101,11 +101,15 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
 
         builder.HasKey(m => m.Id);
         builder.Property(m => m.Id).UseIdentityAlwaysColumn();
+        builder.HasIndex(m => m.PublicId).IsUnique();
 
         builder.Property(m => m.ObjectKey).HasMaxLength(500).IsRequired();
         builder.Property(m => m.Url).HasMaxLength(1000).IsRequired();
         builder.Property(m => m.ContentType).HasMaxLength(100).IsRequired();
         builder.Property(m => m.Role).HasMaxLength(50).IsRequired();
+        builder.Property(m => m.RowVersion).IsConcurrencyToken();
         builder.HasIndex(m => new { m.OfferId, m.Position });
+        builder.HasIndex(m => new { m.HotelId, m.RoomTypeId, m.Position });
+        builder.HasIndex(m => m.MobilityItemId);
     }
 }

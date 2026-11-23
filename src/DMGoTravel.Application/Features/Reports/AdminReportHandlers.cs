@@ -77,7 +77,7 @@ public sealed class CreateAdminReportCommandHandler : IRequestHandler<CreateAdmi
         var fromUtc = _clock.ToUtcStartOfDay(request.From);
         var toUtcExclusive = _clock.ToUtcStartOfNextDay(request.To);
 
-        var (reservations, payments) = await _reports.CaptureSourcesAsync(
+        var (reservations, payments, refunds) = await _reports.CaptureSourcesAsync(
             fromUtc,
             toUtcExclusive,
             request.OfferId,
@@ -123,21 +123,26 @@ public sealed class CreateAdminReportCommandHandler : IRequestHandler<CreateAdmi
                 Money.DefaultCurrency))
             .ToList();
 
-        var movements = payments
-            .GroupBy(p => p.Currency)
-            .OrderBy(g => g.Key)
-            .Select(g =>
+        var currencies = payments.Select(p => p.Currency)
+            .Concat(refunds.Select(r => r.Currency))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(c => c, StringComparer.OrdinalIgnoreCase);
+
+        var movements = currencies
+            .Select(currency =>
             {
-                var confirmedSum = g.Sum(x => x.Amount);
-                var refundSum = 0m;
+                var currencyPayments = payments.Where(p => string.Equals(p.Currency, currency, StringComparison.OrdinalIgnoreCase)).ToList();
+                var currencyRefunds = refunds.Where(r => string.Equals(r.Currency, currency, StringComparison.OrdinalIgnoreCase)).ToList();
+                var confirmedSum = currencyPayments.Sum(x => x.Amount);
+                var refundSum = currencyRefunds.Sum(x => x.Amount);
                 var diff = confirmedSum - refundSum;
                 return new ReportCurrencyMovementDto(
-                    g.Key,
+                    currency.ToUpperInvariant(),
                     confirmedSum.ToString("0.00", CultureInfo.InvariantCulture),
                     refundSum.ToString("0.00", CultureInfo.InvariantCulture),
                     diff.ToString("0.00", CultureInfo.InvariantCulture),
-                    g.Count(),
-                    0);
+                    currencyPayments.Count,
+                    currencyRefunds.Count);
             })
             .ToList();
 

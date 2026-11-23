@@ -86,7 +86,7 @@ public class MobilityItem : Entity<long>
         RowVersion++;
     }
 
-    public void SetImage(string url, string contentType, long sizeBytes, DateTime nowUtc)
+    public void SetImage(string url, string contentType, long sizeBytes, DateTime nowUtc, Guid? imagePublicId = null)
     {
         if (string.IsNullOrWhiteSpace(url))
             throw new DomainException("La URL de la imagen es obligatoria.");
@@ -97,7 +97,7 @@ public class MobilityItem : Entity<long>
         if (sizeBytes <= 0 || sizeBytes > MaxImageSizeBytes)
             throw new DomainException("La imagen no puede exceder 5 MB.");
 
-        ImagePublicId ??= Guid.NewGuid();
+        ImagePublicId = imagePublicId ?? ImagePublicId ?? Guid.NewGuid();
         ImageUrl = url.Trim();
         ImageContentType = contentType.Trim().ToLowerInvariant();
         ImageSizeBytes = sizeBytes;

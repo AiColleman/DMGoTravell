@@ -136,3 +136,19 @@ public sealed class ReportNotReadyAppException : AppException
     {
     }
 }
+
+public sealed class PayloadTooLargeAppException : AppException
+{
+    public PayloadTooLargeAppException(string detail = "El archivo excede el tamaño máximo permitido de 5 MB.")
+        : base(413, "payload_too_large", detail)
+    {
+    }
+}
+
+public sealed class UnsupportedMediaTypeAppException : AppException
+{
+    public UnsupportedMediaTypeAppException(string detail = "Formato de imagen no admitido. Solo se permiten JPG, PNG y WebP válidos.")
+        : base(415, "unsupported_media_type", detail)
+    {
+    }
+}

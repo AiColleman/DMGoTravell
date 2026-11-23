@@ -6,6 +6,7 @@ using DMGoTravel.Domain.Modules.Exports;
 using DMGoTravel.Domain.Modules.Hotels;
 using DMGoTravel.Domain.Modules.Identity;
 using DMGoTravel.Domain.Modules.Mobility;
+using DMGoTravel.Domain.Modules.Notifications;
 using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reports;
 using DMGoTravel.Domain.Modules.Reservations;
@@ -48,6 +49,12 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     // Payments
     public DbSet<PaymentAttempt> PaymentAttempts => Set<PaymentAttempt>();
     public DbSet<ExternalPayment> ExternalPayments => Set<ExternalPayment>();
+    public DbSet<RefundCase> RefundCases => Set<RefundCase>();
+    public DbSet<ProcessedWebhookEvent> ProcessedWebhookEvents => Set<ProcessedWebhookEvent>();
+
+    // Notifications
+    public DbSet<NotificationDelivery> NotificationDeliveries => Set<NotificationDelivery>();
+    public DbSet<NotificationIncident> NotificationIncidents => Set<NotificationIncident>();
 
     // Idempotency
     public DbSet<IdempotencyRecord> IdempotencyRecords => Set<IdempotencyRecord>();

@@ -117,6 +117,10 @@ app.MapAdminClientEndpoints();
 app.MapAuditEndpoints();
 app.MapAdminExportEndpoints();
 app.MapAdminReportEndpoints();
+app.MapWebhookEndpoints();
+app.MapAdminRefundEndpoints();
+app.MapAdminNotificationEndpoints();
+app.MapMediaEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

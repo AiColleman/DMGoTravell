@@ -217,6 +217,7 @@ public sealed class ActivateAdminHotelCommandHandler : IRequestHandler<ActivateA
     private readonly ICurrentUser _currentUser;
     private readonly IUserRepository _users;
     private readonly IHotelRepository _hotels;
+    private readonly IMediaRepository _media;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
@@ -226,6 +227,7 @@ public sealed class ActivateAdminHotelCommandHandler : IRequestHandler<ActivateA
         ICurrentUser currentUser,
         IUserRepository users,
         IHotelRepository hotels,
+        IMediaRepository media,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IAuditWriter audit)
@@ -234,6 +236,7 @@ public sealed class ActivateAdminHotelCommandHandler : IRequestHandler<ActivateA
         _currentUser = currentUser;
         _users = users;
         _hotels = hotels;
+        _media = media;
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
@@ -267,6 +270,8 @@ public sealed class ActivateAdminHotelCommandHandler : IRequestHandler<ActivateA
         {
             throw new ConflictAppException("incomplete_hotel", ex.Message);
         }
+
+        await _media.MarkPublishedForHotelAsync(hotel.Id, _clock.UtcNow, cancellationToken);
 
         _audit.Record(new AuditEntry(
             AuditActions.AdminHotelsActivate,
