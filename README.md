@@ -84,10 +84,7 @@ El administrador podrá gestionar catálogo, hoteles, disponibilidad, reservas, 
 
 # 📊 Estado del proyecto
 
-> **Fase actual: análisis y arquitectura finalizados; preparación para diseño técnico e implementación.**
-
-El repositorio actualmente contiene **documentación de análisis y arquitectura**.  
-Todavía no contiene la implementación del backend, frontend, pruebas ni pipelines de CI/CD.
+> **Fase actual: Sprint 2 completado — Backend Monolito Modular implementado (Specs 001–013), OpenAPI/Swagger, Caché segura, pruebas xUnit + Jest (cobertura 100% líneas), CI/CD GitHub Actions y validación k6 hasta 2,000 VUs.**
 
 | Área | Estado |
 |---|:---:|
@@ -103,16 +100,16 @@ Todavía no contiene la implementación del backend, frontend, pruebas ni pipeli
 | Estilo arquitectónico | ✅ |
 | Clean Architecture | ✅ |
 | Arquitectura de despliegue | ✅ |
-| Modelo de dominio detallado | ⏳ |
-| Modelo de datos / ERD | ⏳ |
-| Diccionario de datos | ⏳ |
-| Contrato OpenAPI | ⏳ |
-| Especificaciones SDD / Spec Kit | ⏳ |
-| Backend | ⏳ |
-| Frontend | ⏳ |
-| Pruebas | ⏳ |
-| CI/CD | ⏳ |
-| Producción | ⏳ |
+| Modelo de dominio detallado | ✅ |
+| Modelo de datos / ERD y migraciones EF Core | ✅ |
+| Contrato OpenAPI 3.1 + Swagger UI (`/swagger`) | ✅ |
+| Especificaciones SDD (`sdd/specs/001`–`013`) | ✅ |
+| Backend ASP.NET Core 10 + PostgreSQL 16 + Caché Decorator | ✅ |
+| Pruebas automatizadas (xUnit 103 + Jest 20 con cobertura + k6 2,000 VUs + Postman) | ✅ |
+| CI/CD (GitHub Actions `.github/workflows/ci.yml`) | ✅ |
+| Evidencias de validación Sprint 2 (`docs/05-validacion-sprint2/`) | ✅ |
+| Frontend React + TypeScript + Vite | ⏳ |
+| Producción (Cloudflare / Render / Supabase / Culqi / Resend / R2) | ⏳ |
 
 ---
 

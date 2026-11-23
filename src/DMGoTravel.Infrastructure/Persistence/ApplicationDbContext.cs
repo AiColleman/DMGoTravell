@@ -17,9 +17,14 @@ namespace DMGoTravel.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext, IUnitOfWork
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    private readonly ICacheInvalidator? _cacheInvalidator;
+
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        ICacheInvalidator? cacheInvalidator = null)
         : base(options)
     {
+        _cacheInvalidator = cacheInvalidator;
     }
 
     // Identity
@@ -82,9 +87,28 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var touchesCatalog = ChangeTracker.Entries().Any(e =>
+            e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted &&
+            e.Entity is Offer or TourDeparture or OfferItineraryDay or MediaAsset);
+
+        var touchesMobility = ChangeTracker.Entries().Any(e =>
+            e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted &&
+            e.Entity is MobilityItem);
+
         try
         {
-            return await base.SaveChangesAsync(cancellationToken);
+            var result = await base.SaveChangesAsync(cancellationToken);
+            if (touchesCatalog)
+            {
+                _cacheInvalidator?.InvalidateCatalog();
+            }
+
+            if (touchesMobility)
+            {
+                _cacheInvalidator?.InvalidateMobility();
+            }
+
+            return result;
         }
         catch (DbUpdateConcurrencyException)
         {

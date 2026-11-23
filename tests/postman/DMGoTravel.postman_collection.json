@@ -1,0 +1,127 @@
+{
+  "info": {
+    "name": "DMGOTRAVEL API v1 — Sprint 2 Validation",
+    "_postman_id": "d4c5b2f8-7c21-4e64-a09d-202611230001",
+    "description": "Colección Postman de validación funcional y de atributos de calidad (AC01-AC12) para DMGOTRAVEL REST API v1.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01. Salud y OpenAPI",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('HTTP 200 Healthy', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().status).to.eql('Healthy'); });"] } }]
+        },
+        {
+          "name": "OpenAPI 3.1 YAML",
+          "request": { "method": "GET", "url": "{{baseUrl}}/openapi/v1.yaml" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('OpenAPI 3.1 servido', () => { pm.response.to.have.status(200); pm.expect(pm.response.text()).to.include('openapi: 3.1.0'); });"] } }]
+        },
+        {
+          "name": "Swagger UI",
+          "request": { "method": "GET", "url": "{{baseUrl}}/swagger" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Swagger UI disponible', () => { pm.response.to.have.status(200); pm.expect(pm.response.text()).to.include('SwaggerUIBundle'); });"] } }]
+        }
+      ]
+    },
+    {
+      "name": "02. Catálogo Público (AC01)",
+      "item": [
+        {
+          "name": "Listar Tours",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/catalog/tours?page=1&pageSize=10" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Latencia < 300ms y HTTP 200', () => { pm.response.to.have.status(200); pm.expect(pm.response.responseTime).to.be.below(300); const items = pm.response.json().items; if (items.length > 0) pm.environment.set('tourId', items[0].id); });"] } }]
+        },
+        {
+          "name": "Detalle Tour",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/catalog/tours/{{tourId}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Detalle con departures', () => { pm.response.to.have.status(200); const deps = pm.response.json().departures; if (deps && deps.length > 0) pm.environment.set('departureId', deps[0].id); });"] } }]
+        },
+        {
+          "name": "Listar Hoteles",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/hotels" }
+        },
+        {
+          "name": "Listar Movilidad",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/mobility" }
+        }
+      ]
+    },
+    {
+      "name": "03. Autenticación y Perfil (AC04 / AC05)",
+      "item": [
+        {
+          "name": "Login Cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\":\"{{clientEmail}}\",\"password\":\"{{clientPassword}}\"}" },
+            "url": "{{baseUrl}}/api/v1/auth/login"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('JWT emitido', () => { pm.response.to.have.status(200); pm.environment.set('accessToken', pm.response.json().accessToken); });"] } }]
+        },
+        {
+          "name": "Consultar Perfil",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/profile"
+          }
+        },
+        {
+          "name": "Acceso Admin Rechazado a Cliente (403 RBAC)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/admin/audit"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('RBAC bloquea cliente con 403 ProblemDetails', () => { pm.response.to.have.status(403); pm.expect(pm.response.json().code).to.eql('forbidden'); });"] } }]
+        }
+      ]
+    },
+    {
+      "name": "04. Reservas y Pagos (AC07 / AC08)",
+      "item": [
+        {
+          "name": "Crear Reserva (Idempotente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"departureId\":\"{{departureId}}\",\"travelers\":1}" },
+            "url": "{{baseUrl}}/api/v1/reservations"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Reserva pending creada', () => { pm.response.to.have.status(201); const r = pm.response.json(); pm.expect(r.status).to.eql('pending'); pm.environment.set('reservationId', r.id); });"] } }]
+        },
+        {
+          "name": "Iniciar Pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{$guid}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"method\":\"card\"}" },
+            "url": "{{baseUrl}}/api/v1/reservations/{{reservationId}}/payments"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Pago procesado', () => { pm.response.to.have.status(201); });"] } }]
+        },
+        {
+          "name": "Verificar Reserva Confirmada",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/reservations/{{reservationId}}"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Estado confirmed', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().status).to.eql('confirmed'); });"] } }]
+        }
+      ]
+    }
+  ]
+}

@@ -121,6 +121,7 @@ app.MapWebhookEndpoints();
 app.MapAdminRefundEndpoints();
 app.MapAdminNotificationEndpoints();
 app.MapMediaEndpoints();
+app.MapOpenApiEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

@@ -4,13 +4,16 @@ using DMGoTravel.Infrastructure.Auth;
 using DMGoTravel.Infrastructure.Integrations;
 using DMGoTravel.Infrastructure.Payments;
 using DMGoTravel.Infrastructure.Persistence;
+using DMGoTravel.Infrastructure.Persistence.Caching;
 using DMGoTravel.Infrastructure.Persistence.Exports;
 using DMGoTravel.Infrastructure.Persistence.Idempotency;
 using DMGoTravel.Infrastructure.Persistence.Repositories;
 using DMGoTravel.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace DMGoTravel.Infrastructure;
 
@@ -18,6 +21,14 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheInvalidator, MemoryCacheInvalidator>();
+        services.Configure<CatalogCacheOptions>(options =>
+        {
+            options.Enabled = configuration.GetValue("Caching:EnablePublicCatalogCache", true);
+            options.TtlSeconds = configuration.GetValue("Caching:PublicCatalogTtlSeconds", 30);
+        });
+
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<JwtKeyProvider>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
@@ -81,7 +92,12 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAdminClientRepository, AdminClientRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-        services.AddScoped<IOfferRepository, OfferRepository>();
+        services.AddScoped<OfferRepository>();
+        services.AddScoped<IOfferRepository>(sp => new CachedOfferRepository(
+            sp.GetRequiredService<OfferRepository>(),
+            sp.GetRequiredService<IMemoryCache>(),
+            sp.GetRequiredService<ICacheInvalidator>(),
+            sp.GetRequiredService<IOptions<CatalogCacheOptions>>()));
         services.AddScoped<IReservationRepository, ReservationRepository>();
         services.AddScoped<IAdminReservationRepository, AdminReservationRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
@@ -91,7 +107,12 @@ public static class DependencyInjection
         services.AddScoped<IPendingAuditRepository, PendingAuditRepository>();
         services.AddScoped<IExportRepository, ExportRepository>();
         services.AddScoped<IReportRepository, ReportRepository>();
-        services.AddScoped<IMobilityRepository, MobilityRepository>();
+        services.AddScoped<MobilityRepository>();
+        services.AddScoped<IMobilityRepository>(sp => new CachedMobilityRepository(
+            sp.GetRequiredService<MobilityRepository>(),
+            sp.GetRequiredService<IMemoryCache>(),
+            sp.GetRequiredService<ICacheInvalidator>(),
+            sp.GetRequiredService<IOptions<CatalogCacheOptions>>()));
         services.AddScoped<IHotelRepository, HotelRepository>();
         services.AddScoped<IRefundRepository, RefundRepository>();
         services.AddScoped<IWebhookEventRepository, WebhookEventRepository>();

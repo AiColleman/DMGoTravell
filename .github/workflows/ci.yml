@@ -1,0 +1,81 @@
+name: DMGOTRAVEL CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  dotnet-build-and-tests:
+    name: .NET 10 Build, Unit, Architecture & PostgreSQL Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: dmgotravel_user
+          POSTGRES_PASSWORD: dmgotravel_password_2026
+          POSTGRES_DB: dmgotravel_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore DMGoTravel.slnx
+
+      - name: Build solution
+        run: dotnet build DMGoTravel.slnx --no-restore --configuration Release
+
+      - name: Run Domain & Architecture tests
+        run: |
+          dotnet test tests/DMGoTravel.Domain.Tests/DMGoTravel.Domain.Tests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage"
+          dotnet test tests/DMGoTravel.ArchitectureTests/DMGoTravel.ArchitectureTests.csproj --no-build --configuration Release
+
+      - name: Run PostgreSQL 16 Integration tests
+        env:
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=dmgotravel_it;Username=dmgotravel_user;Password=dmgotravel_password_2026
+        run: dotnet test tests/DMGoTravel.Api.IntegrationTests/DMGoTravel.Api.IntegrationTests.csproj --no-build --configuration Release
+
+  jest-contract-and-business-rules:
+    name: Jest Automated Tests & Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: tests/jest/package-lock.json
+
+      - name: Install Jest dependencies
+        working-directory: tests/jest
+        run: npm ci
+
+      - name: Execute Jest suite with coverage
+        working-directory: tests/jest
+        run: npm run test:coverage
+
+      - name: Upload Jest coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-coverage-report
+          path: tests/jest/coverage
