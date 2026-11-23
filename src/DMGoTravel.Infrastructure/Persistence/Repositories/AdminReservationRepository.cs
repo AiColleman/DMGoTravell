@@ -73,7 +73,15 @@ public sealed class AdminReservationRepository : IAdminReservationRepository
         var clients = await LoadClientsAsync(accountIds, cancellationToken);
 
         var items = reservations
-            .Select(r => new AdminReservationRecordView(r, clients[r.AccountId]))
+            .Select(r => new AdminReservationRecordView(
+                r,
+                clients.GetValueOrDefault(r.AccountId) ?? new AdminReservationClientView(
+                    Guid.Empty,
+                    string.Empty,
+                    string.Empty,
+                    IsDeleted: true,
+                    ReservationCount: 0,
+                    RegisteredAtUtc: r.CreatedAtUtc)))
             .ToList();
 
         return (items, total);
@@ -95,7 +103,14 @@ public sealed class AdminReservationRepository : IAdminReservationRepository
         }
 
         var clients = await LoadClientsAsync([reservation.AccountId], cancellationToken);
-        return new AdminReservationRecordView(reservation, clients[reservation.AccountId]);
+        var client = clients.GetValueOrDefault(reservation.AccountId) ?? new AdminReservationClientView(
+            Guid.Empty,
+            string.Empty,
+            string.Empty,
+            IsDeleted: true,
+            ReservationCount: 0,
+            RegisteredAtUtc: reservation.CreatedAtUtc);
+        return new AdminReservationRecordView(reservation, client);
     }
 
     public Task<Reservation?> GetTrackedByPublicIdAsync(
@@ -124,6 +139,7 @@ public sealed class AdminReservationRepository : IAdminReservationRepository
             .ToDictionaryAsync(x => x.AccountId, x => x.Count, cancellationToken);
 
         var users = await _db.Users
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Include(u => u.Profile)
             .Where(u => accountIds.Contains(u.Id))
