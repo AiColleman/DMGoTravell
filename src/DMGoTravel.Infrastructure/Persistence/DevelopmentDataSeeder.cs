@@ -14,6 +14,8 @@ namespace DMGoTravel.Infrastructure.Persistence;
 public static class DevelopmentDataSeeder
 {
     public const string DemoEmail = "cliente@example.test";
+    public const string DemoAdminEmail = "admin@dmgotravel.com";
+    public const string DemoAdminPassword = "Admin-DMGo-2026!";
     public const string DemoPassword = "Clave-ficticia-123";
 
     public static async Task SeedAsync(IServiceProvider services, CancellationToken cancellationToken = default)
@@ -22,7 +24,20 @@ public static class DevelopmentDataSeeder
         var passwordHasher = services.GetRequiredService<IPasswordHasher>();
         var clock = services.GetRequiredService<IDateTimeProvider>();
 
-        if (await db.Users.AnyAsync(cancellationToken) || await db.Offers.AnyAsync(cancellationToken))
+        // Garantiza siempre una cuenta administrativa ficticia en Development para pruebas locales,
+        // incluso cuando la base de desarrollo ya fue inicializada previamente.
+        var normalizedAdminEmail = DemoAdminEmail.ToUpperInvariant();
+        if (!await db.Users.AnyAsync(u => u.NormalizedEmail == normalizedAdminEmail, cancellationToken))
+        {
+            var admin = User.CreateAdmin(
+                DemoAdminEmail,
+                passwordHasher.Hash(DemoAdminPassword),
+                "Administrador DMGOTRAVEL");
+            db.Users.Add(admin);
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        if (await db.Users.AnyAsync(u => u.Role == UserRole.Client, cancellationToken) || await db.Offers.AnyAsync(cancellationToken))
         {
             return;
         }
