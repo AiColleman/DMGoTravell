@@ -33,7 +33,8 @@ public sealed record HotelPublicDetailDto(
     IReadOnlyList<string> Services,
     IReadOnlyList<ImageAssetDto> Images,
     bool HasAvailability,
-    IReadOnlyList<RoomTypeDto> RoomTypes);
+    IReadOnlyList<RoomTypeDto> RoomTypes,
+    string? LowestBasePrice = null);
 
 public sealed record LodgingProposalDto(
     Guid Id,
@@ -106,18 +107,27 @@ public static class HotelMapper
         Hotel hotel,
         IReadOnlyList<MediaAsset> hotelImages,
         IReadOnlyDictionary<long, List<MediaAsset>> roomImages,
-        bool hasAvailability) => new(
-        hotel.PublicId,
-        hotel.Name,
-        hotel.Description,
-        hotel.Services.OrderBy(s => s.Position).Select(s => s.Text).ToList(),
-        hotelImages.Select(ToImageDto).ToList(),
-        hasAvailability,
-        hotel.RoomTypes
+        bool hasAvailability)
+    {
+        var activeRooms = hotel.RoomTypes
             .Where(r => r.IsActive && r.DeletedAtUtc is null)
-            .OrderBy(r => r.Name)
-            .Select(r => ToRoomTypeDto(r, roomImages.TryGetValue(r.Id, out var list) ? list : []))
-            .ToList());
+            .OrderBy(r => r.BaseRate.Amount)
+            .ThenBy(r => r.Capacity)
+            .ThenBy(r => r.Name)
+            .ToList();
+
+        return new HotelPublicDetailDto(
+            hotel.PublicId,
+            hotel.Name,
+            hotel.Description,
+            hotel.Services.OrderBy(s => s.Position).Select(s => s.Text).ToList(),
+            hotelImages.Select(ToImageDto).ToList(),
+            hasAvailability,
+            activeRooms
+                .Select(r => ToRoomTypeDto(r, roomImages.TryGetValue(r.Id, out var list) ? list : []))
+                .ToList(),
+            activeRooms.Count > 0 ? activeRooms.Min(r => r.BaseRate.Amount).ToString("0.00", CultureInfo.InvariantCulture) : null);
+    }
 
     public static LodgingProposalDto ToProposalDto(
         LodgingProposal proposal,
@@ -131,7 +141,9 @@ public static class HotelMapper
         proposal.CheckOutDate.ToDateTime(new TimeOnly(12, 0), DateTimeKind.Utc),
         hotel.RoomTypes
             .Where(r => r.IsActive && r.DeletedAtUtc is null)
-            .OrderBy(r => r.Name)
+            .OrderBy(r => r.BaseRate.Amount)
+            .ThenBy(r => r.Capacity)
+            .ThenBy(r => r.Name)
             .Select(r => ToRoomTypeDto(r, roomImages.TryGetValue(r.Id, out var list) ? list : []))
             .ToList());
 

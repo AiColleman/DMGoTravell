@@ -61,12 +61,14 @@ public class MediaAsset : Entity<long>
         string role,
         int position,
         long hotelId,
-        bool isPublished = false)
+        bool isPublished = false,
+        Guid? publicId = null)
     {
         Validate(contentType, sizeBytes);
 
         return new MediaAsset
         {
+            PublicId = publicId ?? Guid.NewGuid(),
             ObjectKey = objectKey,
             Url = url,
             ContentType = contentType.Trim().ToLowerInvariant(),
@@ -88,12 +90,14 @@ public class MediaAsset : Entity<long>
         int position,
         long hotelId,
         long roomTypeId,
-        bool isPublished = false)
+        bool isPublished = false,
+        Guid? publicId = null)
     {
         Validate(contentType, sizeBytes);
 
         return new MediaAsset
         {
+            PublicId = publicId ?? Guid.NewGuid(),
             ObjectKey = objectKey,
             Url = url,
             ContentType = contentType.Trim().ToLowerInvariant(),

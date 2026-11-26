@@ -14,10 +14,18 @@ public class LodgingProposal : Entity<long>
 
     private LodgingProposal() { }
 
-    public LodgingProposal(long departureId, long hotelId, DateOnly checkInDate, DateOnly checkOutDate)
+    public LodgingProposal(
+        long departureId,
+        long hotelId,
+        DateOnly checkInDate,
+        DateOnly checkOutDate,
+        Guid? publicId = null)
     {
         if (checkOutDate <= checkInDate)
             throw new DomainException("La fecha de check-out debe ser posterior a la de check-in.");
+
+        if (publicId.HasValue)
+            PublicId = publicId.Value;
 
         DepartureId = departureId;
         HotelId = hotelId;

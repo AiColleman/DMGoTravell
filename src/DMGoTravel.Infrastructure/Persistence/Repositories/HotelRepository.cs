@@ -141,7 +141,7 @@ public sealed class HotelRepository : IHotelRepository
 
         return await _db.MediaAssets
             .AsNoTracking()
-            .Where(m => m.HotelId.HasValue && hotelIds.Contains(m.HotelId.Value))
+            .Where(m => m.HotelId.HasValue && m.RoomTypeId == null && hotelIds.Contains(m.HotelId.Value))
             .OrderByDescending(m => m.Role == "main")
             .ThenBy(m => m.Position)
             .ToListAsync(cancellationToken);
@@ -164,7 +164,7 @@ public sealed class HotelRepository : IHotelRepository
     public Task<bool> HasHotelImageAsync(long hotelId, CancellationToken cancellationToken = default) =>
         _db.MediaAssets
             .AsNoTracking()
-            .AnyAsync(m => m.HotelId == hotelId, cancellationToken);
+            .AnyAsync(m => m.HotelId == hotelId && m.RoomTypeId == null, cancellationToken);
 
     public async Task<IReadOnlyList<LodgingProposal>> ListActiveProposalsByDepartureIdAsync(
         long departureId,

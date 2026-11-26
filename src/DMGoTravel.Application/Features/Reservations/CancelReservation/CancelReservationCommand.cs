@@ -4,6 +4,7 @@ using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Application.Common.Validation;
 using DMGoTravel.Application.Features.Reservations.Dtos;
+using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reservations;
 using FluentValidation;
 using MediatR;
@@ -39,6 +40,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
     private readonly ICurrentUser _currentUser;
     private readonly IUserRepository _users;
     private readonly IReservationRepository _reservations;
+    private readonly IPaymentRepository _payments;
     private readonly IOfferRepository _offers;
     private readonly IHotelRepository _hotels;
     private readonly ReservationDtoFactory _dtoFactory;
@@ -50,6 +52,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         ICurrentUser currentUser,
         IUserRepository users,
         IReservationRepository reservations,
+        IPaymentRepository payments,
         IOfferRepository offers,
         IHotelRepository hotels,
         ReservationDtoFactory dtoFactory,
@@ -60,6 +63,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         _currentUser = currentUser;
         _users = users;
         _reservations = reservations;
+        _payments = payments;
         _offers = offers;
         _hotels = hotels;
         _dtoFactory = dtoFactory;
@@ -102,6 +106,15 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
             throw new ConflictAppException(
                 "transition_not_allowed",
                 "Solo se puede cancelar una reserva pendiente.");
+        }
+
+        var activePayment = await _payments.GetActiveByReservationIdAsync(reservation.Id, cancellationToken);
+        if (activePayment is not null &&
+            activePayment.Status is PaymentStatus.Created or PaymentStatus.Sent or PaymentStatus.Unknown)
+        {
+            throw new ConflictAppException(
+                "payment_in_progress",
+                "No se puede cancelar la reserva mientras el pago está en verificación.");
         }
 
         var releasedSeats = 0;

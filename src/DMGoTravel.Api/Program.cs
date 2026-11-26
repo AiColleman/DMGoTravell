@@ -73,12 +73,27 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
+    var configuredOrigins = builder.Configuration
+        .GetSection("Cors:AllowedOrigins")
+        .Get<string[]>();
+
+    var allowedOrigins = configuredOrigins is { Length: > 0 }
+        ? configuredOrigins
+        :
+        [
+            "http://localhost:5173",
+            "https://localhost:5173",
+            "http://localhost:5174",
+            "https://localhost:5174"
+        ];
+
     options.AddPolicy("spa", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials()
+            .WithExposedHeaders("ETag", "X-Correlation-Id", "X-Report-Reference-At", "X-Export-Reference-At", "Content-Disposition");
     });
 });
 

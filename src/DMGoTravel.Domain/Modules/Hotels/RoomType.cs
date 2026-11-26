@@ -14,7 +14,7 @@ public class RoomType : Entity<long>
 
     private RoomType() { }
 
-    public RoomType(long hotelId, string name, int capacity, Money baseRate)
+    public RoomType(long hotelId, string name, int capacity, Money baseRate, Guid? publicId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("El nombre del tipo de habitación es obligatorio.");
@@ -24,6 +24,9 @@ public class RoomType : Entity<long>
 
         if (baseRate.Amount <= 0)
             throw new DomainException("La tarifa base debe ser mayor a cero.");
+
+        if (publicId.HasValue)
+            PublicId = publicId.Value;
 
         HotelId = hotelId;
         Name = name.Trim();

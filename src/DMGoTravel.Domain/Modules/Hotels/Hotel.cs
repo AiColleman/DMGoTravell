@@ -18,7 +18,7 @@ public class Hotel : Entity<long>
 
     private Hotel() { }
 
-    public static Hotel Create(string name, string description)
+    public static Hotel Create(string name, string description, Guid? publicId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("El nombre del hotel es obligatorio.");
@@ -28,6 +28,7 @@ public class Hotel : Entity<long>
 
         return new Hotel
         {
+            PublicId = publicId ?? Guid.NewGuid(),
             Name = name.Trim(),
             NormalizedKey = name.Trim().ToUpperInvariant(),
             Description = description.Trim(),

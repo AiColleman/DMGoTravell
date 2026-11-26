@@ -117,9 +117,42 @@ public class Reservation : Entity<long>
         Cancel(Reservations.CancellationOrigin.Client, "Cancelado voluntariamente por el cliente antes del pago.", nowUtc);
     }
 
+    /// <summary>
+    /// Marca la reserva como participante de un inicio de pago para que la
+    /// escritura optimista compita con una cancelación concurrente (001/RF-94).
+    /// </summary>
+    public void MarkPaymentStarted(DateTime nowUtc)
+    {
+        if (Status != ReservationStatus.Pending)
+        {
+            throw new DomainException("Solo se puede iniciar el pago de una reserva pendiente.");
+        }
+
+        UpdatedAtUtc = nowUtc;
+        RowVersion++;
+    }
+
     public void CancelByExpiry(DateTime nowUtc)
     {
         TryCancelByExpiry(nowUtc);
+    }
+
+    /// <summary>
+    /// Cancela una reserva pendiente cuando el proveedor confirma un rechazo
+    /// definitivo dentro de la tolerancia (001/RF-86, 002/RF-19).
+    /// </summary>
+    public bool TryCancelByPaymentRejection(DateTime nowUtc)
+    {
+        if (Status != ReservationStatus.Pending)
+        {
+            return false;
+        }
+
+        Cancel(
+            Reservations.CancellationOrigin.PaymentReject,
+            "Rechazo definitivo del pago durante la tolerancia.",
+            nowUtc);
+        return true;
     }
 
     public bool TryCancelByExpiry(DateTime nowUtc)

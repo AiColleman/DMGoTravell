@@ -129,12 +129,26 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
                 reservation.Total);
 
             await _payments.AddAsync(attempt, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
         else
         {
             // Reintento de un intento que quedó creado antes de invocar al proveedor.
             attempt = activeAttempt;
+        }
+
+        // Registrar el inicio del pago en la reserva antes de invocar al proveedor:
+        // una cancelación concurrente compite por la misma fila (001/RF-94).
+        reservation.MarkPaymentStarted(now);
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (ConcurrencyConflictAppException)
+        {
+            throw new ConflictAppException(
+                "payment_not_payable",
+                "La reserva cambió mientras se iniciaba el pago; consulte el estado antes de reintentar.");
         }
 
         var gatewayResult = await _gateway.ProcessAsync(
