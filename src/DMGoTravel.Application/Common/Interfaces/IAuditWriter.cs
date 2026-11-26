@@ -41,6 +41,8 @@ public static class AuditActions
     public const string ResendVerification = "auth.resendVerification";
     public const string ForgotPassword = "auth.forgotPassword";
     public const string ResetPassword = "auth.resetPassword";
+    public const string GoogleCallback = "auth.googleCallback";
+    public const string GoogleLink = "auth.googleLink";
 
     public const string ReservationCreate = "reservations.create";
     public const string ReservationCancel = "reservations.cancel";

@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
 // En este entorno Windows el proveedor EventLog puede fallar por permisos.
 // La API usa consola para que un fallo de infraestructura no derribe el proceso.

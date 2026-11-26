@@ -40,6 +40,13 @@ public static class DependencyInjection
         services.AddSingleton<IMediaStorage, LocalSandboxMediaStorage>();
         services.AddSingleton<IDevEmailTokenStore, DevEmailTokenStore>();
 
+        services.Configure<GoogleOAuthOptions>(configuration.GetSection(GoogleOAuthOptions.SectionName));
+        services.AddHttpClient("GoogleOAuth", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+        });
+        services.AddSingleton<IGoogleOAuthService, GoogleOAuthService>();
+
         services.Configure<ExternalProviderOptions>(options =>
         {
             var culqiSecret = configuration["Culqi:WebhookSecret"];

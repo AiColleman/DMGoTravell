@@ -41,6 +41,45 @@ export const AuthEditorialPage: React.FC = () => {
   const returnTo = searchParams.get('returnTo') || '/cuenta';
   const oauthCode = searchParams.get('code');
   const oauthState = searchParams.get('state');
+  const oauthSuccess = searchParams.get('oauthSuccess');
+  const oauthError = searchParams.get('oauthError') || searchParams.get('error');
+
+  React.useEffect(() => {
+    if (!oauthError) return;
+    const message =
+      oauthError === 'google_oauth_not_configured'
+        ? 'Falta configurar GoogleOAuth:ClientId y GoogleOAuth:ClientSecret en el backend (appsettings.Local.json).'
+        : oauthError === 'access_denied'
+          ? 'Cancelaste el inicio de sesión con Google.'
+          : `No se pudo iniciar sesión con Google (${oauthError}).`;
+    notifyError(new Error(message), 'Google OAuth 2.0');
+    const cleaned = new URLSearchParams(searchParams);
+    cleaned.delete('oauthError');
+    cleaned.delete('error');
+    setSearchParams(cleaned, { replace: true });
+  }, [oauthError, notifyError, searchParams, setSearchParams]);
+
+  React.useEffect(() => {
+    if (oauthSuccess !== '1') return;
+    let active = true;
+    (async () => {
+      setSubmitting(true);
+      try {
+        const refreshed = await refreshSession();
+        if (active && refreshed) {
+          notifySuccess(`¡Autenticado con Google como ${refreshed.user.fullName}!`);
+          navigate(refreshed.user.role === 'admin' ? '/admin/reportes' : returnTo, {
+            replace: true,
+          });
+        }
+      } finally {
+        if (active) setSubmitting(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [oauthSuccess, refreshSession, navigate, notifySuccess, returnTo]);
 
   React.useEffect(() => {
     if (!oauthCode || !oauthState) return;

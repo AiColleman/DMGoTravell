@@ -1,7 +1,9 @@
 using DMGoTravel.Api.Auth;
 using DMGoTravel.Api.Contracts;
 using DMGoTravel.Application.Common.Exceptions;
+using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Application.Features.Auth.ForgotPassword;
+using DMGoTravel.Application.Features.Auth.Google;
 using DMGoTravel.Application.Features.Auth.Login;
 using DMGoTravel.Application.Features.Auth.Logout;
 using DMGoTravel.Application.Features.Auth.Refresh;
@@ -135,6 +137,91 @@ public static class AuthEndpoints
             return Results.Ok(result);
         })
         .AllowAnonymous();
+
+        group.MapGet("/google/start", (
+            string? returnUrl,
+            IGoogleOAuthService googleOAuth,
+            HttpContext context) =>
+        {
+            if (!googleOAuth.IsConfigured)
+            {
+                var accept = context.Request.Headers.Accept.ToString();
+                if (accept.Contains("text/html", StringComparison.OrdinalIgnoreCase))
+                {
+                    var redirectToSpa =
+                        $"{googleOAuth.FrontendBaseUrl}/acceso?oauthError=google_oauth_not_configured";
+                    return Results.Redirect(redirectToSpa, permanent: false);
+                }
+            }
+
+            var start = googleOAuth.CreateAuthorizationStart(returnUrl);
+            return Results.Redirect(start.AuthorizationUrl, permanent: false);
+        })
+        .AllowAnonymous();
+
+        group.MapGet("/google/callback", async (
+            string? code,
+            string? state,
+            string? error,
+            IMediator mediator,
+            IGoogleOAuthService googleOAuth,
+            HttpContext context,
+            IWebHostEnvironment environment,
+            CancellationToken cancellationToken) =>
+        {
+            var wantsHtmlRedirect = context.Request.Headers.Accept
+                .ToString()
+                .Contains("text/html", StringComparison.OrdinalIgnoreCase);
+
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                if (wantsHtmlRedirect)
+                {
+                    return Results.Redirect(
+                        $"{googleOAuth.FrontendBaseUrl}/acceso?oauthError={Uri.EscapeDataString(error)}",
+                        permanent: false);
+                }
+
+                throw new UnauthorizedAppException($"Google OAuth cancelado o rechazado: {error}");
+            }
+
+            if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(state))
+            {
+                throw new UnauthorizedAppException("Faltan los parámetros 'code' o 'state' del callback de Google.");
+            }
+
+            var result = await mediator.Send(
+                new GoogleCallbackCommand(code, state),
+                cancellationToken);
+
+            AuthCookies.Write(context, result.Auth, secure: !environment.IsDevelopment());
+
+            if (wantsHtmlRedirect)
+            {
+                var targetPath = string.IsNullOrWhiteSpace(result.ReturnUrl)
+                    ? "/cuenta"
+                    : result.ReturnUrl;
+                return Results.Redirect(
+                    $"{googleOAuth.FrontendBaseUrl}/acceso?oauthSuccess=1&returnTo={Uri.EscapeDataString(targetPath)}",
+                    permanent: false);
+            }
+
+            return Results.Ok(result.Auth.Session);
+        })
+        .AllowAnonymous();
+
+        group.MapPost("/google/link", async (
+            GoogleLinkRequest request,
+            IMediator mediator,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await mediator.Send(
+                new GoogleLinkCommand(request.Code, request.State),
+                cancellationToken);
+
+            return Results.Ok(result);
+        })
+        .RequireAuthorization();
 
         return app;
     }

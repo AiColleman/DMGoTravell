@@ -10,6 +10,8 @@ public sealed record ForgotPasswordRequest(string Email);
 
 public sealed record ResetPasswordRequest(string Token, string NewPassword);
 
+public sealed record GoogleLinkRequest(string Code, string State);
+
 public sealed record LodgingRequest(Guid? ProposalId, Guid? RoomTypeId);
 
 public sealed record CreateReservationRequest(

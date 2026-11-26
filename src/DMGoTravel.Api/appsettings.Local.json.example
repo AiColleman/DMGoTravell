@@ -1,0 +1,8 @@
+{
+  "GoogleOAuth": {
+    "ClientId": "TU_CLIENT_ID.apps.googleusercontent.com",
+    "ClientSecret": "GOCSPX-TU_CLIENT_SECRET",
+    "RedirectUri": "http://localhost:5174/acceso",
+    "FrontendBaseUrl": "http://localhost:5174"
+  }
+}
