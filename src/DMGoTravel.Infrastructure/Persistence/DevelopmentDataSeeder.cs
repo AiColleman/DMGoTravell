@@ -330,7 +330,10 @@ public static class DevelopmentDataSeeder
             ])
     ];
 
-    public static async Task SeedAsync(IServiceProvider services, CancellationToken cancellationToken = default)
+    public static async Task SeedAsync(
+        IServiceProvider services,
+        CancellationToken cancellationToken = default,
+        bool includeOfficialHotelsCatalog = true)
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
         var passwordHasher = services.GetRequiredService<IPasswordHasher>();
@@ -435,7 +438,10 @@ public static class DevelopmentDataSeeder
             await db.SaveChangesAsync(cancellationToken);
         }
 
-        await SeedOfficialHotelsCatalogAsync(db, mediaStorage, clock, now, cancellationToken);
+        if (includeOfficialHotelsCatalog)
+        {
+            await SeedOfficialHotelsCatalogAsync(db, mediaStorage, clock, now, cancellationToken);
+        }
     }
 
     private static async Task SeedOfficialHotelsCatalogAsync(

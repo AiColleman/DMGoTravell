@@ -12,7 +12,7 @@ namespace DMGoTravel.Api.IntegrationTests;
 /// Base compartida por las pruebas de integración y de contrato de la slice.
 /// Centraliza el cliente HTTP, la autenticación ficticia y las llamadas principales.
 /// </summary>
-public abstract class ApiTestBase
+public abstract class ApiTestBase : IAsyncLifetime
 {
     protected static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     protected static CancellationToken Ct => TestContext.Current.CancellationToken;
@@ -25,6 +25,17 @@ public abstract class ApiTestBase
             AllowAutoRedirect = false,
             HandleCookies = true
         });
+    }
+
+    public virtual async ValueTask InitializeAsync()
+    {
+        await Factory.ResetStateAsync(Ct);
+    }
+
+    public virtual ValueTask DisposeAsync()
+    {
+        Client.Dispose();
+        return ValueTask.CompletedTask;
     }
 
     protected ApiFactory Factory { get; }

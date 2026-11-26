@@ -1,6 +1,10 @@
 using System.Runtime.CompilerServices;
+using DMGoTravel.Application.Common.Interfaces;
+using DMGoTravel.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
 namespace DMGoTravel.Api.IntegrationTests;
@@ -30,6 +34,42 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Development");
         builder.UseSetting("ConnectionStrings:DefaultConnection", TestConnection);
+    }
+
+    /// <summary>
+    /// Aísla cada prueba de integración limpiando las tablas de negocio, invalidando la caché
+    /// descriptiva en memoria y re-sembrando los datos base deterministas (tour/paquete/usuarios).
+    /// </summary>
+    internal async Task ResetStateAsync(CancellationToken cancellationToken = default)
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        const string truncateSql = """
+            DO $$
+            DECLARE
+                stmt text;
+            BEGIN
+                SELECT 'TRUNCATE TABLE ' || string_agg(format('%I.%I', schemaname, tablename), ', ') || ' RESTART IDENTITY CASCADE;'
+                INTO stmt
+                FROM pg_tables
+                WHERE schemaname = 'public' AND tablename <> '__EFMigrationsHistory';
+
+                IF stmt IS NOT NULL THEN
+                    EXECUTE stmt;
+                END IF;
+            END $$;
+            """;
+
+        await db.Database.ExecuteSqlRawAsync(truncateSql, cancellationToken);
+        await DevelopmentDataSeeder.SeedAsync(
+            scope.ServiceProvider,
+            cancellationToken,
+            includeOfficialHotelsCatalog: false);
+
+        var cacheInvalidator = scope.ServiceProvider.GetService<ICacheInvalidator>();
+        cacheInvalidator?.InvalidateCatalog();
+        cacheInvalidator?.InvalidateMobility();
     }
 
     private static void ResetDatabase()
