@@ -11,13 +11,15 @@ namespace DMGoTravel.Api.IntegrationTests;
 /// </summary>
 public sealed class ApiFactory : WebApplicationFactory<Program>
 {
-    private const string TestDatabase = "dmgotravel_it";
+    private const string DefaultTestDatabase = "dmgotravel_it";
 
-    private const string AdminConnection =
-        "Host=localhost;Port=5432;Database=postgres;Username=dmgotravel_user;Password=dmgotravel_password_2026";
-
-    internal const string TestConnection =
+    private const string DefaultTestConnection =
         "Host=localhost;Port=5432;Database=dmgotravel_it;Username=dmgotravel_user;Password=dmgotravel_password_2026";
+
+    internal static string TestConnection =>
+        Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") is { Length: > 0 } envConn
+            ? envConn
+            : DefaultTestConnection;
 
     public ApiFactory()
     {
@@ -32,20 +34,68 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
     private static void ResetDatabase()
     {
-        using var connection = new NpgsqlConnection(AdminConnection);
-        connection.Open();
+        NpgsqlConnection.ClearAllPools();
 
-        using (var drop = new NpgsqlCommand(
-            $"DROP DATABASE IF EXISTS \"{TestDatabase}\" WITH (FORCE);",
-            connection))
+        var targetBuilder = new NpgsqlConnectionStringBuilder(TestConnection);
+        var targetDatabase = string.IsNullOrWhiteSpace(targetBuilder.Database)
+            ? DefaultTestDatabase
+            : targetBuilder.Database;
+
+        var adminCandidates = new[]
         {
-            drop.ExecuteNonQuery();
+            Environment.GetEnvironmentVariable("POSTGRES_DB"),
+            "postgres",
+            "dmgotravel_dev"
+        }
+        .Where(db => !string.IsNullOrWhiteSpace(db) && !string.Equals(db, targetDatabase, StringComparison.OrdinalIgnoreCase))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+        NpgsqlConnection? connection = null;
+        Exception? lastError = null;
+        foreach (var adminDb in adminCandidates)
+        {
+            var adminBuilder = new NpgsqlConnectionStringBuilder(TestConnection)
+            {
+                Database = adminDb
+            };
+            var candidate = new NpgsqlConnection(adminBuilder.ConnectionString);
+            try
+            {
+                candidate.Open();
+                connection = candidate;
+                break;
+            }
+            catch (Exception ex)
+            {
+                lastError = ex;
+                candidate.Dispose();
+            }
         }
 
-        using var create = new NpgsqlCommand(
-            $"CREATE DATABASE \"{TestDatabase}\";",
-            connection);
-        create.ExecuteNonQuery();
+        if (connection is null)
+        {
+            throw new InvalidOperationException(
+                $"No se pudo conectar a PostgreSQL para recrear la base de pruebas '{targetDatabase}'.",
+                lastError);
+        }
+
+        using (connection)
+        {
+            using (var drop = new NpgsqlCommand(
+                $"DROP DATABASE IF EXISTS \"{targetDatabase}\" WITH (FORCE);",
+                connection))
+            {
+                drop.ExecuteNonQuery();
+            }
+
+            using (var create = new NpgsqlCommand(
+                $"CREATE DATABASE \"{targetDatabase}\";",
+                connection))
+            {
+                create.ExecuteNonQuery();
+            }
+        }
     }
 }
 
@@ -59,8 +109,11 @@ internal static class TestEnvironment
     [ModuleInitializer]
     internal static void Initialize()
     {
-        Environment.SetEnvironmentVariable(
-            "ConnectionStrings__DefaultConnection",
-            ApiFactory.TestConnection);
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")))
+        {
+            Environment.SetEnvironmentVariable(
+                "ConnectionStrings__DefaultConnection",
+                ApiFactory.TestConnection);
+        }
     }
 }

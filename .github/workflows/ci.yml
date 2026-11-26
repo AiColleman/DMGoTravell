@@ -36,20 +36,29 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore DMGoTravel.slnx
+        run: |
+          dotnet restore src/DMGoTravel.Api/DMGoTravel.Api.csproj
+          dotnet restore tests/DMGoTravel.Domain.Tests/DMGoTravel.Domain.Tests.csproj
+          dotnet restore tests/DMGoTravel.ArchitectureTests/DMGoTravel.ArchitectureTests.csproj
+          dotnet restore tests/DMGoTravel.Api.IntegrationTests/DMGoTravel.Api.IntegrationTests.csproj
 
-      - name: Build solution
-        run: dotnet build DMGoTravel.slnx --no-restore --configuration Release
+      - name: Build solution projects
+        run: |
+          dotnet build src/DMGoTravel.Api/DMGoTravel.Api.csproj --no-restore --configuration Release
+          dotnet build tests/DMGoTravel.Domain.Tests/DMGoTravel.Domain.Tests.csproj --no-restore --configuration Release
+          dotnet build tests/DMGoTravel.ArchitectureTests/DMGoTravel.ArchitectureTests.csproj --no-restore --configuration Release
+          dotnet build tests/DMGoTravel.Api.IntegrationTests/DMGoTravel.Api.IntegrationTests.csproj --no-restore --configuration Release
 
       - name: Run Domain & Architecture tests
         run: |
-          dotnet test tests/DMGoTravel.Domain.Tests/DMGoTravel.Domain.Tests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage"
-          dotnet test tests/DMGoTravel.ArchitectureTests/DMGoTravel.ArchitectureTests.csproj --no-build --configuration Release
+          dotnet test tests/DMGoTravel.Domain.Tests/DMGoTravel.Domain.Tests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --logger "console;verbosity=normal"
+          dotnet test tests/DMGoTravel.ArchitectureTests/DMGoTravel.ArchitectureTests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
       - name: Run PostgreSQL 16 Integration tests
         env:
+          POSTGRES_DB: dmgotravel_dev
           ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=dmgotravel_it;Username=dmgotravel_user;Password=dmgotravel_password_2026
-        run: dotnet test tests/DMGoTravel.Api.IntegrationTests/DMGoTravel.Api.IntegrationTests.csproj --no-build --configuration Release
+        run: dotnet test tests/DMGoTravel.Api.IntegrationTests/DMGoTravel.Api.IntegrationTests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
   jest-contract-and-business-rules:
     name: Jest Automated Tests & Coverage
@@ -79,3 +88,30 @@ jobs:
         with:
           name: jest-coverage-report
           path: tests/jest/coverage
+
+  frontend-peru-premium:
+    name: Frontend Peru Premium — Vitest & Vite Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend-peru-premium/package-lock.json
+
+      - name: Install Frontend dependencies
+        working-directory: frontend-peru-premium
+        run: npm ci
+
+      - name: Run Vitest suite
+        working-directory: frontend-peru-premium
+        run: npm run test
+
+      - name: Build Frontend (TypeScript + Vite)
+        working-directory: frontend-peru-premium
+        run: npm run build
