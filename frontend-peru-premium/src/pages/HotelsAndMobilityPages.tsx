@@ -84,16 +84,15 @@ export const HotelsCatalogPage: React.FC = () => {
       <div className="pb-8 border-b border-[#E5DDD0] flex flex-col lg:flex-row lg:items-end justify-between gap-8">
         <div className="space-y-3.5 max-w-3xl">
           <SectionEyebrow>
-            Catálogo Oficial de Alojamiento · Ayacucho · Spec 007
+            Alojamiento Aliado Oficial · Ayacucho
           </SectionEyebrow>
           <h1 className="font-editorial text-4xl sm:text-5xl font-medium text-[#12232E] leading-[1.08]">
             Catálogo de Hoteles en Ayacucho — DM GO TRAVEL
           </h1>
           <p className="text-xs sm:text-sm text-[#5C6B73] leading-relaxed">
-            <strong>{DMGO_AGENCY_CONTACT.tagline}.</strong> Propiedades aliadas verificadas en torno
-            a la Plaza Mayor de Huamanga (casonas coloniales, hoteles boutique eco-amigables y
-            apart-hoteles modernos) para consolidar junto a tu tour o paquete en una sola operación
-            transaccional en Soles Peruanos (<code>PEN</code>).
+            <strong>{DMGO_AGENCY_CONTACT.tagline}.</strong> Casonas coloniales, hoteles boutique
+            eco-amigables y apart-hoteles verificados alrededor de la Plaza Mayor de Huamanga,
+            listos para sumar a tu tour o paquete turístico en una sola reserva en Soles (<code>PEN</code>).
           </p>
         </div>
 
@@ -139,15 +138,14 @@ export const HotelsCatalogPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Cinta informativa sobre reglas Spec 007 e imágenes referenciales reemplazables */}
+      {/* Cinta informativa amigable */}
       <div className="rounded-2xl border border-[#E5DDD0] bg-[#FFFCF8] px-5 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-[#5C6B73]">
         <div className="flex items-start sm:items-center gap-3">
           <Sparkles className="w-4 h-4 text-[#B84A27] shrink-0 mt-0.5 sm:mt-0" />
           <span>
-            Mostrando <strong className="text-[#12232E]">{orderedHotels.length}</strong> propiedades
-            activas en orden alfabético sin paginación ni filtros (<strong>Spec 007 · RF-2, RF-7 &amp; DEC-115</strong>).
-            Las fotografías actuales son vistas editoriales referenciales listas para actualizarse por
-            las originales desde la consola administrativa.
+            Explora nuestras <strong className="text-[#12232E]">{orderedHotels.length}</strong>{' '}
+            propiedades aliadas ordenadas alfabéticamente. Elige tu tour o paquete en Ayacucho para
+            sumar cualquiera de estos hoteles en un solo pago.
           </span>
         </div>
         <Link
@@ -515,12 +513,11 @@ export const HotelDetailPage: React.FC = () => {
                   Habitaciones y Tarifas Oficiales ({sortedRooms.length})
                 </h2>
                 <p className="text-xs text-[#5C6B73] mt-1">
-                  Tarifa única por tipo de habitación y período completo de 24 horas en Soles
-                  Peruanos (<code>PEN</code>), sin multiplicar por número de ocupantes (Spec 007 · RF-32).
+                  Tarifa fija por habitación por noche (período de 24 horas) en Soles Peruanos (<code>PEN</code>).
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-[#5C6B73]">
-                Disponibilidad validada por salida (RF-10)
+              <span className="text-[11px] font-semibold text-[#1B5E4A]">
+                Desayuno e impuestos incluidos según hotel
               </span>
             </div>
 
@@ -582,42 +579,53 @@ export const HotelDetailPage: React.FC = () => {
             <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#E5DDD0] flex items-start gap-2.5 text-[11px] text-[#5C6B73]">
               <Info className="w-4 h-4 text-[#1B5E4A] shrink-0 mt-0.5" />
               <span>
-                Conforme a <strong>Spec 007 (RF-10 &amp; RF-37)</strong>, el inventario exacto por
-                noche se comprueba automáticamente en todas las fechas del período al vincular este
-                hotel con una salida turística de Ayacucho.
+                La disponibilidad exacta de cada habitación se confirma automáticamente para todas
+                las noches de tu viaje al elegir tu fecha de salida turística en Ayacucho.
               </span>
             </div>
           </section>
         </div>
 
-        {/* Panel Lateral Sticky: Reserva Compuesta Spec 001/007 + Contacto Directo DM GO TRAVEL */}
-        <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
-          <div className="hairline-card rounded-2xl p-6 space-y-5">
-            <div className="w-11 h-11 rounded-xl bg-[#E7F3EE] text-[#1B5E4A] flex items-center justify-center">
-              <Hotel className="w-5 h-5" />
-            </div>
+        {/* Panel Lateral Fijo y Centrado: Reserva Integrada + Contacto Directo DM GO TRAVEL */}
+        <aside className="lg:col-span-4 lg:self-stretch">
+          <div className="lg:sticky lg:top-20 lg:min-h-[calc(100vh-5.5rem)] lg:flex lg:items-center lg:py-3">
+            <div className="w-full space-y-4">
+              <div className="hairline-card rounded-3xl p-6 space-y-4 text-center shadow-lg border-[#D8CCBA] bg-[#FFFCF8]">
+                <div className="w-11 h-11 rounded-2xl bg-[#E7F3EE] text-[#1B5E4A] flex items-center justify-center mx-auto">
+                  <Hotel className="w-5 h-5" />
+                </div>
 
-            <div className="space-y-2">
-              <h3 className="font-editorial text-2xl font-medium text-[#12232E]">
-                ¿Cómo reservar en {hotel.name}?
-              </h3>
-              <p className="text-xs text-[#5C6B73] leading-relaxed">
-                En <strong>DM GO TRAVEL</strong> el alojamiento se contrata de forma integrada junto
-                con una salida turística compatible (<strong>Reserva Compuesta · Spec 001 &amp; 007 RF-53</strong>).
-                Elige primero tu tour o paquete en Ayacucho y selecciona esta propiedad y tu tipo de
-                habitación en un solo pago verificado.
-              </p>
-            </div>
+                {lowestPrice && (
+                  <div className="pb-3 border-b border-[#E5DDD0]">
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-[#5C6B73]">
+                      Tarifa oficial por noche desde
+                    </span>
+                    <strong className="font-editorial text-4xl font-semibold text-[#12232E] tabular-nums">
+                      {formatPen(lowestPrice)}
+                    </strong>
+                    <span className="text-xs text-[#5C6B73] ml-1">PEN</span>
+                  </div>
+                )}
 
-            <div className="space-y-2.5">
-              <Link
-                to={`/tours?destination=${encodeURIComponent(meta.destination === 'Perú' ? 'Ayacucho' : meta.destination)}`}
-                className="w-full py-3 px-5 rounded-xl bg-[#B84A27] hover:bg-[#943618] text-white text-xs font-bold inline-flex items-center justify-center gap-2 transition-colors"
-              >
-                Elegir Tour en {meta.destination} + Hotel
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
+                <div className="space-y-1.5">
+                  <h3 className="font-editorial text-2xl font-medium text-[#12232E]">
+                    ¿Cómo reservar en {hotel.name}?
+                  </h3>
+                  <p className="text-xs text-[#5C6B73] leading-relaxed">
+                    En <strong>DM GO TRAVEL</strong> sumas tu alojamiento directamente al reservar
+                    tu tour o paquete en Ayacucho, unificando todo tu viaje en un solo pago seguro.
+                  </p>
+                </div>
+
+                <div className="space-y-2.5 pt-1">
+                  <Link
+                    to={`/tours?destination=${encodeURIComponent(meta.destination === 'Perú' ? 'Ayacucho' : meta.destination)}`}
+                    className="w-full py-3 px-5 rounded-xl bg-[#B84A27] hover:bg-[#943618] text-white text-xs font-bold shadow-sm inline-flex items-center justify-center gap-2 transition-colors"
+                  >
+                    Elegir Tour en {meta.destination} + Hotel
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
                 to={`/paquetes?destination=${encodeURIComponent(meta.destination === 'Perú' ? 'Ayacucho' : meta.destination)}`}
                 className="w-full py-3 px-5 rounded-xl bg-[#12232E] hover:bg-[#263D4D] text-white text-xs font-bold inline-flex items-center justify-center gap-2 transition-colors"
               >
@@ -653,6 +661,8 @@ export const HotelDetailPage: React.FC = () => {
               >
                 {DMGO_AGENCY_CONTACT.phones[1]}
               </a>
+            </div>
+          </div>
             </div>
           </div>
         </aside>

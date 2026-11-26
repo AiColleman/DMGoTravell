@@ -45,35 +45,40 @@ export const PublicEditorialLayout: React.FC = () => {
         Saltar al contenido principal
       </a>
 
-      {/* Cinta superior editorial con estado en vivo del Monolito Modular */}
+      {/* Cinta superior editorial amigable */}
       <div className="bg-[#12232E] text-[#FAF7F2] border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 min-h-9 py-1.5 flex flex-wrap items-center justify-between gap-3 text-[11px]">
-          <span className="inline-flex items-center gap-2 text-[#FAF7F2]/85">
+          <span className="inline-flex items-center gap-2 text-[#FAF7F2]/90">
             <Sparkles className="w-3.5 h-3.5 text-[#C89B54]" />
             <span>
-              <strong>Viajes Perú Premium</strong> · Tours turísticos, paquetes turísticos y
-              alojamiento consolidado en Soles Peruanos (<span className="font-mono">PEN</span>)
+              <strong>{DMGO_AGENCY_CONTACT.brand}</strong> · Experiencias y hoteles aliados en Perú
+              con tarifas oficiales en Soles (<span className="font-mono">PEN</span>)
             </span>
           </span>
 
           <div className="flex items-center gap-4">
+            <span className="hidden sm:inline text-[#FAF7F2]/80">
+              Atención WhatsApp: <strong>{DMGO_AGENCY_CONTACT.phones[0]}</strong> ·{' '}
+              <strong>{DMGO_AGENCY_CONTACT.phones[1]}</strong>
+            </span>
+
             {apiOnline === true ? (
               <span className="inline-flex items-center gap-1.5 text-[#8BE0B9] font-medium">
                 <Wifi className="w-3.5 h-3.5" />
-                API ASP.NET Core en línea
+                Reservas en línea activas
               </span>
             ) : apiOnline === false ? (
               <span className="inline-flex items-center gap-1.5 text-[#F2CB88] font-medium">
                 <WifiOff className="w-3.5 h-3.5" />
-                Catálogo Editorial Local · Inicia DMGoTravel.Api para persistencia real
+                Modo exploración interactiva
               </span>
             ) : (
-              <span className="text-[#FAF7F2]/60">Verificando conexión API...</span>
+              <span className="text-[#FAF7F2]/60">Conectando...</span>
             )}
 
             {isDemoSession && (
-              <span className="px-2 py-0.5 rounded bg-[#C89B54]/20 text-[#F2CB88] font-mono text-[10px]">
-                Sesión Vista Previa
+              <span className="px-2 py-0.5 rounded bg-[#C89B54]/20 text-[#F2CB88] text-[10px] font-semibold">
+                Sesión de prueba
               </span>
             )}
           </div>
@@ -241,13 +246,13 @@ export const PublicEditorialLayout: React.FC = () => {
             <div className="lg:col-span-4 space-y-4">
               <BrandLogo inverse />
               <p className="text-xs text-[#FAF7F2]/75 leading-relaxed max-w-sm">
-                Agencia y operadora turística peruana. Reunimos experiencias curadas, propuestas de
-                alojamiento aliado y pagos verificados en una sola intención de viaje respaldada por
-                nuestro Monolito Modular ASP.NET Core.
+                Agencia y operadora turística peruana. Reunimos experiencias de autor, casonas y
+                hoteles aliados verificados y pagos seguros en una sola reserva clara y sin cargos
+                ocultos.
               </p>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-[#C89B54] uppercase tracking-widest font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                Precios Oficiales en Soles (PEN) · Culqi &amp; Resend
+                Tarifas Oficiales en Soles (PEN) · Tarjeta &amp; Yape
               </div>
             </div>
 
@@ -291,7 +296,7 @@ export const PublicEditorialLayout: React.FC = () => {
                 </li>
                 <li>
                   <Link to="/cuenta?section=perfil" className="hover:text-white transition-colors">
-                    Perfil &amp; Seguridad ETag
+                    Mi Perfil &amp; Datos
                   </Link>
                 </li>
                 <li>
@@ -304,17 +309,17 @@ export const PublicEditorialLayout: React.FC = () => {
 
             <div className="lg:col-span-3 space-y-3">
               <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C89B54]">
-                Transparencia &amp; Gestión
+                Ayuda &amp; Políticas
               </h2>
               <ul className="space-y-2.5 text-xs text-[#FAF7F2]/80">
                 <li>
                   <Link to="/nosotros" className="hover:text-white transition-colors">
-                    Nuestra Identidad &amp; Arquitectura
+                    Sobre Nosotros
                   </Link>
                 </li>
                 <li>
                   <Link to="/politicas?section=terms" className="hover:text-white transition-colors">
-                    Condiciones de Reserva y Reembolso
+                    Términos, Cancelaciones y Reembolsos
                   </Link>
                 </li>
                 <li>
@@ -322,25 +327,15 @@ export const PublicEditorialLayout: React.FC = () => {
                     to="/politicas?section=privacy"
                     className="hover:text-white transition-colors"
                   >
-                    Privacidad &amp; Baja Lógica (RN-30)
+                    Política de Privacidad y Datos
                   </Link>
-                </li>
-                <li>
-                  <a
-                    href={import.meta.env.VITE_OPENAPI_SPEC_URL || '/openapi/v1.yaml'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    Contrato OpenAPI 3.1 (ADR-015)
-                  </a>
                 </li>
                 <li>
                   <Link
                     to={isAdmin ? '/admin/reportes' : '/acceso?mode=login&returnTo=/admin/reportes'}
                     className="text-[#C89B54] hover:text-white transition-colors font-semibold"
                   >
-                    Consola Operativa Admin →
+                    Acceso Administrativo →
                   </Link>
                 </li>
               </ul>

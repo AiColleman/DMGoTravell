@@ -286,8 +286,13 @@ export const SectionEyebrow: React.FC<{ children: React.ReactNode; light?: boole
 export const ExperienceCard: React.FC<{
   offer: CatalogOfferDto;
   seedIndex?: number;
-}> = ({ offer, seedIndex = 0 }) => {
-  const detailHref = offer.type === 'package' ? `/paquetes/${offer.id}` : `/tours/${offer.id}`;
+  preferredStartDate?: string;
+}> = ({ offer, seedIndex = 0, preferredStartDate }) => {
+  const baseHref = offer.type === 'package' ? `/paquetes/${offer.id}` : `/tours/${offer.id}`;
+  const detailHref =
+    preferredStartDate && /^\d{4}-\d{2}-\d{2}$/.test(preferredStartDate)
+      ? `${baseHref}?startDate=${encodeURIComponent(preferredStartDate)}`
+      : baseHref;
   const destination = offer.destinationHint || inferDestination(`${offer.name} ${offer.description}`);
   const primaryImg = offer.images.find((i) => i.isPrimary)?.url ?? offer.images[0]?.url;
   const hasDiscount =

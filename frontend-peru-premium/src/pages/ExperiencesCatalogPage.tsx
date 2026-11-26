@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { ArrowUpRight, Compass, Layers, RotateCcw, Search, SlidersHorizontal } from 'lucide-react';
 import { catalogApi } from '../api/services';
-import { parseDecimal } from '../lib/format';
+import { parseDecimal, toLimaDateIso } from '../lib/format';
 import {
   asCatalogSummary,
   inferDestination,
@@ -31,10 +31,10 @@ const SECTION_META: Record<
   }
 > = {
   tours: {
-    eyebrow: 'Catálogo Público · Tours Turísticos · Spec 006',
+    eyebrow: 'Experiencias de un Día & Rutas de Autor',
     title: 'Tours Turísticos',
     description:
-      'Recorridos guiados de autor y salidas diarias verificadas por Cusco, Ayacucho, Arequipa y Lima con tarifas oficiales en Soles Peruanos (PEN).',
+      'Recorridos guiados y salidas verificadas por Cusco, Ayacucho, Arequipa y Lima con tarifas transparentes en Soles Peruanos (PEN).',
     badgeLabel: 'Salidas Diarias & Full Days',
     counterNoun: 'tours turísticos',
     emptyTitle: 'No encontramos tours turísticos con esos criterios',
@@ -43,10 +43,10 @@ const SECTION_META: Record<
     accentBg: 'bg-[#12232E] text-[#FAF7F2]',
   },
   packages: {
-    eyebrow: 'Catálogo Público · Paquetes Turísticos · Spec 006',
+    eyebrow: 'Programas Multidía & Estadía Opcional',
     title: 'Paquetes Turísticos',
     description:
-      'Programas integrales y circuitos multidía diseñados con pausa por los Andes y la costa peruana, listos para consolidar alojamiento aliado en Soles Peruanos (PEN).',
+      'Circuitos integrales diseñados por los Andes y la costa peruana, listos para sumar casonas y hoteles aliados en una misma reserva.',
     badgeLabel: 'Circuitos Integrales Multidía',
     counterNoun: 'paquetes turísticos',
     emptyTitle: 'No encontramos paquetes turísticos con esos criterios',
@@ -114,19 +114,29 @@ const DecentralizedCatalogView: React.FC<{ catalogType: CatalogApiType }> = ({ c
       setTotal(response.total);
       setHasNext(response.hasNext);
     } catch {
-      const source = (catalogType === 'packages' ? SHOWCASE_PACKAGES : SHOWCASE_TOURS).map(
-        asCatalogSummary
-      );
-      const filtered = source.filter((item) => {
-        const destText = `${item.destinationHint ?? ''} ${item.name} ${item.description}`.toLowerCase();
-        if (destVal && !destText.includes(destVal.toLowerCase())) return false;
-        const p = parseDecimal(item.price);
-        if (minPriceVal && p < Number(minPriceVal)) return false;
-        if (maxPriceVal && p > Number(maxPriceVal)) return false;
-        if (minDurVal && item.durationDays < Number(minDurVal)) return false;
-        if (maxDurVal && item.durationDays > Number(maxDurVal)) return false;
-        return true;
-      });
+      const detailsPool = catalogType === 'packages' ? SHOWCASE_PACKAGES : SHOWCASE_TOURS;
+      const filtered = detailsPool
+        .filter((detail) => {
+          const destText = `${detail.destinationHint ?? ''} ${detail.name} ${detail.description}`.toLowerCase();
+          if (destVal && !destText.includes(destVal.toLowerCase())) return false;
+          const p = parseDecimal(detail.price);
+          if (minPriceVal && p < Number(minPriceVal)) return false;
+          if (maxPriceVal && p > Number(maxPriceVal)) return false;
+          if (minDurVal && detail.durationDays < Number(minDurVal)) return false;
+          if (maxDurVal && detail.durationDays > Number(maxDurVal)) return false;
+          if (startVal || endVal) {
+            const hasMatchingDeparture = detail.departures.some((dep) => {
+              const depDate = toLimaDateIso(dep.startDate);
+              if (!depDate) return false;
+              if (startVal && depDate < startVal) return false;
+              if (endVal && depDate > endVal) return false;
+              return (dep.available ?? 1) > 0;
+            });
+            if (!hasMatchingDeparture) return false;
+          }
+          return true;
+        })
+        .map(asCatalogSummary);
       setItems(filtered);
       setTotal(filtered.length);
       setHasNext(false);
@@ -457,6 +467,7 @@ const DecentralizedCatalogView: React.FC<{ catalogType: CatalogApiType }> = ({ c
                         inferDestination(`${offer.name} ${offer.description}`),
                     }}
                     seedIndex={idx}
+                    preferredStartDate={startDate || undefined}
                   />
                 ))}
               </div>

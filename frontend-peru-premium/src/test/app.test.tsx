@@ -13,6 +13,7 @@ import {
   formatIfMatchHeader,
   formatPen,
   parseEtagVersion,
+  pickSmartDeparture,
 } from '../lib/format';
 import {
   mergeWithOfficialDmGoAdminHotels,
@@ -267,9 +268,9 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     }
 
     // Contactos oficiales de agencia
-    expect(screen.getByText('@dmgotravel')).toBeInTheDocument();
-    expect(screen.getByText('913 249 767')).toBeInTheDocument();
-    expect(screen.getByText('969 167 443')).toBeInTheDocument();
+    expect(screen.getAllByText('@dmgotravel').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('913 249 767').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('969 167 443').length).toBeGreaterThanOrEqual(1);
   });
 
   it('cumple Spec 007 (RF-6, RF-11, RF-55, RF-56): detalle de Hotel Internazionale muestra sus 8 tarifas reales con fotos ficticias, omite placeholder cuando una habitación no tiene imagen y responde Hotel no disponible ante ID inválido', async () => {
@@ -383,7 +384,7 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
   });
 
   it('cumple Spec 001 (RF-45, RF-70..RF-72, RF-99, RF-102) y Spec 010 (RF-44): alojamiento parcial del grupo, páginas inválidas/vacías de historial y anonimización en baja lógica', async () => {
-    // 1. Reserva compuesta en paquete de Ayacucho: permite elegir habitación Individual para 3 viajeros (alojamiento parcial · RF-70)
+    // 1. Reserva compuesta en paquete de Ayacucho: cotizador fijo centrado + selector compacto de 9 hoteles + alojamiento parcial (RF-70)
     renderAt('/paquetes/00000000-0000-4000-8000-000000000106');
     expect(
       await screen.findByRole('heading', {
@@ -392,8 +393,15 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
       })
     ).toBeInTheDocument();
 
+    const pricingAside = screen.getByRole('complementary', {
+      name: /Tarifario y resumen de reserva/i,
+    });
+    expect(pricingAside).toHaveTextContent(/Tarifa Oficial por Viajero/i);
+    expect(pricingAside).toHaveTextContent(/Reservar y pasar al checkout/i);
+
     fireEvent.click(screen.getByLabelText(/Aumentar viajeros/i)); // 2 -> 3 viajeros
     fireEvent.click(screen.getByRole('button', { name: /Consolidar Tour \+ Casona Aliada/i }));
+    expect(screen.getByText(/9 hoteles disponibles/i)).toBeInTheDocument();
 
     // RF-45: indica expresamente que no existe tolerancia adicional tras salida asignada
     expect(
@@ -424,5 +432,85 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     expect(
       await screen.findByText(/Omitido por baja lógica \(RF-44\)/i)
     ).toBeInTheDocument();
+  });
+
+  it('aplica lógica inteligente de selección de fecha de salida: calendario interactivo, fecha más próxima disponible, bloqueo de agotados, ajuste de viajeros y preservación de hotel', async () => {
+    const sampleDeps = [
+      { id: 'd-soldout', startDate: '2026-12-26T13:00:00Z', available: 0 },
+      { id: 'd-later', startDate: '2026-12-19T13:00:00Z', available: 9 },
+      { id: 'd-first', startDate: '2026-12-05T13:00:00Z', available: 11 },
+      { id: 'd-low', startDate: '2026-12-24T13:00:00Z', available: 3 },
+    ];
+    const nowRef = new Date('2026-11-26T12:00:00Z').getTime();
+
+    // Ordena cronológicamente y recomienda la primera salida con cupo suficiente
+    const defPick = pickSmartDeparture(sampleDeps, { travelers: 4, nowMs: nowRef });
+    expect(defPick.departure?.id).toBe('d-first');
+    expect(defPick.sortedFuture[0]?.id).toBe('d-first');
+
+    // Si el cliente pide una fecha intermedia o agotada, sugiere la más cercana disponible
+    const nearPick = pickSmartDeparture(sampleDeps, {
+      requestedDateIso: '2026-12-15',
+      travelers: 2,
+      nowMs: nowRef,
+    });
+    expect(nearPick.departure?.id).toBe('d-later');
+    expect(nearPick.matchKind).toBe('nearest-after');
+
+    const avoidSoldOut = pickSmartDeparture(sampleDeps, {
+      requestedDateIso: '2026-12-26',
+      travelers: 2,
+      nowMs: nowRef,
+    });
+    expect(avoidSoldOut.departure?.id).not.toBe('d-soldout');
+
+    // Integración UI en Tour Huamanga (/tours/00000000-0000-4000-8000-000000000101)
+    renderAt('/tours/00000000-0000-4000-8000-000000000101');
+    expect(
+      await screen.findByRole('heading', {
+        level: 1,
+        name: /Huamanga Virreinal, Talleres de Piedra & Ruta Wari/i,
+      })
+    ).toBeInTheDocument();
+
+    // Selecciona un hotel específico (Hotel Sumaq Plaza) y sube viajeros a 5
+    const consolidateBtn = await screen.findByRole('button', {
+      name: /Consolidar Tour \+ Casona Aliada/i,
+    });
+    fireEvent.click(consolidateBtn);
+    fireEvent.click(await screen.findByRole('button', { name: /Hotel Sumaq Plaza/i }));
+    fireEvent.click(screen.getByLabelText(/Aumentar viajeros/i)); // 3
+    fireEvent.click(screen.getByLabelText(/Aumentar viajeros/i)); // 4
+    fireEvent.click(screen.getByLabelText(/Aumentar viajeros/i)); // 5
+
+    // 1) Elige una fecha sin salida exacta (2026-12-20) con 5 viajeros -> ubica la próxima salida con capacidad para los 5 viajeros y conserva Hotel Sumaq Plaza
+    const dateInput = screen.getByLabelText(/Elegir fecha deseada/i);
+    fireEvent.change(dateInput, { target: { value: '2026-12-20' } });
+
+    expect(
+      await screen.findByText(/No hay salida exacta el/i)
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 3, name: /Hotel Sumaq Plaza/i })
+    ).toBeInTheDocument();
+
+    // 2) Elige explícitamente la fecha exacta de últimos cupos (2026-12-24, solo 3 cupos) -> ajusta viajeros de 5 a 3 automáticamente conservando Hotel Sumaq Plaza
+    fireEvent.change(dateInput, { target: { value: '2026-12-24' } });
+    expect(
+      await screen.findByText(/Ajustamos la reserva a 3 viajeros según los cupos libres/i)
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 3, name: /Hotel Sumaq Plaza/i })
+    ).toBeInTheDocument();
+
+    // 3) Intenta elegir una fecha agotada (2026-12-26, 0 cupos) -> informa agotado y sugiere automáticamente la siguiente salida con cupos
+    fireEvent.change(dateInput, { target: { value: '2026-12-26' } });
+    expect(
+      await screen.findByText(/está agotada; te sugerimos la fecha disponible más próxima/i)
+    ).toBeInTheDocument();
+
+    // Permite alternar a vista Calendario interactivo
+    fireEvent.click(screen.getByRole('button', { name: /^Calendario$/i }));
+    expect(screen.getByLabelText(/Mes siguiente/i)).toBeInTheDocument();
   });
 });

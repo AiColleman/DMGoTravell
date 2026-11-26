@@ -257,7 +257,7 @@ export const CheckoutCulqiPage: React.FC = () => {
 
         <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#E7F3EE] border border-[#B6DEC9] text-xs font-semibold text-[#15523F]">
           <Lock className="w-3.5 h-3.5" />
-          Culqi Checkout v4 &amp; Idempotency-Key
+          Pago Seguro Verificado en Soles (PEN)
         </div>
       </div>
 
@@ -362,18 +362,16 @@ export const CheckoutCulqiPage: React.FC = () => {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="font-editorial text-2xl font-medium text-[#12232E]">
-                  Pasarela Oficial Culqi (ADR-007)
+                  Pasarela Oficial Culqi
                 </h2>
                 <p className="text-xs text-[#5C6B73] mt-1">
-                  El backend liquidará exclusivamente el total oficial congelado:{' '}
+                  Elige tu medio de pago preferido para completar tu reserva por{' '}
                   <strong className="text-[#12232E]">{formatPen(reservation.total)} PEN</strong>.
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EDE2] border border-[#D2C6B4] font-mono text-[10px] font-semibold text-[#12232E]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EDE2] border border-[#D2C6B4] text-[10px] font-semibold text-[#12232E]">
                 <KeyRound className="w-3 h-3 text-[#B84A27]" />
-                {culqiAdapter.publicKeyConfigured
-                  ? 'Culqi.js v4 Live/Test'
-                  : 'Tokenizador Sandbox (AC11)'}
+                {culqiAdapter.publicKeyConfigured ? 'Conexión Segura' : 'Entorno de Prueba Seguro'}
               </span>
             </div>
 
@@ -433,22 +431,19 @@ export const CheckoutCulqiPage: React.FC = () => {
                 </div>
 
                 <p className="text-xs text-[#5C6B73] leading-relaxed">
-                  Conforme a la restricción <strong>RS07</strong> y al Modelo C4 (Nivel 2), esta
-                  aplicación React <strong>no captura ni almacena PAN, fecha de vencimiento ni CVV</strong>{' '}
-                  en su interfaz: la captura ocurre directamente en el tokenizador de Culqi y el
-                  servidor ASP.NET Core valida el cargo e idempotencia.
+                  Tu pago se procesa de forma encriptada mediante <strong>Culqi</strong> sin
+                  almacenar los datos de tu tarjeta en nuestra página, protegiendo tu operación
+                  contra cargos duplicados.
                 </p>
 
                 <div className="pt-2 border-t border-[#E5DDD0]/80 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
                   <div>
-                    <span className="text-[#5C6B73] block">Comprobante asociado a:</span>
+                    <span className="text-[#5C6B73] block">Comprobante enviado a:</span>
                     <strong className="text-[#12232E]">{user?.email ?? 'viajero@dmgotravel.com'}</strong>
                   </div>
                   <div>
-                    <span className="text-[#5C6B73] block">Clave de Idempotencia activa:</span>
-                    <code className="font-mono text-[10px] text-[#1B5E4A]">
-                      {attemptIdemKeyRef.current.slice(0, 18)}…
-                    </code>
+                    <span className="text-[#5C6B73] block">Protección anti-duplicado:</span>
+                    <span className="font-semibold text-[#1B5E4A]">Activa para esta orden</span>
                   </div>
                 </div>
 
@@ -465,9 +460,8 @@ export const CheckoutCulqiPage: React.FC = () => {
               <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#E5DDD0] text-[11px] text-[#5C6B73] flex items-start gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-[#1B5E4A] shrink-0 mt-0.5" />
                 <span>
-                  <strong>Garantía RN-03 &amp; RN-14:</strong> DMGOTRAVEL ignora cualquier monto del
-                  cliente, procesa el cobro con el snapshot oficial en PostgreSQL y solo transiciona{' '}
-                  <code>pending → confirmed</code> tras pago validado.
+                  <strong>Tarifa protegida:</strong> cobramos exactamente el importe acordado en tu
+                  resumen y tu reserva se confirma de inmediato al aprobarse el pago.
                 </span>
               </div>
 
@@ -502,81 +496,88 @@ export const CheckoutCulqiPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Snapshot Histórico Inmutable */}
-        <aside className="lg:col-span-5 hairline-card rounded-2xl overflow-hidden">
-          <div className="h-44 relative">
-            <PeruPhoto
-              src={PERU_ASSETS.cusco}
-              alt="Snapshot de reserva"
-              category="tour"
-              hintText={reservation.offerNameHint || 'Cusco'}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1720]/85 via-transparent to-transparent" />
-            <div className="absolute bottom-4 left-5 right-5 text-[#FAF7F2]">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#C89B54]">
-                Snapshot Histórico Inmutable · ADR-011
-              </span>
-              <p className="font-editorial text-2xl font-medium mt-0.5">
-                Orden #{reservation.reservationNumber}
-              </p>
-            </div>
-          </div>
-
-          <div className="p-6 space-y-5 text-xs">
-            {reservation.offerNameHint && (
-              <p className="font-bold text-[#12232E] text-sm">{reservation.offerNameHint}</p>
-            )}
-
-            {reservation.departure && (
-              <div className="space-y-1.5 pb-4 border-b border-[#E5DDD0]">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#5C6B73]">
-                  Componente Turístico
-                </p>
-                <p className="font-semibold text-[#12232E]">
-                  Salida: {formatLimaDateTime(reservation.departure.startDate)}
-                </p>
-                <p className="text-[#5C6B73]">
-                  Viajeros: <strong>{reservation.travelers}</strong> · Tarifa unitaria:{' '}
-                  {formatPen(reservation.departure.price)}
-                </p>
+        {/* Resumen Fijo y Centrado de la Orden */}
+        <aside className="lg:col-span-5 lg:self-stretch">
+          <div className="lg:sticky lg:top-20 lg:py-2">
+            <div className="hairline-card rounded-3xl overflow-hidden shadow-lg border-[#D8CCBA]">
+              <div className="h-40 relative">
+                <PeruPhoto
+                  src={PERU_ASSETS.cusco}
+                  alt="Resumen de reserva"
+                  category="tour"
+                  hintText={reservation.offerNameHint || 'Ayacucho'}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1720]/85 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-5 right-5 text-[#FAF7F2]">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#C89B54]">
+                    Resumen de tu Viaje
+                  </span>
+                  <p className="font-editorial text-2xl font-medium mt-0.5">
+                    Orden #{reservation.reservationNumber}
+                  </p>
+                </div>
               </div>
-            )}
 
-            {reservation.lodging ? (
-              <div className="space-y-1.5 pb-4 border-b border-[#E5DDD0]">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#1B5E4A]">
-                  Alojamiento Aliado Consolidado
-                </p>
-                <p className="font-bold text-[#12232E]">{reservation.lodging.hotelName}</p>
-                <p className="text-[#5C6B73]">
-                  {reservation.lodging.roomTypeName} · {reservation.lodging.nights} noches (
-                  {formatLimaDate(reservation.lodging.checkInDate)} →{' '}
-                  {formatLimaDate(reservation.lodging.checkOutDate)})
-                </p>
-                <p className="font-semibold text-[#1B5E4A] tabular-nums">
-                  Subtotal alojamiento: {formatPen(reservation.lodging.subtotal)}
-                </p>
+              <div className="p-6 space-y-4 text-xs bg-[#FFFCF8]">
+                {reservation.offerNameHint && (
+                  <p className="font-bold text-[#12232E] text-sm">{reservation.offerNameHint}</p>
+                )}
+
+                {reservation.departure && (
+                  <div className="space-y-1.5 pb-3.5 border-b border-[#E5DDD0]">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#5C6B73]">
+                      Experiencia Turística
+                    </p>
+                    <p className="font-semibold text-[#12232E]">
+                      Salida: {formatLimaDateTime(reservation.departure.startDate)}
+                    </p>
+                    <p className="text-[#5C6B73]">
+                      Viajeros: <strong>{reservation.travelers}</strong> · Tarifa por persona:{' '}
+                      {formatPen(reservation.departure.price)}
+                    </p>
+                  </div>
+                )}
+
+                {reservation.lodging ? (
+                  <div className="space-y-1.5 pb-3.5 border-b border-[#E5DDD0]">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#1B5E4A]">
+                      Alojamiento Aliado Incluido
+                    </p>
+                    <p className="font-bold text-[#12232E]">{reservation.lodging.hotelName}</p>
+                    <p className="text-[#5C6B73]">
+                      {reservation.lodging.roomTypeName} · {reservation.lodging.nights}{' '}
+                      {reservation.lodging.nights === 1 ? 'noche' : 'noches'} (
+                      {formatLimaDate(reservation.lodging.checkInDate)} →{' '}
+                      {formatLimaDate(reservation.lodging.checkOutDate)})
+                    </p>
+                    <p className="font-semibold text-[#1B5E4A] tabular-nums">
+                      Subtotal alojamiento: {formatPen(reservation.lodging.subtotal)}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="pb-3.5 border-b border-[#E5DDD0] text-[#5C6B73]">
+                    Modalidad: <strong>Solo experiencia turística</strong>.
+                  </p>
+                )}
+
+                <div className="text-center py-2 rounded-2xl bg-[#FAF7F2] border border-[#E5DDD0]">
+                  <span className="block text-[10px] font-bold uppercase tracking-widest text-[#5C6B73]">
+                    Total a Pagar (PEN)
+                  </span>
+                  <strong className="font-editorial text-3xl sm:text-4xl font-semibold text-[#12232E] tabular-nums">
+                    {formatPen(reservation.total)}
+                  </strong>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-[#E7F3EE] border border-[#B6DEC9] text-[11px] text-[#15523F] flex items-start gap-2">
+                  <MailCheck className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>
+                    Enviaremos tu confirmación y comprobante a{' '}
+                    <strong>{user?.email ?? 'tu correo registrado'}</strong>.
+                  </span>
+                </div>
               </div>
-            ) : (
-              <p className="pb-4 border-b border-[#E5DDD0] text-[#5C6B73]">
-                Modalidad: <strong>Solo experiencia turística</strong>.
-              </p>
-            )}
-
-            <div className="flex items-baseline justify-between">
-              <span className="font-bold text-[#12232E]">Total Congelado (PEN)</span>
-              <strong className="font-editorial text-3xl font-semibold text-[#12232E] tabular-nums">
-                {formatPen(reservation.total)}
-              </strong>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-[#E7F3EE] border border-[#B6DEC9] text-[11px] text-[#15523F] flex items-start gap-2">
-              <MailCheck className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>
-                Recibirás el comprobante electrónico vía <strong>Resend</strong> en{' '}
-                <strong>{user?.email ?? 'tu correo registrado'}</strong>.
-              </span>
             </div>
           </div>
         </aside>

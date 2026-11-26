@@ -161,14 +161,14 @@ export const HomePage: React.FC = () => {
               </Link>
             </div>
 
-            {/* Indicadores de Confianza Arquitectónica */}
+            {/* Indicadores de Confianza para el Viajero */}
             <div className="pt-6 border-t border-[#E5DDD0] grid grid-cols-3 gap-4 max-w-lg">
               <div>
                 <span className="font-editorial text-2xl sm:text-3xl font-semibold text-[#12232E]">
-                  100% PEN
+                  100% Soles
                 </span>
                 <p className="text-[11px] text-[#5C6B73] mt-0.5">
-                  Snapshot inmutable calculado en servidor
+                  Tarifa transparente sin cargos ocultos
                 </p>
               </div>
               <div>
@@ -176,15 +176,15 @@ export const HomePage: React.FC = () => {
                   15 min
                 </span>
                 <p className="text-[11px] text-[#5C6B73] mt-0.5">
-                  Bloqueo transaccional de cupos e inventario
+                  Tus cupos quedan reservados al instante
                 </p>
               </div>
               <div>
                 <span className="font-editorial text-2xl sm:text-3xl font-semibold text-[#1B5E4A]">
-                  Culqi + Yape
+                  Tarjeta + Yape
                 </span>
                 <p className="text-[11px] text-[#5C6B73] mt-0.5">
-                  Confirmación verificada y recibo Resend
+                  Confirmación inmediata en tu correo
                 </p>
               </div>
             </div>
@@ -527,11 +527,11 @@ export const HomePage: React.FC = () => {
             <ShieldCheck className="w-6 h-6 text-[#1B5E4A] shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-bold text-[#12232E]">
-                Integridad financiera respaldada por el servidor (RN-03 &amp; RN-14)
+                Reserva segura y tarifas garantizadas desde el primer clic
               </h3>
               <p className="text-xs text-[#5C6B73] mt-0.5">
-                Ningún precio se impone desde el navegador y ninguna reserva pasa a estado Confirmada
-                sin validación criptográfica de pago exitoso.
+                Tu tarifa en Soles se mantiene fija durante tu reserva y recibes confirmación
+                inmediata apenas completas tu pago con tarjeta o Yape.
               </p>
             </div>
           </div>
@@ -539,12 +539,12 @@ export const HomePage: React.FC = () => {
             to="/politicas?section=terms"
             className="text-xs font-bold text-[#B84A27] hover:underline shrink-0"
           >
-            Leer reglas de reserva →
+            Ver condiciones de viaje →
           </Link>
         </div>
       </section>
 
-      {/* ================= CASONAS & HOTELES ALIADOS (SPEC 007 · RF-2, RF-7, RF-12) ================= */}
+      {/* ================= CASONAS & HOTELES ALIADOS ================= */}
       {hotels.length > 0 && (
         <section className="bg-[#FAF7F2] pb-16 sm:pb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-8 space-y-10">
@@ -557,9 +557,8 @@ export const HomePage: React.FC = () => {
                   Hoteles Aliados de DM GO TRAVEL en Huamanga
                 </h2>
                 <p className="text-xs sm:text-sm text-[#5C6B73] max-w-2xl">
-                  Todos nuestros hoteles públicamente visibles ordenados de A a Z sin paginación
-                  (Spec 007 · RF-2 &amp; RF-7), listos para consolidar con tus salidas turísticas en
-                  Soles Peruanos (PEN).
+                  Conoce nuestras 9 propiedades aliadas en torno a la Plaza Mayor de Ayacucho,
+                  listas para sumar a tu tour o paquete turístico en una misma reserva.
                 </p>
               </div>
               <Link

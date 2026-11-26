@@ -66,9 +66,152 @@ export function formatLimaDate(iso: string | null | undefined): string {
 }
 
 export function todayLimaIso(): string {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  return now.toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Lima',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+/**
+ * Extrae la fecha calendario YYYY-MM-DD en zona horaria America/Lima (UTC-5).
+ */
+export function toLimaDateIso(iso: string | null | undefined): string {
+  if (!iso) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Lima',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+export function formatLimaTime(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat('es-PE', {
+    timeZone: 'America/Lima',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
+}
+
+export function formatLimaWeekdayDate(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(iso)
+    ? new Date(`${iso}T12:00:00Z`)
+    : new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  const formatted = new Intl.DateTimeFormat('es-PE', {
+    timeZone: /^\d{4}-\d{2}-\d{2}$/.test(iso) ? 'UTC' : 'America/Lima',
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1).replace(/\./g, '');
+}
+
+export type DepartureMatchKind =
+  | 'exact-id'
+  | 'exact-date'
+  | 'nearest-after'
+  | 'nearest-available'
+  | 'recommended'
+  | 'none';
+
+export interface SmartDepartureCandidate {
+  id: string;
+  startDate: string;
+  available?: number | null;
+}
+
+/**
+ * Lógica inteligente de selección de salida (Spec 001 · RF-4, RF-6):
+ * - Excluye salidas pasadas y ordena cronológicamente ascendente.
+ * - Prioriza coincidencia exacta por ID o fecha deseada en hora Perú con cupos disponibles.
+ * - Si la fecha elegida no opera o está agotada, sugiere la salida futura disponible más próxima.
+ * - Por defecto selecciona la salida próxima con cupo suficiente para el grupo (o con cupo > 0).
+ */
+export function pickSmartDeparture<T extends SmartDepartureCandidate>(
+  departures: readonly T[],
+  options: {
+    requestedDepartureId?: string | null;
+    requestedDateIso?: string | null;
+    travelers?: number;
+    nowMs?: number;
+  } = {}
+): {
+  departure: T | null;
+  sortedFuture: T[];
+  matchKind: DepartureMatchKind;
+} {
+  const nowMs = options.nowMs ?? Date.now();
+  const travelers = Math.max(1, options.travelers ?? 1);
+
+  const sortedFuture = [...departures]
+    .filter((d) => {
+      const ms = new Date(d.startDate).getTime();
+      return Number.isFinite(ms) && ms > nowMs;
+    })
+    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+
+  const hasSeats = (d: T) => d.available === null || d.available === undefined || d.available > 0;
+  const coversGroup = (d: T) =>
+    d.available === null || d.available === undefined || d.available >= travelers;
+
+  const bookable = sortedFuture.filter(hasSeats);
+  if (bookable.length === 0) {
+    return {
+      departure: sortedFuture[0] ?? null,
+      sortedFuture,
+      matchKind: 'none',
+    };
+  }
+
+  if (options.requestedDepartureId) {
+    const byId = bookable.find((d) => d.id === options.requestedDepartureId);
+    if (byId) {
+      return { departure: byId, sortedFuture, matchKind: 'exact-id' };
+    }
+  }
+
+  const targetDate = options.requestedDateIso?.trim();
+  if (targetDate && /^\d{4}-\d{2}-\d{2}$/.test(targetDate)) {
+    const sameDayWithGroup = bookable.find(
+      (d) => toLimaDateIso(d.startDate) === targetDate && coversGroup(d)
+    );
+    if (sameDayWithGroup) {
+      return { departure: sameDayWithGroup, sortedFuture, matchKind: 'exact-date' };
+    }
+
+    const sameDayAny = bookable.find((d) => toLimaDateIso(d.startDate) === targetDate);
+    if (sameDayAny) {
+      return { departure: sameDayAny, sortedFuture, matchKind: 'exact-date' };
+    }
+
+    const nextAvailable =
+      bookable.find((d) => toLimaDateIso(d.startDate) >= targetDate && coversGroup(d)) ??
+      bookable.find((d) => toLimaDateIso(d.startDate) >= targetDate);
+    if (nextAvailable) {
+      return { departure: nextAvailable, sortedFuture, matchKind: 'nearest-after' };
+    }
+
+    return {
+      departure: bookable[bookable.length - 1]!,
+      sortedFuture,
+      matchKind: 'nearest-available',
+    };
+  }
+
+  const recommended = bookable.find(coversGroup) ?? bookable[0]!;
+  return { departure: recommended, sortedFuture, matchKind: 'recommended' };
 }
 
 export function calculateNights24h(startIso: string, endIso: string): number {

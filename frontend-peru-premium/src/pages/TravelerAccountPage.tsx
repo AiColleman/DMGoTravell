@@ -283,13 +283,13 @@ export const TravelerAccountPage: React.FC = () => {
       {/* Cabecera Editorial del Viajero */}
       <div className="pb-8 border-b border-[#E5DDD0] flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-2">
-          <SectionEyebrow>Espacio Personal del Viajero · Specs 001 &amp; 008</SectionEyebrow>
+          <SectionEyebrow>Mi Espacio de Viajero</SectionEyebrow>
           <h1 className="font-editorial text-4xl sm:text-5xl font-medium text-[#12232E]">
             Hola, {user?.fullName?.split(' ')[0] ?? 'Viajero'}
           </h1>
           <p className="text-xs sm:text-sm text-[#5C6B73]">
-            Consulta el estado de tus experiencias y administra tus datos protegidos con{' '}
-            <span className="font-mono">ETag / If-Match</span>.
+            Revisa el estado de tus reservas, descarga tu resumen y administra tus datos de
+            contacto.
           </p>
         </div>
 
@@ -597,7 +597,7 @@ export const TravelerAccountPage: React.FC = () => {
                 className="w-full py-2.5 rounded-xl bg-[#12232E] hover:bg-[#263D4D] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
-                {savingProfile ? 'Guardando...' : 'Guardar con If-Match'}
+                {savingProfile ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </form>
           </div>
@@ -655,27 +655,27 @@ export const TravelerAccountPage: React.FC = () => {
           <div className="hairline-card rounded-2xl p-6 space-y-3">
             <h3 className="text-sm font-bold text-[#12232E] inline-flex items-center gap-2">
               <span className="font-serif font-bold text-sm text-[#B84A27]">G</span>
-              Identidad Google OAuth 2.0 / OIDC (ADR-009)
+              Cuenta de Google
             </h3>
             <p className="text-[11px] text-[#5C6B73] leading-relaxed">
-              Vincula tu identidad de Google sin duplicar cuentas por correo electrónico (HU-05).
+              Vincula tu cuenta de Google para ingresar con un solo clic usando tu mismo correo.
             </p>
             <a
               href={authApi.getGoogleStartUrl('/cuenta?section=perfil')}
               className="w-full py-2.5 px-3.5 rounded-xl border border-[#D2C6B4] bg-[#FAF7F2] hover:border-[#12232E] text-xs font-bold text-[#12232E] flex items-center justify-center gap-2 transition-colors"
             >
-              Vincular con Google OAuth 2.0
+              Vincular con Google
             </a>
           </div>
 
           <div className="rounded-2xl border border-[#EABCB3] bg-[#FFFCF8] p-6 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#8E2B17] inline-flex items-center gap-1.5">
               <ShieldAlert className="w-4 h-4" />
-              Baja Lógica de Cuenta (RN-30)
+              Cierre de Cuenta
             </h3>
             <p className="text-[11px] text-[#5C6B73] leading-relaxed">
-              Revoca sesiones activas y protege tus datos personales conservando la trazabilidad
-              histórica exigida por normativa.
+              Cierra tu cuenta y protege tus datos personales cuando no tengas reservas pendientes
+              ni viajes en curso.
             </p>
 
             {blockers.length > 0 && (
