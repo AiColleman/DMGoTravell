@@ -76,7 +76,7 @@ Los IDs `T002-nn` son propios de Pagos y no renumeran T001/T007 ni tareas de otr
   - **Aceptación:** solo éxito auténtico coincidente antes de 20; no confirmación manual, cambio de snapshots ni doble notificación lógica; un fallo local no deja confirmación parcial.
   - **Dependencias:** T002-11 y contratos 001/004/010. [RF-10–RF-16]
 
-- [ ] **T002-13 — Aplicar rechazo y liberación durante tolerancia.** → **PARCIAL**: el vencimiento con pago en curso está probado (`ReservationExpiryTests`), pero no el rechazo definitivo en minuto 18 con liberación inmediata.
+- [x] **T002-13 — Aplicar rechazo y liberación durante tolerancia.** → **HECHO**: `ProcessCulqiWebhookCommand.TryCancelAfterDefinitiveRejectionAsync` cancela solo si el intento se inició antes del corte y el rechazo llega dentro de la tolerancia; pruebas `ReservationPaymentRejectionTests` (rechazo en tolerancia con cancelación, liberación única, auditoría `reservation.auto_cancelled` origen `paymentreject` y deduplicación; rechazo antes de 15 mantiene `pending` y permite reintentar).
   - **Entregable:** rechazo definitivo con motivo seguro, retry antes de 15 y cancelación/liberación en tolerancia.
   - **Aceptación:** no reiniciar ventana; rechazo en minuto 18 cancela sin esperar a 20; fallback exacto «No se pudo procesar el pago» y sin datos sensibles.
   - **Dependencias:** T002-11 y contratos 001/003/006/007/010. [RF-17–RF-22]

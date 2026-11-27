@@ -84,7 +84,7 @@ El administrador podrá gestionar catálogo, hoteles, disponibilidad, reservas, 
 
 # 📊 Estado del proyecto
 
-> **Fase actual: Sprint 2 (backend) completado + SPA rastreada.** Backend Monolito Modular de las Specs 001–013 con OpenAPI/Swagger, caché segura, CI/CD y pruebas xUnit/Jest/Vitest. **Auditoría de tareas 2026-11-25:** 195 HECHO, 162 PARCIAL y 45 PENDIENTE sobre 402 tareas; detalle en [`sdd/auditoria/`](sdd/auditoria/inventario-2026-11-24.md) y [matriz RF](sdd/auditoria/matriz-rf-2026-11-25.md). Los pendientes son, sobre todo, proveedores reales, Google OAuth, calendario hábil, rate limiting, roles SQL de auditoría, carga y cierre RF por RF.
+> **Fase actual: Sprint 2 (backend) completado + SPA rastreada.** Backend Monolito Modular de las Specs 001–013 con OpenAPI/Swagger, caché segura, CI/CD y pruebas xUnit/Jest/Vitest. **Auditoría de tareas 2026-11-25, actualizada 2026-11-27:** 199 HECHO, 159 PARCIAL y 44 PENDIENTE sobre 402 tareas; detalle en [`sdd/auditoria/`](sdd/auditoria/inventario-2026-11-24.md) y [matriz RF](sdd/auditoria/matriz-rf-2026-11-25.md). Los pendientes son, sobre todo, proveedores reales, Google OAuth, calendario hábil, rate limiting, roles SQL de auditoría, carga y cierre RF por RF.
 
 | Área | Estado |
 |---|:---:|
@@ -108,7 +108,7 @@ El administrador podrá gestionar catálogo, hoteles, disponibilidad, reservas, 
 | Pruebas automatizadas (xUnit 103 casos declarados + Jest 20/20 + Vitest 7/7) | ✅ |
 | CI/CD (GitHub Actions `.github/workflows/ci.yml`) | ✅ |
 | Evidencias de validación Sprint 2 (`docs/05-validacion-sprint2/`) | ✅ |
-| Tareas SDD auditadas (`sdd/specs/001`–`013`) | 195 HECHO / 162 PARCIAL / 45 PENDIENTE |
+| Tareas SDD auditadas (`sdd/specs/001`–`013`) | 199 HECHO / 159 PARCIAL / 44 PENDIENTE |
 | Frontend React + TypeScript + Vite (`frontend/`) | ✅ (sin E2E contra API) |
 | Producción (Cloudflare / Render / Supabase / Culqi / Resend / R2) | ⏳ |
 

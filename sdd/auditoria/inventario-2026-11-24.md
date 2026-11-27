@@ -105,8 +105,8 @@ Auditoría estática sobre `e74fd37`; HECHO exige código rastreado + prueba o a
 
 | Spec | Archivo | HECHO | PARCIAL | PENDIENTE | Total |
 |---|---|---:|---:|---:|---:|
-| 001 | `001-reservas/tasks.md` | 31 | 8 | 1 | 40 |
-| 002 | `002-pagos/tasks.md` | 11 | 18 | 3 | 32 |
+| 001 | `001-reservas/tasks.md` | 34 | 6 | 0 | 40 |
+| 002 | `002-pagos/tasks.md` | 12 | 17 | 3 | 32 |
 | 003 | `003-vencimiento/tasks.md` | 12 | 6 | 6 | 24 |
 | 004 | `004-notificaciones/tasks.md` | 6 | 18 | 6 | 30 |
 | 005 | `005-identidad/tasks.md` | 13 | 11 | 8 | 32 |
@@ -119,8 +119,8 @@ Auditoría estática sobre `e74fd37`; HECHO exige código rastreado + prueba o a
 | 011 | `011-reportes/tasks.md` | 16 | 10 | 2 | 28 |
 | 012 | `012-multimedia/tasks.md` | 7 | 15 | 8 | 30 |
 | 013 | `013-movilidad-informativa/tasks.md` | 10 | 8 | 0 | 18 |
-| **Total** | | **195** | **162** | **45** | **402** |
+| **Total** | | **199** | **159** | **44** | **402** |
 
 **Lectura:** el backend de las 13 specs está mayormente implementado y probado; los pendientes se concentran en proveedores reales (Culqi, Resend, R2, Google), calendario hábil de devoluciones, rate limiting, roles SQL de auditoría, observabilidad/carga y cierre formal RF por RF. Las tareas de UI quedan PARCIAL: la SPA rastreada cubre las pantallas principales, pero sin E2E contra la API ni pruebas por pantalla.
 
-La expansión criterio por criterio está en [matriz RF 2026-11-25](matriz-rf-2026-11-25.md): 677 criterios, 379 derivados de las tablas de 002–012 y 298 redactados para 001, 006, 007 y 013. De esos 298, 60 quedan PARCIAL por falta de prueba específica o evidencia solo de UI.
+La expansión criterio por criterio está en [matriz RF 2026-11-25](matriz-rf-2026-11-25.md): 677 criterios, 379 derivados de las tablas de 002–012 y 298 redactados para 001, 006, 007 y 013. De esos 298, 53 quedan PARCIAL por falta de prueba específica o evidencia solo de UI. El 2026-11-27 se cerraron T025, T026, T037 y T002-13 con pruebas de integración ejecutadas (9/9 en las clases afectadas; 16/16 al incluir idempotencia, con el runner in-process de xUnit v3).
