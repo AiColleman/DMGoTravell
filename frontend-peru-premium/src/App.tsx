@@ -21,10 +21,19 @@ import { ExperienceDetailBookingPage } from './pages/ExperienceDetailBookingPage
 import { CheckoutCulqiPage } from './pages/CheckoutCulqiPage';
 import { AuthEditorialPage } from './pages/AuthEditorialPage';
 import { TravelerAccountPage } from './pages/TravelerAccountPage';
-import { AdminOperationsPage, AdminReportsPage } from './pages/admin/AdminReportsAndOperations';
 import {
-  AdminCommercialPage,
-  AdminGovernancePage,
+  AdminNotificationsPage,
+  AdminOperationsPage,
+  AdminRefundsPage,
+  AdminReportsPage,
+} from './pages/admin/AdminReportsAndOperations';
+import {
+  AdminAuditPage,
+  AdminClientsPage,
+  AdminGalleryPage,
+  AdminHotelsPage,
+  AdminMobilityPage,
+  AdminOffersPage,
 } from './pages/admin/AdminCommercialAndGovernance';
 
 export const AppRoutes: React.FC = () => (
@@ -77,7 +86,7 @@ export const AppRoutes: React.FC = () => (
       />
     </Route>
 
-    {/* Consola Ejecutiva Administrativa */}
+    {/* Panel de Administración — 10 secciones especializadas */}
     <Route
       path="/admin"
       element={
@@ -89,8 +98,20 @@ export const AppRoutes: React.FC = () => (
       <Route index element={<Navigate to="/admin/reportes" replace />} />
       <Route path="reportes" element={<AdminReportsPage />} />
       <Route path="reservas" element={<AdminOperationsPage />} />
-      <Route path="comercial" element={<AdminCommercialPage />} />
-      <Route path="gobernanza" element={<AdminGovernancePage />} />
+      <Route path="devoluciones" element={<AdminRefundsPage />} />
+      <Route path="notificaciones" element={<AdminNotificationsPage />} />
+
+      <Route path="ofertas" element={<AdminOffersPage />} />
+      <Route path="hoteles" element={<AdminHotelsPage />} />
+      <Route path="movilidad" element={<AdminMobilityPage />} />
+      <Route path="galeria" element={<AdminGalleryPage />} />
+
+      <Route path="clientes" element={<AdminClientsPage />} />
+      <Route path="auditoria" element={<AdminAuditPage />} />
+
+      {/* Rutas heredadas redirigidas a sus nuevas secciones dedicadas */}
+      <Route path="comercial" element={<Navigate to="/admin/hoteles" replace />} />
+      <Route path="gobernanza" element={<Navigate to="/admin/clientes" replace />} />
     </Route>
 
     <Route path="*" element={<Navigate to="/" replace />} />

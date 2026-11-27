@@ -108,13 +108,29 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     const quickAdminBtn = await screen.findByRole('button', { name: /Entrar como Admin/i });
     fireEvent.click(quickAdminBtn);
     expect(
-      await screen.findByRole('heading', { name: /Reportes Snapshot & PDF Oficial/i })
+      await screen.findByRole('heading', { name: /Reportes Financieros y PDF Oficial/i })
     ).toBeInTheDocument();
     expect(screen.getAllByText('Hospedaje Santa Lucía').length).toBeGreaterThanOrEqual(1);
     expect(
       screen.getAllByText('Hotel Internazionale (Hotel - Restaurant)').length
     ).toBeGreaterThanOrEqual(1);
     expect(screen.queryByText(/Casa del Valle/i)).not.toBeInTheDocument();
+
+    // Verifica que el menú lateral exhibe las 10 secciones dedicadas y limpias
+    for (const navLabel of [
+      'Reportes Financieros',
+      'Gestión de Reservas',
+      'Devoluciones',
+      'Correos y Avisos',
+      'Tours y Paquetes',
+      'Hoteles y Habitaciones',
+      'Flota Turística',
+      'Galería Fotográfica',
+      'Directorio de Clientes',
+      'Historial de Actividad',
+    ]) {
+      expect(screen.getAllByText(navLabel).length).toBeGreaterThanOrEqual(1);
+    }
 
     // Spec 011 RF-6: filtros de oferta turística y hotel contratado, sin selector de estado comercial que distorsione el resumen
     expect(screen.getByLabelText(/Filtrar reporte por oferta turística/i)).toBeInTheDocument();
@@ -125,7 +141,7 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     expect(screen.getByText(/Diferencia de movimientos \(PEN\)/i)).toBeInTheDocument();
 
     // Captura nueva consulta -> pdfStatus pasa a not_requested y permite preparar PDF (202 -> ready)
-    fireEvent.click(screen.getByRole('button', { name: /Capturar ReportSnapshot/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Generar reporte/i }));
     const prepPdfBtn = await screen.findByRole('button', {
       name: /Preparar PDF de esta consulta/i,
     });
@@ -345,15 +361,15 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
   it('cumple Spec 009 (RF-8, RF-9, RF-14, RF-27, RF-37) y Spec 002: exige motivo obligatorio al cancelar, confirmación expresa al completar y estados reales de RefundCase', async () => {
     renderAt('/acceso');
     fireEvent.click(await screen.findByRole('button', { name: /Entrar como Admin/i }));
-    await screen.findByRole('heading', { name: /Reportes Snapshot & PDF Oficial/i });
+    await screen.findByRole('heading', { name: /Reportes Financieros y PDF Oficial/i });
 
     renderAt('/admin/reservas');
     expect(
-      await screen.findByRole('heading', { name: /Reservas, Devoluciones & Entregas Resend/i })
+      await screen.findByRole('heading', { level: 1, name: /^Gestión de Reservas$/i })
     ).toBeInTheDocument();
 
-    // Spec 009 RF-9: la reserva pending muestra bloqueo explícito y no botón de cancelación manual
-    expect(screen.getByText(/Exclusivo 001\/002\/003 \(RF-9\)/i)).toBeInTheDocument();
+    // Spec 009 RF-9: la reserva pending muestra aviso de espera de pago y no botón de cancelación manual
+    expect(screen.getAllByText(/En espera de pago del cliente/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByRole('button', { name: /Cancelar con motivo/i })).toHaveLength(1);
 
     // Spec 009 RF-27: completar exige marcar casilla de confirmación expresa
@@ -367,7 +383,7 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     );
     expect(confirmCompleteSubmit).not.toBeDisabled();
 
-    // Spec 009 RF-14 & RF-15: cancelar abre formulario de motivo y genera RefundCase en estado open
+    // Spec 009 RF-14 & RF-15: cancelar abre formulario de motivo y genera RefundCase en la sección Devoluciones
     fireEvent.click(screen.getByRole('button', { name: /Cancelar con motivo/i }));
     const reasonBox = await screen.findByPlaceholderText(/Describe el motivo operativo/i);
     fireEvent.change(reasonBox, {
@@ -377,7 +393,11 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
       screen.getByRole('button', { name: /Confirmar Cancelación y Abrir Devolución/i })
     );
 
-    // Spec 002: autorizar devolución pasa de open -> authorized (Autorizado (sin abono))
+    // Spec 002: en la sección dedicada /admin/devoluciones, autorizar pasa de open -> authorized
+    renderAt('/admin/devoluciones');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /Devoluciones y Reembolsos/i })
+    ).toBeInTheDocument();
     const authorizeButtons = await screen.findAllByRole('button', { name: /^Autorizar$/i });
     fireEvent.click(authorizeButtons[0]!);
     expect(await screen.findByText(/Autorizado \(sin abono\)/i)).toBeInTheDocument();
@@ -425,12 +445,12 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     renderAt('/cuenta?page=3');
     expect(await screen.findByText('No hay reservas en esta página')).toBeInTheDocument();
 
-    // 3. Spec 010 RF-44: en Gobernanza, clientes con baja lógica omiten nombre, correo, teléfono y registro
+    // 3. Spec 010 RF-44: en Directorio de Clientes (/admin/gobernanza -> /admin/clientes), clientes con baja lógica omiten PII
     renderAt('/acceso');
     fireEvent.click(await screen.findByRole('button', { name: /Entrar como Admin/i }));
     renderAt('/admin/gobernanza');
     expect(
-      await screen.findByText(/Omitido por baja lógica \(RF-44\)/i)
+      await screen.findByText(/Datos protegidos por cierre de cuenta/i)
     ).toBeInTheDocument();
   });
 
