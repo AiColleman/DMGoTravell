@@ -1,2 +1,0 @@
-export const routes = { home:'/', tours:'/tours', hotels:'/hotels', about:'/about', login:'/login', register:'/register', account:'/account', reservations:'/account/reservations', admin:'/admin' } as const;
-export function pageHead(title:string,description:string) { return {meta:[{title:`${title} · DMGOTRAVEL`},{name:'description',content:description},{property:'og:title',content:`${title} · DMGOTRAVEL`},{property:'og:description',content:description},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]}; }
