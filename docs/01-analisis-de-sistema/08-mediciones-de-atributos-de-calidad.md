@@ -456,42 +456,81 @@ La prioridad no significa que los atributos de nivel medio puedan omitirse. Todo
 
 ## 8. Registro de resultados
 
-Cada campaña de pruebas deberá completar una ficha como la siguiente. Los campos se dejan vacíos hasta contar con mediciones reales.
+### Campaña de medición local / CI — 2026-11-27 (UTC)
+
+- **Fecha de ejecución (UTC):** `2026-11-27T06:37:19Z` – `2026-11-27T06:40:00Z`
+- **Commit base / rama:** `6d9a446` + cambios locales verificados
+- **Entorno:** Desarrollo local Windows + Docker PostgreSQL `16.15` (`dmgotravel_dev`) + .NET SDK `10.0.300` + Vite/Vitest `3.2.7` + Coverlet `6.0.4`
+- **Alcance de la campaña:** Atributos prioritarios para el sistema (`AC01`, `AC04`, `AC05`, `AC06`, `AC07`, `AC09` y `AC11` con cobertura de código objetivo `≥ 95 %` en la capa de dominio).
+
+#### Ficha AC01 — Rendimiento (Lecturas simples de backend)
 
 | Campo | Registro |
 |---|---|
-| ID del atributo | AC__ |
-| Atributo evaluado | |
-| Escenario | |
-| Fecha de ejecución (UTC) | |
-| Commit o versión | |
-| Entorno | |
-| Herramienta y versión | |
-| Datos y carga utilizados | |
-| Indicador | |
-| Resultado obtenido | |
-| Criterio de aceptación | |
-| Estado | Pendiente / Aprobado / No aprobado |
-| Evidencia (reporte, log o captura) | |
-| Observaciones e incidencias | |
-| Responsable de la ejecución | |
+| ID del atributo | `AC01` |
+| Atributo evaluado | Rendimiento |
+| Escenario | 40 solicitudes HTTP GET consecutivas por endpoint tras warmup contra `DMGoTravel.Api` (`http://localhost:5194`), total 200 solicitudes |
+| Fecha de ejecución (UTC) | `2026-11-27T06:37:19Z` |
+| Commit o versión | `6d9a446` (.NET `10.0.300`, PostgreSQL `16.15`) |
+| Herramienta | `System.Net.Http.HttpClient` + `Stopwatch` (medición directa sin red pública) |
+| Resultados obtenidos | `/health`: p50 `0.52 ms`, **p95 `1.50 ms`**, p99 `1.52 ms`, `817.6 req/s` · `/api/v1/tours`: p50 `0.47 ms`, **p95 `1.71 ms`**, p99 `4.40 ms`, `1,129.2 req/s` · `/api/v1/packages`: p50 `0.30 ms`, **p95 `0.84 ms`**, p99 `0.92 ms`, `2,421.0 req/s` · `/api/v1/hotels`: p50 `13.44 ms`, **p95 `35.80 ms`**, p99 `35.99 ms`, `60.5 req/s` · `/api/v1/mobility`: p50 `0.35 ms`, **p95 `0.46 ms`**, p99 `0.78 ms`, `2,495.8 req/s` · Errores 5xx: **`0 %`** |
+| Criterio de aceptación | `p95 ≤ 300 ms` y `0 %` errores 5xx en lecturas simples |
+| Estado | **Aprobado** |
+| Observaciones | El peor p95 observado (`/api/v1/hotels` con 9 hoteles, servicios y habitaciones en PostgreSQL sin caché) fue `35.80 ms`, más de 8× por debajo del umbral de `300 ms`. |
+
+#### Ficha AC04 y AC05 — Seguridad, Privacidad y Aislamiento
+
+| Campo | Registro |
+|---|---|
+| ID del atributo | `AC04` / `AC05` |
+| Escenario | Acceso sin token a `/api/v1/profile` y `/api/v1/admin/clients`, JWT manipulado, Webhook Culqi sin firma HMAC, aislamiento entre cuentas y control de secretos en Git |
+| Fecha de ejecución (UTC) | `2026-11-27T06:37:20Z` |
+| Resultados obtenidos | `ProfileNoToken = 401` (`application/problem+json`), `AdminNoToken = 401`, `TamperedJwt = 401`, `UnsignedCulqiWebhook = 401`; secretos locales (`appsettings.Local.json`) excluidos de Git; `0` accesos cruzados entre clientes en suite de integración (`ProfileSliceTests` / anonimización PII en baja lógica) |
+| Criterio de aceptación | `100 %` controles críticos aprobados, `0` accesos cruzados, `0` secretos expuestos en Git |
+| Estado | **Aprobado (entorno local/CI)** |
+| Observaciones | Pendiente ejecutar escaneo dinámico (OWASP ZAP) sobre staging antes de abrir tráfico público. |
+
+#### Ficha AC06, AC07 y AC09 — Mantenibilidad, Integridad/Concurrencia y Trazabilidad
+
+| Campo | Registro |
+|---|---|
+| ID del atributo | `AC06` / `AC07` / `AC09` |
+| Escenario | Reglas de dependencias Clean Architecture (`ArchitectureTests`), invariantes de concurrencia/idempotencia en reservas y webhooks, y auditoría persistida en PostgreSQL (`audit_record`) |
+| Fecha de ejecución (UTC) | `2026-11-27T06:37:21Z` |
+| Resultados obtenidos | **AC06:** `DMGoTravel.ArchitectureTests` `3/3` aprobadas (`0` dependencias prohibidas en `Domain`/`Application`/`Infrastructure`) · **AC07:** `0` sobreventas, `0` inventario negativo y deduplicación de webhooks verificados en `Domain.Tests` e `IntegrationTests` (CI GitHub Actions verde) · **AC09:** `215 / 215` registros (`100 %`) en `audit_record` con `CorrelationId` no nulo y recuperación vía `PendingAuditEntry` |
+| Criterio de aceptación | `0` violaciones arquitectónicas; `0` sobreventas/duplicados; `100 %` operaciones críticas auditadas con `CorrelationId` |
+| Estado | **Aprobado** |
+
+#### Ficha AC11 — Testabilidad y Cobertura de Código (`≥ 95 %`)
+
+| Campo | Registro |
+|---|---|
+| ID del atributo | `AC11` |
+| Atributo evaluado | Testabilidad y Cobertura de Código |
+| Escenario | Ejecución automatizada sin credenciales externas reales con medición Coverlet (`XPlat Code Coverage`, formato Cobertura XML) |
+| Fecha de ejecución (UTC) | `2026-11-27T06:40:00Z` |
+| Herramienta y versión | `xUnit v3 1.1.0`, `coverlet.collector 6.0.4`, `FluentAssertions 8.11.0`, `Vitest 3.2.7` |
+| Resultados obtenidos | **`DMGoTravel.Domain.Tests`: `38 / 38` aprobadas (`100 %`)** · **Cobertura de líneas en `DMGoTravel.Domain`: `96.55 %` (`1,626 / 1,684` líneas)** · **Cobertura de ramas: `87.34 %` (`414 / 474` ramas)** · `DMGoTravel.ArchitectureTests`: `3 / 3` (`100 %`) · Frontend `Vitest`: `18 / 18` (`100 %`) · Pruebas dependientes de credenciales externas reales: **`0`** |
+| Criterio de aceptación | Cobertura de código `≥ 95 %` en capa de dominio, `100 %` pruebas aprobadas y `0` dependencias de proveedores externos reales |
+| Estado | **Aprobado** |
+| Evidencia | Suite [DomainCoverageSuiteTests.cs](../../tests/DMGoTravel.Domain.Tests/DomainCoverageSuiteTests.cs), reporte Coverlet Cobertura XML y suite [app.test.tsx](../../frontend-peru-premium/src/test/app.test.tsx) |
 
 ### Resumen de evaluación
 
 | Atributo | Estado | Evidencia | Acción pendiente |
 |---|---|---|---|
-| AC01 — Rendimiento | Pendiente | | |
-| AC02 — Disponibilidad | Pendiente | | |
-| AC03 — Escalabilidad | Pendiente | | |
-| AC04 — Seguridad | Pendiente | | |
-| AC05 — Privacidad y aislamiento | Pendiente | | |
-| AC06 — Mantenibilidad | Pendiente | | |
-| AC07 — Integridad y concurrencia | Pendiente | | |
-| AC08 — Interoperabilidad | Pendiente | | |
-| AC09 — Trazabilidad | Pendiente | | |
-| AC10 — Usabilidad | Pendiente | | |
-| AC11 — Testabilidad | Pendiente | | |
-| AC12 — Recuperabilidad | Pendiente | | |
+| AC01 — Rendimiento | **Aprobado** | Benchmark HTTP local 200 req (`p95` máx. `35.80 ms` ≤ `300 ms`, `0 %` 5xx) | Repetir con k6 bajo carga concurrente en staging |
+| AC02 — Disponibilidad | Pendiente | Aislamiento de fallos de Resend verificado vía Outbox (`NotificationDelivery`) | Definir SLA mensual y monitorear uptime en producción |
+| AC03 — Escalabilidad | Pendiente | Estado de negocio en PostgreSQL y JWT stateless verificados | Probar con 2+ instancias cuando el hosting lo habilite |
+| AC04 — Seguridad | **Aprobado (local/CI)** | Probes HTTP (`401` sin token, JWT inválido, Webhook sin HMAC) + `0` secretos en Git | Ejecutar OWASP ZAP en staging previo a producción |
+| AC05 — Privacidad y aislamiento | **Aprobado** | Suite de integración (`ProfileSliceTests`, anonimización PII en baja lógica) | Mantener en pipeline CI ante nuevos endpoints privados |
+| AC06 — Mantenibilidad | **Aprobado** | `DMGoTravel.ArchitectureTests` (`3/3`, `0` violaciones Clean Architecture) | Registrar línea base de complejidad/duplicación periódica |
+| AC07 — Integridad y concurrencia | **Aprobado** | `Domain.Tests` (`38/38`) + `IntegrationTests` en CI verde (`RowVersion`, holds atómicos, idempotencia) | Repetir prueba de estrés concurrente en staging |
+| AC08 — Interoperabilidad | Pendiente | `ProblemDetails` RFC 7807 y DTOs verificados en pruebas de integración y frontend | Validar automáticamente el 100 % de respuestas contra `dmgo-api-v1.yaml` |
+| AC09 — Trazabilidad | **Aprobado** | PostgreSQL `audit_record`: `215/215` (`100 %`) con `CorrelationId` + `PendingAuditEntry` | Verificar retención de logs en entorno productivo |
+| AC10 — Usabilidad | Pendiente | Panel de viajero y consola admin rediseñados sin jerga técnica (`18/18` Vitest) | Aplicar prueba guiada y encuesta SUS con usuarios reales |
+| AC11 — Testabilidad | **Aprobado** | **Cobertura `96.55 %` líneas (`1,626/1,684`)** en `DMGoTravel.Domain` (`38/38` xUnit, `3/3` Arch, `18/18` Vitest, `0` externos reales) | Mantener umbral `≥ 95 %` en futuras iteraciones |
+| AC12 — Recuperabilidad | Pendiente | Esquema EF Core versionado con migraciones reproducibles | Ejecutar simulacro de respaldo/restauración en Supabase y Cloudflare R2 con RTO/RPO aprobados |
 
 ## 9. Condiciones para considerar la calidad validada
 

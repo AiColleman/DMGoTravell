@@ -302,7 +302,7 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     expect(
       await screen.findByRole('heading', {
         level: 1,
-        name: /Catálogo de Hoteles en Ayacucho — DM GO TRAVEL/i,
+        name: /^Hoteles en Ayacucho$/i,
       })
     ).toBeInTheDocument();
 

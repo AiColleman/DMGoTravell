@@ -80,19 +80,18 @@ export const HotelsCatalogPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 space-y-10">
-      {/* Cabecera Oficial del Catálogo de Hoteles en Ayacucho — DM GO TRAVEL */}
+      {/* Cabecera de Hoteles en Ayacucho */}
       <div className="pb-8 border-b border-[#E5DDD0] flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-        <div className="space-y-3.5 max-w-3xl">
+        <div className="space-y-3 max-w-2xl">
           <SectionEyebrow>
-            Alojamiento Aliado Oficial · Ayacucho
+            Alojamiento Aliado · Ayacucho
           </SectionEyebrow>
           <h1 className="font-editorial text-4xl sm:text-5xl font-medium text-[#12232E] leading-[1.08]">
-            Catálogo de Hoteles en Ayacucho — DM GO TRAVEL
+            Hoteles en Ayacucho
           </h1>
           <p className="text-xs sm:text-sm text-[#5C6B73] leading-relaxed">
-            <strong>{DMGO_AGENCY_CONTACT.tagline}.</strong> Casonas coloniales, hoteles boutique
-            eco-amigables y apart-hoteles verificados alrededor de la Plaza Mayor de Huamanga,
-            listos para sumar a tu tour o paquete turístico en una sola reserva en Soles (<code>PEN</code>).
+            Casonas coloniales, hoteles boutique y apart-hoteles verificados alrededor de la Plaza
+            Mayor de Huamanga, listos para sumar a tu tour o paquete en una sola reserva.
           </p>
         </div>
 
