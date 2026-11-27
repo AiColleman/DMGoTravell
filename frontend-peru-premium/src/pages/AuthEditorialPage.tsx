@@ -192,11 +192,32 @@ export const AuthEditorialPage: React.FC = () => {
     }
   };
 
-  const handleDemoQuickAccess = (role: 'client' | 'admin') => {
+  const handleDemoQuickAccess = async (role: 'client' | 'admin') => {
+    if (apiOnline === true) {
+      setSubmitting(true);
+      try {
+        const realCreds =
+          role === 'admin'
+            ? { email: 'admin@dmgotravel.com', password: 'Admin-DMGo-2026!' }
+            : { email: 'cliente@example.test', password: 'Clave-ficticia-123' };
+        const realSess = await login(realCreds);
+        notifySuccess(
+          `Sesión real conectada (${role === 'admin' ? 'Administrador' : 'Viajero'})`,
+          `Conectado a PostgreSQL como ${realSess.user.fullName}`
+        );
+        navigate(role === 'admin' ? '/admin/reportes' : returnTo);
+        return;
+      } catch {
+        // Si el backend no respondió o aún no tiene la cuenta semilla, cae limpiamente a vista previa
+      } finally {
+        setSubmitting(false);
+      }
+    }
+
     const sess = loginDemoRole(role);
     notifySuccess(
       `Sesión vista previa iniciada (${role === 'admin' ? 'Administrador' : 'Viajero'})`,
-      `Activo como ${sess.user.fullName}`
+      `Activo como ${sess.user.fullName} (datos de demostración)`
     );
     navigate(role === 'admin' ? '/admin/reportes' : returnTo);
   };
@@ -456,7 +477,7 @@ export const AuthEditorialPage: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <button
                 type="button"
-                onClick={() => handleDemoQuickAccess('client')}
+                onClick={() => void handleDemoQuickAccess('client')}
                 className="py-2.5 px-3.5 rounded-xl bg-[#FFFCF8] border border-[#D2C6B4] hover:border-[#B84A27] text-xs font-bold text-[#12232E] inline-flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <UserRound className="w-3.5 h-3.5 text-[#B84A27]" />
@@ -464,7 +485,7 @@ export const AuthEditorialPage: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => handleDemoQuickAccess('admin')}
+                onClick={() => void handleDemoQuickAccess('admin')}
                 className="py-2.5 px-3.5 rounded-xl bg-[#12232E] hover:bg-[#263D4D] text-xs font-bold text-white inline-flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <LayoutDashboard className="w-3.5 h-3.5 text-[#C89B54]" />

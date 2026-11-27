@@ -17,6 +17,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { BrandLogo } from '../ui/EditorialPrimitives';
 
 export const RequireAuth: React.FC<{
@@ -139,8 +140,10 @@ const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
 const FLAT_ADMIN_ITEMS = ADMIN_NAV_GROUPS.flatMap((g) => g.items);
 
 export const AdminEditorialLayout: React.FC = () => {
-  const { user, apiOnline, isDemoSession, logout } = useAuth();
+  const { user, apiOnline, isDemoSession, login, logout } = useAuth();
+  const { notifyError, notifySuccess } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [connectingRealDb, setConnectingRealDb] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -150,6 +153,26 @@ export const AdminEditorialLayout: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     navigate('/');
+  };
+
+  const handleConnectRealDatabase = async () => {
+    setConnectingRealDb(true);
+    try {
+      await login({ email: 'admin@dmgotravel.com', password: 'Admin-DMGo-2026!' });
+      notifySuccess(
+        'Conectado a la base de datos real',
+        'Ahora estás viendo los clientes, reservas y actividad reales de PostgreSQL.'
+      );
+    } catch {
+      notifyError(
+        new Error(
+          'Asegúrate de tener encendido el backend (dotnet run --project src/DMGoTravel.Api en el puerto 5194).'
+        ),
+        'Servidor backend apagado'
+      );
+    } finally {
+      setConnectingRealDb(false);
+    }
   };
 
   return (
@@ -317,7 +340,25 @@ export const AdminEditorialLayout: React.FC = () => {
           </div>
         </header>
 
-        <main className="p-4 sm:p-8 max-w-7xl w-full mx-auto flex-1">
+        <main className="p-4 sm:p-8 max-w-7xl w-full mx-auto flex-1 space-y-5">
+          {(isDemoSession || apiOnline === false) && (
+            <div className="rounded-2xl bg-[#FBF4E4] border border-[#E8D2A0] px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="text-[#7A4E0D]">
+                <strong>Estás viendo datos de demostración.</strong>{' '}
+                {apiOnline === false
+                  ? 'Enciende el backend (.NET API) para consultar los usuarios y reservas reales de tu base de datos.'
+                  : 'Conéctate a la sesión administrativa real para ver los usuarios que se registraron en tu base de datos.'}
+              </div>
+              <button
+                type="button"
+                disabled={connectingRealDb}
+                onClick={() => void handleConnectRealDatabase()}
+                className="px-4 py-2 rounded-xl bg-[#12232E] hover:bg-[#B84A27] disabled:opacity-50 text-white font-bold transition-colors cursor-pointer shrink-0"
+              >
+                {connectingRealDb ? 'Conectando...' : 'Ver datos reales de mi BD'}
+              </button>
+            </div>
+          )}
           <Outlet />
         </main>
       </div>
