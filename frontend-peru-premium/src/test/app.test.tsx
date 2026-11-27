@@ -94,6 +94,7 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     expect(mainNav).toHaveTextContent('Tours Turísticos');
     expect(mainNav).toHaveTextContent('Paquetes Turísticos');
     expect(mainNav).not.toHaveTextContent('Experiencias');
+    expect(mainNav).not.toHaveTextContent('Nosotros');
 
     expect(
       await screen.findByRole('heading', { level: 1, name: /^Tours Turísticos$/i })
@@ -106,13 +107,27 @@ describe('Viajes Perú Premium — Navegación Editorial e Integración UI', () 
     ).toBeInTheDocument();
   });
 
-  it('permite iniciar sesión rápida de exploración como Viajero y ver Mis Reservas', async () => {
+  it('permite iniciar sesión rápida de exploración como Viajero y ver Mis Reservas organizadas por secciones limpias', async () => {
     renderAt('/acceso');
     const quickClientBtn = await screen.findByRole('button', { name: /Entrar como Viajero/i });
     fireEvent.click(quickClientBtn);
     expect(
       await screen.findByRole('heading', { name: /^Mis Reservas$/i })
     ).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Mis Reservas/i })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(screen.getByRole('tab', { name: /Nueva Reserva/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Datos de Contacto/i })).toBeInTheDocument();
+    expect(screen.queryByText(/ETag v/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Registrada en snapshot/i)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: /Nueva Reserva/i }));
+    expect(await screen.findByText(/¿Qué deseas reservar hoy\?/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: /Datos de Contacto/i }));
+    expect(await screen.findByText(/Datos del Viajero Titular/i)).toBeInTheDocument();
   });
 
   it('permite ingresar como Admin y visualizar la consola de Reportes Snapshot conforme a Spec 011 (RF-6, RF-9, RF-11, RF-23, RF-29, RF-38)', async () => {

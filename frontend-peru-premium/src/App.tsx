@@ -11,7 +11,6 @@ import {
   ToursCatalogPage,
 } from './pages/ExperiencesCatalogPage';
 import {
-  AboutPage,
   HotelDetailPage,
   HotelsCatalogPage,
   MobilityFleetPage,
@@ -61,8 +60,8 @@ export const AppRoutes: React.FC = () => (
       <Route path="/hoteles/:id" element={<HotelDetailPage />} />
       <Route path="/hotels" element={<Navigate to="/hoteles" replace />} />
       <Route path="/movilidad" element={<MobilityFleetPage />} />
-      <Route path="/nosotros" element={<AboutPage />} />
-      <Route path="/about" element={<Navigate to="/nosotros" replace />} />
+      <Route path="/nosotros" element={<Navigate to="/" replace />} />
+      <Route path="/about" element={<Navigate to="/" replace />} />
       <Route path="/politicas" element={<PoliciesPage />} />
       <Route path="/acceso" element={<AuthEditorialPage />} />
       <Route path="/auth/google/callback" element={<AuthEditorialPage />} />

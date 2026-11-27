@@ -49,6 +49,7 @@ public sealed class RequestEmailChangeCommandHandler
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDevEmailTokenStore _devTokens;
+    private readonly IEmailSender _emailSender;
     private readonly IAuditWriter _audit;
 
     public RequestEmailChangeCommandHandler(
@@ -58,6 +59,7 @@ public sealed class RequestEmailChangeCommandHandler
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IDevEmailTokenStore devTokens,
+        IEmailSender emailSender,
         IAuditWriter audit)
     {
         _currentUser = currentUser;
@@ -66,6 +68,7 @@ public sealed class RequestEmailChangeCommandHandler
         _clock = clock;
         _unitOfWork = unitOfWork;
         _devTokens = devTokens;
+        _emailSender = emailSender;
         _audit = audit;
     }
 
@@ -134,6 +137,20 @@ public sealed class RequestEmailChangeCommandHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _devTokens.SetEmailChange(user.PendingEmail!, rawToken);
+
+        var profileUrl = $"{_emailSender.FrontendBaseUrl}/cuenta?section=perfil";
+        await _emailSender.SendAsync(
+            new EmailSendRequest(
+                ToEmail: user.PendingEmail!,
+                Subject: "Confirma tu nuevo correo electrónico — DM GO TRAVEL",
+                BodyText:
+                    $"Solicitaste actualizar el correo de tu cuenta en DM GO TRAVEL a {user.PendingEmail}.\nCopia el código de confirmación e ingrésalo en Mi Cuenta -> Perfil (válido por {EmailChangeTokenMinutes} minutos).",
+                Template: "profile.email_change",
+                IdempotencyKey: $"email-change-{request.IdempotencyKey}",
+                ActionUrl: profileUrl,
+                ActionLabel: "Ir a Mi Cuenta",
+                HighlightCode: rawToken),
+            cancellationToken);
 
         return new OperationAcceptedDto(
             Guid.NewGuid(),

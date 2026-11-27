@@ -31,6 +31,7 @@ public sealed class ForgotPasswordCommandHandler
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDevEmailTokenStore _devEmailTokens;
+    private readonly IEmailSender _emailSender;
     private readonly IAuditWriter _audit;
 
     public ForgotPasswordCommandHandler(
@@ -38,12 +39,14 @@ public sealed class ForgotPasswordCommandHandler
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IDevEmailTokenStore devEmailTokens,
+        IEmailSender emailSender,
         IAuditWriter audit)
     {
         _users = users;
         _clock = clock;
         _unitOfWork = unitOfWork;
         _devEmailTokens = devEmailTokens;
+        _emailSender = emailSender;
         _audit = audit;
     }
 
@@ -77,6 +80,21 @@ public sealed class ForgotPasswordCommandHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _devEmailTokens.SetPasswordReset(user.Email, resetToken);
+
+        var resetUrl =
+            $"{_emailSender.FrontendBaseUrl}/acceso?mode=reset&token={Uri.EscapeDataString(resetToken)}";
+        await _emailSender.SendAsync(
+            new EmailSendRequest(
+                ToEmail: user.Email,
+                Subject: "Restablecimiento de contraseña — DM GO TRAVEL",
+                BodyText:
+                    $"Recibimos una solicitud para restablecer la contraseña de tu cuenta en DM GO TRAVEL.\nEste enlace es válido por {AuthTokenPolicy.PasswordResetMinutes} minutos. Si no realizaste esta solicitud, puedes ignorar este mensaje.\nEnlace directo: {resetUrl}",
+                Template: "auth.password_reset",
+                IdempotencyKey: $"pwd-reset-{Guid.NewGuid():N}",
+                ActionUrl: resetUrl,
+                ActionLabel: "Restablecer contraseña",
+                HighlightCode: resetToken),
+            cancellationToken);
 
         return new OperationAcceptedDto(Guid.NewGuid(), "accepted", now, expiresAt);
     }

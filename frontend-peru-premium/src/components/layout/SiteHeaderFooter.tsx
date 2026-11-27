@@ -22,7 +22,6 @@ const NAV_ITEMS = [
   { to: '/paquetes', label: 'Paquetes Turísticos' },
   { to: '/hoteles', label: 'Hoteles Aliados' },
   { to: '/movilidad', label: 'Flota Turística' },
-  { to: '/nosotros', label: 'Nosotros' },
 ];
 
 export const PublicEditorialLayout: React.FC = () => {
@@ -127,13 +126,19 @@ export const PublicEditorialLayout: React.FC = () => {
                   </Link>
                 )}
 
-                <Link
+                <NavLink
                   to="/cuenta"
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[#E5DDD0] bg-[#FFFCF8] text-xs font-semibold text-[#12232E] hover:border-[#B84A27] transition-colors"
+                  className={({ isActive }) =>
+                    `inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-colors ${
+                      isActive
+                        ? 'border-[#B84A27] bg-[#F7EAE4] text-[#B84A27]'
+                        : 'border-[#E5DDD0] bg-[#FFFCF8] text-[#12232E] hover:border-[#B84A27]'
+                    }`
+                  }
                 >
                   <UserRound className="w-3.5 h-3.5 text-[#B84A27]" />
-                  <span className="max-w-[140px] truncate">{user.fullName}</span>
-                </Link>
+                  <span className="max-w-[150px] truncate">Mi Panel · {user.fullName.split(' ')[0]}</span>
+                </NavLink>
 
                 <button
                   type="button"
@@ -312,11 +317,6 @@ export const PublicEditorialLayout: React.FC = () => {
                 Ayuda &amp; Políticas
               </h2>
               <ul className="space-y-2.5 text-xs text-[#FAF7F2]/80">
-                <li>
-                  <Link to="/nosotros" className="hover:text-white transition-colors">
-                    Sobre Nosotros
-                  </Link>
-                </li>
                 <li>
                   <Link to="/politicas?section=terms" className="hover:text-white transition-colors">
                     Términos, Cancelaciones y Reembolsos

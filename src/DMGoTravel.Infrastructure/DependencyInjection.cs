@@ -35,7 +35,11 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, PasswordHasherService>();
         services.AddSingleton<IPaymentGateway, SimulatedPaymentGateway>();
         services.AddSingleton<IRefundGateway, SimulatedRefundGateway>();
-        services.AddSingleton<IEmailSender, SimulatedEmailSender>();
+        services.AddHttpClient("Resend", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+        });
+        services.AddSingleton<IEmailSender, ResendHttpEmailSender>();
         services.AddSingleton<IWebhookSignatureVerifier, HmacWebhookSignatureVerifier>();
         services.AddSingleton<IMediaStorage, LocalSandboxMediaStorage>();
         services.AddSingleton<IDevEmailTokenStore, DevEmailTokenStore>();
@@ -61,10 +65,28 @@ public static class DependencyInjection
                 options.ResendWebhookSecret = resendSecret;
             }
 
+            var resendApiKey = configuration["Resend:ApiKey"];
+            if (!string.IsNullOrWhiteSpace(resendApiKey))
+            {
+                options.ResendApiKey = resendApiKey;
+            }
+
+            var resendEndpoint = configuration["Resend:ApiEndpoint"];
+            if (!string.IsNullOrWhiteSpace(resendEndpoint))
+            {
+                options.ResendApiEndpoint = resendEndpoint;
+            }
+
             var fromEmail = configuration["Resend:FromEmail"];
             if (!string.IsNullOrWhiteSpace(fromEmail))
             {
                 options.ResendFromEmail = fromEmail;
+            }
+
+            var frontendBase = configuration["Resend:FrontendBaseUrl"] ?? configuration["GoogleOAuth:FrontendBaseUrl"];
+            if (!string.IsNullOrWhiteSpace(frontendBase))
+            {
+                options.FrontendBaseUrl = frontendBase;
             }
 
             var mediaRoot = configuration["R2:LocalStoragePath"];

@@ -13,7 +13,8 @@ public sealed record ReservationDto(
     string Currency,
     DateTime PaymentDeadlineAt,
     DateTime ValidationDeadlineAt,
-    long Version);
+    long Version,
+    string? OfferNameHint = null);
 
 public sealed record ReservationPageDto(
     int Page,

@@ -4,5 +4,10 @@
     "ClientSecret": "GOCSPX-TU_CLIENT_SECRET",
     "RedirectUri": "http://localhost:5174/acceso",
     "FrontendBaseUrl": "http://localhost:5174"
+  },
+  "Resend": {
+    "ApiKey": "re_TU_API_KEY_DE_RESEND",
+    "FromEmail": "DM GO TRAVEL <onboarding@resend.dev>",
+    "FrontendBaseUrl": "http://localhost:5174"
   }
 }

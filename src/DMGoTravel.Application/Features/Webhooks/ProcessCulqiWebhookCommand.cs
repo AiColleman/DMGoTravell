@@ -1,6 +1,7 @@
 using System.Text.Json;
 using DMGoTravel.Application.Common.Exceptions;
 using DMGoTravel.Application.Common.Interfaces;
+using DMGoTravel.Application.Features.Notifications;
 using DMGoTravel.Application.Features.Payments.Refunds;
 using DMGoTravel.Domain.Common;
 using DMGoTravel.Domain.Modules.Payments;
@@ -27,9 +28,11 @@ public sealed class ProcessCulqiWebhookCommandHandler : IRequestHandler<ProcessC
     private readonly IRefundRepository _refunds;
     private readonly IOfferRepository _offers;
     private readonly IHotelRepository _hotels;
+    private readonly IAdminReservationRepository _adminReservations;
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
+    private readonly IReservationEmailNotifier _reservationEmails;
 
     public ProcessCulqiWebhookCommandHandler(
         IWebhookSignatureVerifier signatureVerifier,
@@ -39,9 +42,11 @@ public sealed class ProcessCulqiWebhookCommandHandler : IRequestHandler<ProcessC
         IRefundRepository refunds,
         IOfferRepository offers,
         IHotelRepository hotels,
+        IAdminReservationRepository adminReservations,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
-        IAuditWriter audit)
+        IAuditWriter audit,
+        IReservationEmailNotifier reservationEmails)
     {
         _signatureVerifier = signatureVerifier;
         _webhookEvents = webhookEvents;
@@ -50,9 +55,11 @@ public sealed class ProcessCulqiWebhookCommandHandler : IRequestHandler<ProcessC
         _refunds = refunds;
         _offers = offers;
         _hotels = hotels;
+        _adminReservations = adminReservations;
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
+        _reservationEmails = reservationEmails;
     }
 
     public async Task<WebhookAckDto> Handle(ProcessCulqiWebhookCommand request, CancellationToken cancellationToken)
@@ -82,6 +89,7 @@ public sealed class ProcessCulqiWebhookCommandHandler : IRequestHandler<ProcessC
         var entityId = eventId;
         var entityType = "webhook_culqi";
         var reference = request.Reference?.Trim();
+        Reservation? newlyConfirmedReservation = null;
 
         if (!string.IsNullOrWhiteSpace(reference))
         {
@@ -118,6 +126,7 @@ public sealed class ProcessCulqiWebhookCommandHandler : IRequestHandler<ProcessC
                         if (reservation.Status == ReservationStatus.Pending && now < reservation.ValidationDeadlineAtUtc)
                         {
                             reservation.ConfirmPayment(now);
+                            newlyConfirmedReservation = reservation;
                         }
                         else if (reservation.Status == ReservationStatus.Cancelled)
                         {
@@ -202,6 +211,26 @@ public sealed class ProcessCulqiWebhookCommandHandler : IRequestHandler<ProcessC
             })));
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        if (newlyConfirmedReservation is not null)
+        {
+            var detail = await _adminReservations.GetDetailByPublicIdAsync(
+                newlyConfirmedReservation.PublicId,
+                cancellationToken);
+
+            if (detail is not null &&
+                !detail.Client.IsDeleted &&
+                !string.IsNullOrWhiteSpace(detail.Client.Email))
+            {
+                await _reservationEmails.NotifyReservationConfirmedAsync(
+                    detail.Reservation,
+                    detail.Client.Email,
+                    detail.Client.FullName,
+                    reference,
+                    cancellationToken);
+            }
+        }
+
         return new WebhookAckDto(Received: true, Duplicate: false);
     }
 

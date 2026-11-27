@@ -294,9 +294,9 @@ export const CheckoutCulqiPage: React.FC = () => {
                 ¡Tu experiencia en Perú está confirmada!
               </h2>
               <p className="text-xs text-[#15523F] leading-relaxed max-w-xl">
-                Pago oficial validado por <strong>{formatPen(reservation.total)} PEN</strong>. Tu
-                comprobante electrónico se procesa de forma asíncrona vía <strong>Resend</strong>{' '}
-                (Transactional Outbox · ADR-008).
+                Pago oficial validado por <strong>{formatPen(reservation.total)} PEN</strong>. Hemos
+                enviado la confirmación y el resumen de tu reserva a{' '}
+                <strong>{user?.email ?? 'tu correo verificado'}</strong>.
               </p>
               {providerRef && (
                 <p className="font-mono text-[11px] text-[#1B5E4A]">

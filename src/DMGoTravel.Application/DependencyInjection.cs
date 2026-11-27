@@ -1,5 +1,6 @@
 using DMGoTravel.Application.Common.Behaviors;
 using DMGoTravel.Application.Common.Security;
+using DMGoTravel.Application.Features.Notifications;
 using DMGoTravel.Application.Features.Reservations;
 using FluentValidation;
 using MediatR;
@@ -37,6 +38,7 @@ public static class DependencyInjection
 
         services.AddTransient<ReservationDtoFactory>();
         services.AddScoped<IAdminAccessGuard, AdminAccessGuard>();
+        services.AddScoped<IReservationEmailNotifier, ReservationEmailNotifier>();
 
         return services;
     }

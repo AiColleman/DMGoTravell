@@ -4,6 +4,7 @@ using DMGoTravel.Application.Common.Exceptions;
 using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Application.Common.Validation;
+using DMGoTravel.Application.Features.Notifications;
 using DMGoTravel.Application.Features.Payments.Dtos;
 using DMGoTravel.Domain.Modules.Audit;
 using DMGoTravel.Domain.Modules.Payments;
@@ -52,6 +53,7 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
     private readonly IAuditWriter _audit;
     private readonly IPendingAuditRepository _pendingAudit;
     private readonly ICorrelationContext _correlation;
+    private readonly IReservationEmailNotifier _reservationEmails;
     private readonly ILogger<StartPaymentCommandHandler> _logger;
 
     public StartPaymentCommandHandler(
@@ -65,6 +67,7 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
         IAuditWriter audit,
         IPendingAuditRepository pendingAudit,
         ICorrelationContext correlation,
+        IReservationEmailNotifier reservationEmails,
         ILogger<StartPaymentCommandHandler> logger)
     {
         _currentUser = currentUser;
@@ -77,6 +80,7 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
         _audit = audit;
         _pendingAudit = pendingAudit;
         _correlation = correlation;
+        _reservationEmails = reservationEmails;
         _logger = logger;
     }
 
@@ -251,6 +255,16 @@ public sealed class StartPaymentCommandHandler : IRequestHandler<StartPaymentCom
             throw new ConflictAppException(
                 "payment_not_payable",
                 "La reserva cambió mientras se procesaba el pago; consulte el estado antes de reintentar.");
+        }
+
+        if (gatewayResult.Approved && reservation.Status == ReservationStatus.Confirmed)
+        {
+            await _reservationEmails.NotifyReservationConfirmedAsync(
+                reservation,
+                user.Email,
+                user.Profile?.FullName,
+                gatewayResult.ProviderReference,
+                cancellationToken);
         }
 
         return new PaymentStartResponseDto(

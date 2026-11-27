@@ -5,6 +5,7 @@ using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Application.Common.Security;
 using DMGoTravel.Application.Common.Validation;
 using DMGoTravel.Application.Features.AdminReservations.Dtos;
+using DMGoTravel.Application.Features.Notifications;
 using DMGoTravel.Application.Features.Reservations;
 using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reservations;
@@ -59,6 +60,7 @@ public sealed class CancelAdminReservationCommandHandler
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
+    private readonly IReservationEmailNotifier _reservationEmails;
 
     public CancelAdminReservationCommandHandler(
         IAdminAccessGuard adminAccess,
@@ -72,7 +74,8 @@ public sealed class CancelAdminReservationCommandHandler
         ReservationDtoFactory reservationDtoFactory,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
-        IAuditWriter audit)
+        IAuditWriter audit,
+        IReservationEmailNotifier reservationEmails)
     {
         _adminAccess = adminAccess;
         _currentUser = currentUser;
@@ -86,6 +89,7 @@ public sealed class CancelAdminReservationCommandHandler
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
+        _reservationEmails = reservationEmails;
     }
 
     public async Task<AdminReservationDto> Handle(
@@ -189,6 +193,18 @@ public sealed class CancelAdminReservationCommandHandler
 
         var detail = await _adminReservations.GetDetailByPublicIdAsync(reservation.PublicId, cancellationToken)
             ?? throw new NotFoundAppException("La reserva no existe.");
+
+        if (!detail.Client.IsDeleted && !string.IsNullOrWhiteSpace(detail.Client.Email))
+        {
+            await _reservationEmails.NotifyReservationCancelledByAdminAsync(
+                detail.Reservation,
+                detail.Client.Email,
+                detail.Client.FullName,
+                request.Reason,
+                openedRefundCaseId.HasValue,
+                cancellationToken);
+        }
+
         var reservationDto = await _reservationDtoFactory.CreateAsync(detail.Reservation, cancellationToken);
         return AdminReservationMapper.ToDto(detail, reservationDto.Departure);
     }

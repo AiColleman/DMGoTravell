@@ -8,7 +8,10 @@ public sealed record EmailSendRequest(
     string Subject,
     string BodyText,
     string Template,
-    string? IdempotencyKey = null);
+    string? IdempotencyKey = null,
+    string? ActionUrl = null,
+    string? ActionLabel = null,
+    string? HighlightCode = null);
 
 public sealed record EmailSendResult(
     bool Sent,
@@ -18,6 +21,7 @@ public sealed record EmailSendResult(
 
 public interface IEmailSender
 {
+    string FrontendBaseUrl => "http://localhost:5174";
     Task<EmailSendResult> SendAsync(EmailSendRequest request, CancellationToken cancellationToken = default);
 }
 

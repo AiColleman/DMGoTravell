@@ -5,6 +5,7 @@ using DMGoTravel.Application.Common.Exceptions;
 using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Application.Common.Validation;
+using DMGoTravel.Application.Features.Notifications;
 using DMGoTravel.Application.Features.Reservations.Dtos;
 using DMGoTravel.Domain.Common;
 using DMGoTravel.Domain.Modules.Catalog;
@@ -59,6 +60,7 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
+    private readonly IReservationEmailNotifier _reservationEmails;
 
     public CreateReservationCommandHandler(
         ICurrentUser currentUser,
@@ -69,7 +71,8 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
         ReservationDtoFactory dtoFactory,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
-        IAuditWriter audit)
+        IAuditWriter audit,
+        IReservationEmailNotifier reservationEmails)
     {
         _currentUser = currentUser;
         _users = users;
@@ -80,6 +83,7 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
+        _reservationEmails = reservationEmails;
     }
 
     public async Task<ReservationDto> Handle(CreateReservationCommand request, CancellationToken cancellationToken)
@@ -253,6 +257,12 @@ public sealed class CreateReservationCommandHandler : IRequestHandler<CreateRese
                 "reservation_unavailable",
                 "La disponibilidad cambió mientras se creaba la reserva; vuelva a intentarlo.");
         }
+
+        await _reservationEmails.NotifyReservationCreatedAsync(
+            reservation,
+            user.Email,
+            user.Profile?.FullName,
+            cancellationToken);
 
         return await _dtoFactory.CreateAsync(reservation, cancellationToken);
     }

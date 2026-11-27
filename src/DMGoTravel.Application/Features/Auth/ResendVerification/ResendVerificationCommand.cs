@@ -39,6 +39,7 @@ public sealed class ResendVerificationCommandHandler
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDevEmailTokenStore _devEmailTokens;
+    private readonly IEmailSender _emailSender;
     private readonly IAuditWriter _audit;
 
     public ResendVerificationCommandHandler(
@@ -47,6 +48,7 @@ public sealed class ResendVerificationCommandHandler
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IDevEmailTokenStore devEmailTokens,
+        IEmailSender emailSender,
         IAuditWriter audit)
     {
         _currentUser = currentUser;
@@ -54,6 +56,7 @@ public sealed class ResendVerificationCommandHandler
         _clock = clock;
         _unitOfWork = unitOfWork;
         _devEmailTokens = devEmailTokens;
+        _emailSender = emailSender;
         _audit = audit;
     }
 
@@ -98,6 +101,21 @@ public sealed class ResendVerificationCommandHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _devEmailTokens.Set(user.Email, verificationToken);
+
+        var verifyUrl =
+            $"{_emailSender.FrontendBaseUrl}/acceso?mode=verify&token={Uri.EscapeDataString(verificationToken)}";
+        await _emailSender.SendAsync(
+            new EmailSendRequest(
+                ToEmail: user.Email,
+                Subject: "Nuevo enlace de verificación — DM GO TRAVEL",
+                BodyText:
+                    $"Solicitaste un nuevo enlace para verificar tu cuenta en DM GO TRAVEL.\nHaz clic en el botón o ingresa el código en la pantalla de acceso (el enlace anterior quedó invalidado).\nEnlace directo: {verifyUrl}",
+                Template: "auth.resend_verification",
+                IdempotencyKey: $"resend-verify-{request.IdempotencyKey}",
+                ActionUrl: verifyUrl,
+                ActionLabel: "Verificar mi correo ahora",
+                HighlightCode: verificationToken),
+            cancellationToken);
 
         return new OperationAcceptedDto(Guid.NewGuid(), "accepted", now, expiresAt);
     }

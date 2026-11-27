@@ -35,6 +35,7 @@ internal static class ReservationMapper
             "PEN",
             reservation.PaymentDeadlineAtUtc,
             reservation.ValidationDeadlineAtUtc,
-            reservation.RowVersion);
+            reservation.RowVersion,
+            snapshot?.OfferName);
     }
 }

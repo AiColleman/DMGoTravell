@@ -25,15 +25,18 @@ public sealed class ListReservationsQueryHandler : IRequestHandler<ListReservati
     private readonly ICurrentUser _currentUser;
     private readonly IUserRepository _users;
     private readonly IReservationRepository _reservations;
+    private readonly ReservationDtoFactory _dtoFactory;
 
     public ListReservationsQueryHandler(
         ICurrentUser currentUser,
         IUserRepository users,
-        IReservationRepository reservations)
+        IReservationRepository reservations,
+        ReservationDtoFactory dtoFactory)
     {
         _currentUser = currentUser;
         _users = users;
         _reservations = reservations;
+        _dtoFactory = dtoFactory;
     }
 
     public async Task<ReservationPageDto> Handle(ListReservationsQuery request, CancellationToken cancellationToken)
@@ -55,11 +58,17 @@ public sealed class ListReservationsQueryHandler : IRequestHandler<ListReservati
             request.PageSize,
             cancellationToken);
 
+        var dtos = new List<ReservationDto>(items.Count);
+        foreach (var reservation in items)
+        {
+            dtos.Add(await _dtoFactory.CreateAsync(reservation, cancellationToken));
+        }
+
         return new ReservationPageDto(
             request.Page,
             request.PageSize,
             total,
             request.Page * request.PageSize < total,
-            items.Select(reservation => ReservationMapper.ToDto(reservation)).ToArray());
+            dtos);
     }
 }

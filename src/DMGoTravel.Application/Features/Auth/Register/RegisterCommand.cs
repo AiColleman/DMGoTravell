@@ -43,6 +43,7 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Au
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDevEmailTokenStore _devEmailTokens;
+    private readonly IEmailSender _emailSender;
     private readonly IAuditWriter _audit;
 
     public RegisterCommandHandler(
@@ -53,6 +54,7 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Au
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
         IDevEmailTokenStore devEmailTokens,
+        IEmailSender emailSender,
         IAuditWriter audit)
     {
         _users = users;
@@ -62,6 +64,7 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Au
         _clock = clock;
         _unitOfWork = unitOfWork;
         _devEmailTokens = devEmailTokens;
+        _emailSender = emailSender;
         _audit = audit;
     }
 
@@ -111,6 +114,21 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Au
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _devEmailTokens.Set(user.Email, verificationToken);
+
+        var verifyUrl =
+            $"{_emailSender.FrontendBaseUrl}/acceso?mode=verify&token={Uri.EscapeDataString(verificationToken)}";
+        await _emailSender.SendAsync(
+            new EmailSendRequest(
+                ToEmail: user.Email,
+                Subject: "Confirma tu correo electrónico — DM GO TRAVEL",
+                BodyText:
+                    $"¡Hola, {request.FullName.Trim()}!\nGracias por registrarte en DM GO TRAVEL. Confirma tu correo electrónico haciendo clic en el botón o pegando el código en la pantalla de verificación (válido por {AuthTokenPolicy.EmailVerificationHours} horas).\nEnlace directo: {verifyUrl}",
+                Template: "auth.email_verification",
+                IdempotencyKey: $"reg-verify-{user.PublicId:N}",
+                ActionUrl: verifyUrl,
+                ActionLabel: "Verificar mi correo ahora",
+                HighlightCode: verificationToken),
+            cancellationToken);
 
         var access = _jwt.CreateAccessToken(user, familyId);
         var session = new AuthSessionDto(

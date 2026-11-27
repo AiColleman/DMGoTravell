@@ -120,6 +120,13 @@ export const AuthEditorialPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const urlTokenParam = searchParams.get('token');
+  React.useEffect(() => {
+    if (urlTokenParam) {
+      setToken(urlTokenParam);
+    }
+  }, [urlTokenParam]);
+
   const passwordStrength =
     (password.length >= 8 ? 1 : 0) +
     (/[A-Z]/.test(password) ? 1 : 0) +

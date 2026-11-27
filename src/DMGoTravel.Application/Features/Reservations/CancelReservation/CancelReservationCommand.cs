@@ -3,6 +3,7 @@ using DMGoTravel.Application.Common.Exceptions;
 using DMGoTravel.Application.Common.Idempotency;
 using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Application.Common.Validation;
+using DMGoTravel.Application.Features.Notifications;
 using DMGoTravel.Application.Features.Reservations.Dtos;
 using DMGoTravel.Domain.Modules.Payments;
 using DMGoTravel.Domain.Modules.Reservations;
@@ -47,6 +48,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
     private readonly IDateTimeProvider _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditWriter _audit;
+    private readonly IReservationEmailNotifier _reservationEmails;
 
     public CancelReservationCommandHandler(
         ICurrentUser currentUser,
@@ -58,7 +60,8 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         ReservationDtoFactory dtoFactory,
         IDateTimeProvider clock,
         IUnitOfWork unitOfWork,
-        IAuditWriter audit)
+        IAuditWriter audit,
+        IReservationEmailNotifier reservationEmails)
     {
         _currentUser = currentUser;
         _users = users;
@@ -70,6 +73,7 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
         _clock = clock;
         _unitOfWork = unitOfWork;
         _audit = audit;
+        _reservationEmails = reservationEmails;
     }
 
     public async Task<ReservationDto> Handle(CancelReservationCommand request, CancellationToken cancellationToken)
@@ -156,6 +160,12 @@ public sealed class CancelReservationCommandHandler : IRequestHandler<CancelRese
             })));
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _reservationEmails.NotifyReservationCancelledByClientAsync(
+            reservation,
+            user.Email,
+            user.Profile?.FullName,
+            cancellationToken);
 
         return await _dtoFactory.CreateAsync(reservation, cancellationToken);
     }
