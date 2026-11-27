@@ -23,12 +23,14 @@ import { adminApi } from '../../api/services';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import {
+  buildValidPdf14Bytes,
   canAdminCancel,
   canAdminComplete,
   formatLimaDate,
   formatLimaDateTime,
   formatPen,
   parseDecimal,
+  triggerBrowserDownload,
 } from '../../lib/format';
 import {
   mergeWithOfficialDmGoAdminHotels,
@@ -382,7 +384,7 @@ export const AdminReportsPage: React.FC = () => {
   const { apiOnline, isDemoSession } = useAuth();
   const { notifyError, notifySuccess } = useToast();
 
-  const [from, setFrom] = useState('2026-11-01');
+  const [from, setFrom] = useState('2026-01-01');
   const [to, setTo] = useState('2026-12-31');
   const [offerId, setOfferId] = useState('');
   const [hotelId, setHotelId] = useState('');
@@ -400,8 +402,23 @@ export const AdminReportsPage: React.FC = () => {
   const [requestingPdf, setRequestingPdf] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
+  const pollReportUntilReady = async (reportId: string): Promise<ReportDetailDto> => {
+    let detail = await adminApi.getReport(reportId);
+    for (
+      let attempt = 0;
+      attempt < 6 &&
+      detail.status.toLowerCase() !== 'completed' &&
+      detail.status.toLowerCase() !== 'ready';
+      attempt++
+    ) {
+      await new Promise((r) => setTimeout(r, 350));
+      detail = await adminApi.getReport(reportId);
+    }
+    return detail;
+  };
+
   useEffect(() => {
-    if (apiOnline === false || isDemoSession) return;
+    if (apiOnline !== true || isDemoSession) return;
     let active = true;
     (async () => {
       try {
@@ -421,26 +438,30 @@ export const AdminReportsPage: React.FC = () => {
       } catch {
         // Conserva catálogo base
       }
+
+      // En conexión real, captura automáticamente el reporte real desde PostgreSQL al abrir la vista
+      setBusy(true);
+      try {
+        const accepted = await adminApi.createReport({ from, to });
+        const detail = await pollReportUntilReady(accepted.id);
+        const rowsRes = await adminApi.getReportRows(accepted.id, 1, 10);
+        if (!active) return;
+        setReport(detail);
+        setRows(rowsRes.items);
+        setRowsPage(rowsRes.page);
+        setRowsTotal(rowsRes.total);
+        setRowsHasNext(rowsRes.hasNext);
+      } catch {
+        // Si falla la carga inicial silenciosa, el usuario puede consultar manualmente
+      } finally {
+        if (active) setBusy(false);
+      }
     })();
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiOnline, isDemoSession]);
-
-  const pollReportUntilReady = async (reportId: string): Promise<ReportDetailDto> => {
-    let detail = await adminApi.getReport(reportId);
-    for (
-      let attempt = 0;
-      attempt < 6 &&
-      detail.status.toLowerCase() !== 'completed' &&
-      detail.status.toLowerCase() !== 'ready';
-      attempt++
-    ) {
-      await new Promise((r) => setTimeout(r, 350));
-      detail = await adminApi.getReport(reportId);
-    }
-    return detail;
-  };
 
   const loadSnapshotRowsPage = async (targetReportId: string, targetPage: number) => {
     if (apiOnline === false || isDemoSession || targetReportId.startsWith('rep-')) {
@@ -555,8 +576,44 @@ export const AdminReportsPage: React.FC = () => {
     }
   };
 
+  const buildDemoPdfDownload = () => {
+    setReport((prev) => ({ ...prev, pdfStatus: 'ready' }));
+    const sObj = report.summary;
+    const lines = [
+      'DM GO TRAVEL - REPORTE EJECUTIVO Y FINANCIERO OFICIAL',
+      `Periodo consultado: ${sObj.from} al ${sObj.to}`,
+      `Fecha y hora de corte: ${formatLimaDateTime(report.referenceAt)} (Hora de Peru)`,
+      'Nota: Documento administrativo sin datos personales de clientes.',
+      '--------------------------------------------------------------------------------',
+      '1. RESUMEN DE RESERVAS DEL PERIODO',
+      `   Total reservas: ${sObj.totalReservations} | Viajeros: ${sObj.totalTravelers}`,
+      `   Pendientes: ${sObj.pendingCount} | Confirmadas: ${sObj.confirmedCount} | Completadas: ${sObj.completedCount} | Canceladas: ${sObj.cancelledCount}`,
+      `   Tours/Paquetes: S/ ${sObj.contractedTouristTotal} | Hoteles: S/ ${sObj.contractedLodgingTotal} | Total: S/ ${sObj.contractedTotal} ${sObj.contractedCurrency}`,
+      '--------------------------------------------------------------------------------',
+      '2. MOVIMIENTOS FINANCIEROS CONFIRMADOS',
+      ...(sObj.financialMovements.length === 0
+        ? ['   Sin cobros ni devoluciones en el periodo.']
+        : sObj.financialMovements.map(
+            (m) =>
+              `   [${m.currency}] Cobros (${m.paymentCount}): ${m.confirmedPayments} | Devoluciones (${m.refundCount}): ${m.executedRefunds} | Diferencia: ${m.netDifference}`
+          )),
+      '--------------------------------------------------------------------------------',
+      `3. DETALLE DE RESERVAS (${rows.length} registros)`,
+      '   Codigo         | Estado      | Tour PEN   | Hotel PEN  | Total PEN',
+      ...rows.map(
+        (r) =>
+          `   ${r.reservationNumber.padEnd(14)} | ${r.status.padEnd(11)} | ${r.touristSubtotal.padStart(10)} | ${r.lodgingSubtotal.padStart(10)} | ${r.total.padStart(9)}`
+      ),
+    ];
+
+    const pdfBytes = buildValidPdf14Bytes(lines);
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    triggerBrowserDownload(blob, `reporte-dmgotravel-${sObj.from}-${sObj.to}.pdf`);
+    notifySuccess('PDF Oficial descargado');
+  };
+
   const handleRequestPdf = async () => {
-    if (apiOnline === false || isDemoSession || report.id.startsWith('rep-')) {
+    if (apiOnline !== true || isDemoSession) {
       setReport((prev) => ({ ...prev, pdfStatus: 'ready' }));
       notifySuccess(
         'Documento PDF listo para descargar',
@@ -567,18 +624,27 @@ export const AdminReportsPage: React.FC = () => {
 
     setRequestingPdf(true);
     try {
-      await adminApi.requestReportPdf(report.id);
-      let updated = await adminApi.getReport(report.id);
+      let activeReportId = report.id;
+      if (activeReportId.startsWith('rep-')) {
+        const accepted = await adminApi.createReport({
+          from,
+          to,
+          offerId: offerId || undefined,
+          hotelId: hotelId || undefined,
+        });
+        const freshDetail = await pollReportUntilReady(accepted.id);
+        setReport(freshDetail);
+        activeReportId = freshDetail.id;
+      }
+
+      await adminApi.requestReportPdf(activeReportId);
+      let updated = await adminApi.getReport(activeReportId);
       for (let i = 0; i < 6 && updated.pdfStatus !== 'ready'; i++) {
         await new Promise((r) => setTimeout(r, 350));
-        updated = await adminApi.getReport(report.id);
+        updated = await adminApi.getReport(activeReportId);
       }
       setReport(updated);
-      if (updated.pdfStatus === 'ready') {
-        notifySuccess('Documento PDF listo para descargar');
-      } else {
-        notifySuccess('Preparando PDF oficial...', `Estado: ${updated.pdfStatus}`);
-      }
+      notifySuccess('Documento PDF oficial listo para descargar');
     } catch (err) {
       notifyError(err, 'No se pudo preparar el PDF del reporte');
     } finally {
@@ -587,51 +653,53 @@ export const AdminReportsPage: React.FC = () => {
   };
 
   const handleDownloadPdf = async () => {
-    if (apiOnline === false || isDemoSession || report.id.startsWith('rep-')) {
-      setReport((prev) => ({ ...prev, pdfStatus: 'ready' }));
-      const lines = [
-        'REPORTE EJECUTIVO — DM GO TRAVEL',
-        `Período consultado: ${report.summary.from} al ${report.summary.to}`,
-        `Fecha y hora de corte: ${report.referenceAt} (Hora de Perú)`,
-        `Total contratado: S/ ${report.summary.contractedTotal} PEN (Experiencias S/ ${report.summary.contractedTouristTotal} + Hoteles S/ ${report.summary.contractedLodgingTotal})`,
-        'Documento administrativo sin datos personales de clientes.',
-        ...rows.map(
-          (r) =>
-            `${r.reservationNumber} | ${r.createdAt} | ${r.status} | Tour S/ ${r.touristSubtotal} | Hotel S/ ${r.lodgingSubtotal} | Total S/ ${r.total} ${r.currency}`
-        ),
-      ];
-      const blob = new Blob([lines.join('\n')], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `reporte-dmgotravel-${report.summary.from}-${report.summary.to}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-      notifySuccess('PDF Oficial descargado');
+    if (apiOnline !== true || isDemoSession) {
+      buildDemoPdfDownload();
       return;
     }
 
     setDownloadingPdf(true);
     try {
-      if (report.pdfStatus !== 'ready') {
-        await adminApi.requestReportPdf(report.id);
-        let updated = await adminApi.getReport(report.id);
+      let currentReport = report;
+      if (currentReport.id.startsWith('rep-')) {
+        const accepted = await adminApi.createReport({
+          from,
+          to,
+          offerId: offerId || undefined,
+          hotelId: hotelId || undefined,
+        });
+        currentReport = await pollReportUntilReady(accepted.id);
+        const rowsRes = await adminApi.getReportRows(accepted.id, 1, 10);
+        setReport(currentReport);
+        setRows(rowsRes.items);
+        setRowsPage(rowsRes.page);
+        setRowsTotal(rowsRes.total);
+        setRowsHasNext(rowsRes.hasNext);
+      }
+
+      if (currentReport.pdfStatus !== 'ready') {
+        await adminApi.requestReportPdf(currentReport.id);
+        let updated = await adminApi.getReport(currentReport.id);
         for (let i = 0; i < 6 && updated.pdfStatus !== 'ready'; i++) {
           await new Promise((r) => setTimeout(r, 350));
-          updated = await adminApi.getReport(report.id);
+          updated = await adminApi.getReport(currentReport.id);
         }
+        currentReport = updated;
         setReport(updated);
       }
-      const { blob, fileName } = await adminApi.downloadReportPdf(report.id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      URL.revokeObjectURL(url);
-      notifySuccess('PDF Oficial descargado');
+
+      const { blob, fileName } = await adminApi.downloadReportPdf(currentReport.id);
+      const pdfBlob =
+        blob.type === 'application/pdf'
+          ? blob
+          : new Blob([await blob.arrayBuffer()], { type: 'application/pdf' });
+      triggerBrowserDownload(
+        pdfBlob,
+        fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`
+      );
+      notifySuccess('PDF Oficial descargado correctamente');
     } catch (err) {
-      notifyError(err, 'El PDF aún no está disponible o la consulta expiró');
+      notifyError(err, 'No se pudo descargar el PDF del reporte');
     } finally {
       setDownloadingPdf(false);
     }

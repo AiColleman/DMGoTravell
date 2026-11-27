@@ -5,6 +5,7 @@ import { AppRoutes } from '../App';
 import { AuthProvider } from '../context/AuthContext';
 import { ToastProvider } from '../context/ToastContext';
 import {
+  buildValidPdf14Bytes,
   calculateNights24h,
   canAdminCancel,
   canAdminComplete,
@@ -41,6 +42,17 @@ function renderAt(route = '/') {
 }
 
 describe('Viajes Perú Premium — Reglas de dominio y formateo PEN', () => {
+  it('genera binarios PDF 1.4 válidos con cabecera %PDF-1.4, xref y %%EOF', () => {
+    const bytes = buildValidPdf14Bytes([
+      'DM GO TRAVEL - REPORTE EJECUTIVO',
+      'Total contratado: S/ 1,440.00 PEN',
+    ]);
+    const text = new TextDecoder('ascii').decode(bytes);
+    expect(text.startsWith('%PDF-1.4\n')).toBe(true);
+    expect(text).toContain('xref\n');
+    expect(text.trimEnd().endsWith('%%EOF')).toBe(true);
+  });
+
   it('formatea importes exactos en Soles Peruanos (PEN)', () => {
     expect(formatPen('1480.00')).toContain('S/');
     expect(formatPen(0)).toBe('S/ 0.00');

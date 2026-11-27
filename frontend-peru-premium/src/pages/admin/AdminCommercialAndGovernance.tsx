@@ -20,7 +20,7 @@ import {
 import { adminApi, hotelsApi } from '../../api/services';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { formatLimaDateTime, formatPen } from '../../lib/format';
+import { formatLimaDateTime, formatPen, triggerBrowserDownload } from '../../lib/format';
 import {
   extractHotelEditorialMeta,
   mergeWithOfficialDmGoAdminHotels,
@@ -1942,37 +1942,35 @@ export const AdminClientsPage: React.FC = () => {
       return;
     }
 
-    if (apiOnline === false || isDemoSession) {
+    if (apiOnline !== true || isDemoSession) {
       const refIso = new Date().toISOString();
       setLastCsvReferenceAt(refIso);
       const csv =
-        'id,status,fullName,email,phone,emailVerified,registeredAt,reservationCount\ncl-01,active,"Valeria Quispe Mendoza",valeria.quispe@viajero.pe,"+51 987 654 321",true,2026-10-14T15:00:00Z,3\ncl-02,closed,,,,,1\n';
+        '\uFEFFid,status,fullName,email,phone,emailVerified,registeredAt,reservationCount\r\ncl-01,active,"Valeria Quispe Mendoza",valeria.quispe@viajero.pe,"+51 987 654 321",true,2026-10-14T15:00:00Z,3\r\ncl-02,closed,,,,,1\r\n';
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'clientes-dmgotravel.csv';
-      a.click();
-      URL.revokeObjectURL(url);
+      triggerBrowserDownload(blob, 'clientes-dmgotravel.csv');
       notifySuccess('Archivo CSV de clientes descargado');
       return;
     }
 
     setExporting(true);
     try {
-      const accepted = await adminApi.createClientsExport({
-        name: clientName.trim() || undefined,
-        email: clientEmail.trim() || undefined,
-        status: clientStatus || undefined,
-        registeredFrom: registeredFrom || undefined,
-        registeredTo: registeredTo || undefined,
-      });
+      const cleanFilters: Record<string, string> = {};
+      if (clientName.trim()) cleanFilters.name = clientName.trim();
+      if (clientEmail.trim()) cleanFilters.email = clientEmail.trim();
+      if (clientStatus) cleanFilters.status = clientStatus;
+      if (registeredFrom) cleanFilters.registeredFrom = registeredFrom;
+      if (registeredTo) cleanFilters.registeredTo = registeredTo;
+
+      const accepted = await adminApi.createClientsExport(
+        Object.keys(cleanFilters).length > 0 ? cleanFilters : undefined
+      );
       setLastCsvReferenceAt(accepted.referenceAt);
 
       let job = await adminApi.getExportStatus(accepted.id);
       for (
         let i = 0;
-        i < 6 &&
+        i < 8 &&
         job.status.toLowerCase() !== 'completed' &&
         job.status.toLowerCase() !== 'ready';
         i++
@@ -1982,12 +1980,12 @@ export const AdminClientsPage: React.FC = () => {
       }
 
       const { blob, fileName } = await adminApi.downloadExportCsv(accepted.id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      URL.revokeObjectURL(url);
+      const csvText = await blob.text();
+      const utf8CsvBlob = new Blob(['\uFEFF' + csvText], { type: 'text/csv;charset=utf-8' });
+      triggerBrowserDownload(
+        utf8CsvBlob,
+        fileName.endsWith('.csv') ? fileName : `${fileName}.csv`
+      );
       notifySuccess('Archivo CSV de clientes descargado');
     } catch (err) {
       notifyError(err, 'No se pudo descargar el archivo CSV');
@@ -2271,34 +2269,32 @@ export const AdminAuditPage: React.FC = () => {
       return;
     }
 
-    if (apiOnline === false || isDemoSession) {
+    if (apiOnline !== true || isDemoSession) {
       const csv =
-        'id,occurredAt,actor,entity,entityId,action,result,correlationId\naud-101,2026-11-24T16:40:00Z,operaciones@dmgotravel.pe,ReportSnapshot,rep-2026-nov,REPORT_CREATED,SUCCESS,corr-98a4f21c\n';
+        '\uFEFFid,occurredAt,actor,entity,entityId,action,result,correlationId\r\naud-101,2026-11-24T16:40:00Z,operaciones@dmgotravel.pe,ReportSnapshot,rep-2026-nov,REPORT_CREATED,success,corr-98a4f21c\r\n';
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'historial-actividad-dmgotravel.csv';
-      a.click();
-      URL.revokeObjectURL(url);
+      triggerBrowserDownload(blob, 'historial-actividad-dmgotravel.csv');
       notifySuccess('Archivo CSV de actividad descargado');
       return;
     }
 
     setExporting(true);
     try {
-      const accepted = await adminApi.createAuditExport({
-        from: auditFrom || undefined,
-        to: auditTo || undefined,
-        actor: actorFilter.trim() || undefined,
-        entity: entityFilter.trim() || undefined,
-        result: resultFilter.trim() || undefined,
-      });
+      const cleanFilters: Record<string, string> = {};
+      if (auditFrom) cleanFilters.from = auditFrom;
+      if (auditTo) cleanFilters.to = auditTo;
+      if (actorFilter.trim()) cleanFilters.actor = actorFilter.trim();
+      if (entityFilter.trim()) cleanFilters.entity = entityFilter.trim();
+      if (resultFilter.trim()) cleanFilters.result = resultFilter.trim().toLowerCase();
+
+      const accepted = await adminApi.createAuditExport(
+        Object.keys(cleanFilters).length > 0 ? cleanFilters : undefined
+      );
 
       let job = await adminApi.getExportStatus(accepted.id);
       for (
         let i = 0;
-        i < 6 &&
+        i < 8 &&
         job.status.toLowerCase() !== 'completed' &&
         job.status.toLowerCase() !== 'ready';
         i++
@@ -2308,12 +2304,12 @@ export const AdminAuditPage: React.FC = () => {
       }
 
       const { blob, fileName } = await adminApi.downloadExportCsv(accepted.id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      URL.revokeObjectURL(url);
+      const csvText = await blob.text();
+      const utf8CsvBlob = new Blob(['\uFEFF' + csvText], { type: 'text/csv;charset=utf-8' });
+      triggerBrowserDownload(
+        utf8CsvBlob,
+        fileName.endsWith('.csv') ? fileName : `${fileName}.csv`
+      );
       notifySuccess('Archivo CSV de actividad descargado');
     } catch (err) {
       notifyError(err, 'No se pudo exportar el historial');
@@ -2404,15 +2400,18 @@ export const AdminAuditPage: React.FC = () => {
 
         <div className="lg:col-span-3">
           <label className="block text-[11px] font-semibold text-[#5C6B73] mb-1">
-            Usuario o proceso
+            Tipo de origen
           </label>
-          <input
-            type="text"
+          <select
             value={actorFilter}
             onChange={(e) => setActorFilter(e.target.value)}
-            placeholder="Ej. operaciones@dmgotravel.pe"
             className="w-full px-3 py-2 rounded-xl border border-[#E5DDD0] bg-[#FAF7F2] text-xs"
-          />
+          >
+            <option value="">Todos los orígenes</option>
+            <option value="human">Usuario o administrador</option>
+            <option value="system">Sistema automático</option>
+            <option value="unidentified">Intento no identificado</option>
+          </select>
         </div>
 
         <div className="lg:col-span-2">
@@ -2421,7 +2420,7 @@ export const AdminAuditPage: React.FC = () => {
             type="text"
             value={entityFilter}
             onChange={(e) => setEntityFilter(e.target.value)}
-            placeholder="Ej. Reservation, Hotel..."
+            placeholder="Ej. reservation, user_account..."
             className="w-full px-3 py-2 rounded-xl border border-[#E5DDD0] bg-[#FAF7F2] text-xs"
           />
         </div>
@@ -2435,8 +2434,8 @@ export const AdminAuditPage: React.FC = () => {
               className="w-full px-3 py-2 rounded-xl border border-[#E5DDD0] bg-[#FAF7F2] text-xs"
             >
               <option value="">Todos</option>
-              <option value="SUCCESS">Exitoso</option>
-              <option value="FAILURE">Rechazado</option>
+              <option value="success">Exitoso</option>
+              <option value="failure">Rechazado</option>
             </select>
           </div>
           <button

@@ -289,3 +289,129 @@ export function canAdminCancel(status: CommercialReservationStatus | string): bo
 export function canManuallyConfirm(_status: CommercialReservationStatus | string): boolean {
   return false;
 }
+
+/**
+ * Dispara una descarga de archivo confiable en navegadores modernos (Chrome, Edge, Firefox)
+ * insertando temporalmente el enlace en el DOM y liberando el Object URL de forma diferida
+ * para no abortar la escritura en disco.
+ */
+export function triggerBrowserDownload(blob: Blob, fileName: string): void {
+  if (typeof document === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.rel = 'noopener';
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+
+  setTimeout(() => {
+    try {
+      URL.revokeObjectURL(url);
+    } catch {
+      // Ignora en entornos de prueba
+    }
+  }, 2000);
+}
+
+function escapePdfAscii(input: string): string {
+  const map: Record<string, string> = {
+    á: 'a',
+    é: 'e',
+    í: 'i',
+    ó: 'o',
+    ú: 'u',
+    ñ: 'n',
+    Á: 'A',
+    É: 'E',
+    Í: 'I',
+    Ó: 'O',
+    Ú: 'U',
+    Ñ: 'N',
+    ü: 'u',
+    Ü: 'U',
+    '°': 'o',
+    '·': '-',
+    '—': '-',
+    '–': '-',
+    '→': '->',
+  };
+
+  let out = '';
+  for (const ch of input) {
+    const mapped = map[ch] ?? (ch.charCodeAt(0) >= 32 && ch.charCodeAt(0) <= 126 ? ch : ' ');
+    if (mapped === '(' || mapped === ')' || mapped === '\\') {
+      out += '\\';
+    }
+    out += mapped;
+  }
+  return out;
+}
+
+/**
+ * Construye un archivo binario PDF 1.4 100 % válido (con tabla xref exacta y %%EOF)
+ * para que cualquier visor (Chrome, Edge, Adobe Acrobat) abra el reporte sin error.
+ */
+export function buildValidPdf14Bytes(lines: readonly string[]): Uint8Array {
+  const linesPerPage = 46;
+  const pages: string[][] = [];
+  for (let i = 0; i < lines.length; i += linesPerPage) {
+    pages.push(lines.slice(i, i + linesPerPage));
+  }
+  if (pages.length === 0) {
+    pages.push(['DM GO TRAVEL - Reporte Administrativo']);
+  }
+
+  const pageObjectIds = pages.map((_, i) => 4 + i * 2);
+  const objects: string[] = [
+    '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n',
+    `2 0 obj\n<< /Type /Pages /Kids [${pageObjectIds.map((id) => `${id} 0 R`).join(' ')}] /Count ${pages.length} >>\nendobj\n`,
+    '3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>\nendobj\n',
+  ];
+
+  const encoder = new TextEncoder();
+
+  pages.forEach((pageLines, i) => {
+    const pageId = 4 + i * 2;
+    const contentId = pageId + 1;
+    let stream = 'BT\n/F1 8.5 Tf\n36 760 Td\n14 TL\n';
+    pageLines.forEach((line, idx) => {
+      const safe = escapePdfAscii(line);
+      stream += idx === 0 ? `(${safe}) Tj\n` : `T* (${safe}) Tj\n`;
+    });
+    stream += 'ET\n';
+    const streamLen = encoder.encode(stream).byteLength;
+
+    objects.push(
+      `${pageId} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>\nendobj\n`
+    );
+    objects.push(`${contentId} 0 obj\n<< /Length ${streamLen} >>\nstream\n${stream}endstream\nendobj\n`);
+  });
+
+  const chunks: string[] = ['%PDF-1.4\n'];
+  let byteCursor = encoder.encode(chunks[0]!).byteLength;
+  const offsets: number[] = [0];
+
+  for (const obj of objects) {
+    offsets.push(byteCursor);
+    chunks.push(obj);
+    byteCursor += encoder.encode(obj).byteLength;
+  }
+
+  const xrefPos = byteCursor;
+  chunks.push(`xref\n0 ${offsets.length}\n`);
+  chunks.push('0000000000 65535 f \n');
+  for (let i = 1; i < offsets.length; i++) {
+    chunks.push(`${String(offsets[i]).padStart(10, '0')} 00000 n \n`);
+  }
+  chunks.push(
+    `trailer\n<< /Size ${offsets.length} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF\n`
+  );
+
+  return encoder.encode(chunks.join(''));
+}
