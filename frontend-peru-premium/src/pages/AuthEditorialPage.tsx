@@ -230,40 +230,39 @@ export const AuthEditorialPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-116px)] grid grid-cols-1 lg:grid-cols-12">
-      {/* Fotografía Editorial Izquierda */}
-      <div className="hidden lg:block lg:col-span-6 relative overflow-hidden bg-[#12232E]">
+    <div className="min-h-[calc(100vh-116px)] grid grid-cols-1 lg:grid-cols-12 lg:items-start bg-[#FAF7F2]">
+      {/* Fotografía Editorial Izquierda fija al viewport para evitar saltos al cambiar de pestaña */}
+      <div className="hidden lg:block lg:col-span-6 lg:sticky lg:top-20 lg:h-[calc(100vh-116px)] lg:min-h-[540px] relative overflow-hidden bg-[#12232E]">
         <PeruPhoto
           src={PERU_ASSETS.peruHero}
           alt="Machu Picchu, Cusco"
           category="package"
           hintText="Machu Picchu Cusco"
           loading="eager"
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1720]/90 via-[#0B1720]/30 to-transparent" />
-        <div className="absolute bottom-12 left-12 right-12 text-[#FAF7F2] space-y-4">
-          <SectionEyebrow light>Identidad &amp; Acceso · Spec 005</SectionEyebrow>
-          <h2 className="font-editorial text-5xl font-medium leading-tight">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1720]/90 via-[#0B1720]/35 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-10 xl:p-12 text-[#FAF7F2] space-y-3">
+          <SectionEyebrow light>Portal de Viajeros · DMGOTRAVEL</SectionEyebrow>
+          <h2 className="font-editorial text-4xl xl:text-5xl font-medium leading-tight">
             Cada gran historia en el Perú empieza con un primer paso.
           </h2>
-          <p className="text-sm text-[#FAF7F2]/80 max-w-md leading-relaxed">
-            Gestiona tus reservas compuestas, pagos verificados en Soles y preferencias personales
-            con seguridad JWT y cookies protegidas.
+          <p className="text-sm text-[#FAF7F2]/85 max-w-md leading-relaxed">
+            Gestiona tus reservas, pagos verificados en Soles y datos de viaje desde un solo lugar.
           </p>
-          <span className="inline-flex items-center gap-1.5 text-xs text-[#C89B54]">
+          <span className="inline-flex items-center gap-1.5 text-xs text-[#C89B54] pt-1">
             <MapPin className="w-3.5 h-3.5" />
             Santuario Histórico de Machu Picchu · Cusco
           </span>
         </div>
       </div>
 
-      {/* Formulario Derecho */}
-      <div className="lg:col-span-6 flex items-center justify-center px-4 sm:px-10 py-12 bg-[#FAF7F2]">
-        <div className="w-full max-w-md space-y-6">
-          <div className="space-y-2">
+      {/* Formulario Derecho alineado arriba para mantener fijos título y selector */}
+      <div className="lg:col-span-6 flex items-start justify-center px-4 sm:px-10 pt-8 sm:pt-10 pb-12 bg-[#FAF7F2]">
+        <div className="w-full max-w-md space-y-5">
+          <div className="space-y-1.5">
             <SectionEyebrow>Portal de Acceso DMGOTRAVEL</SectionEyebrow>
-            <h1 className="font-editorial text-4xl font-medium text-[#12232E]">
+            <h1 className="font-editorial text-3xl sm:text-4xl font-medium text-[#12232E]">
               {mode === 'login' && 'Qué bueno verte de nuevo'}
               {mode === 'register' && 'Crea tu cuenta de viajero'}
               {mode === 'verify' && 'Verifica tu correo'}
