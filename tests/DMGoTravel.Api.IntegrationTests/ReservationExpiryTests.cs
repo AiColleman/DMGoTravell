@@ -123,6 +123,47 @@ public sealed class ReservationExpiryTests : ApiTestBase
             .Contain("límite de validación vencido");
     }
 
+    [Fact(DisplayName = "Vencimiento: corte a commit completo en 60 s o menos con el worker real")]
+    public async Task Expiry_Worker_ShouldCommitWithin60Seconds()
+    {
+        var user = await RegisterVerifiedUserAsync();
+        var (_, departureId) = await GetTourAsync();
+        var seatsBefore = await GetAvailableSeatsAsync(departureId);
+
+        var created = await CreateReservationAsync(user.AccessToken, departureId, travelers: 2);
+        created.StatusCode.Should().Be(HttpStatusCode.Created);
+        var reservationId = (await ReadJsonAsync(created)).GetProperty("id").GetGuid();
+
+        // El corte ya ocurrió: el worker hospedado debe recogerlo en su siguiente ciclo.
+        var cutoff = DateTime.UtcNow.AddSeconds(-2);
+        await SetDeadlinesAsync(reservationId, cutoff, DateTime.UtcNow.AddMinutes(5));
+
+        Reservation? current = null;
+        var timeoutAt = cutoff.AddSeconds(60);
+        while (DateTime.UtcNow < timeoutAt)
+        {
+            using (var scope = Factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                current = await db.Reservations.AsNoTracking()
+                    .SingleAsync(r => r.PublicId == reservationId, Ct);
+            }
+
+            if (current.Status == ReservationStatus.Cancelled)
+            {
+                break;
+            }
+
+            await Task.Delay(500, Ct);
+        }
+
+        current.Should().NotBeNull();
+        current!.Status.Should().Be(ReservationStatus.Cancelled);
+        current.CancellationOrigin.Should().Be(CancellationOrigin.Expiry);
+        (DateTime.UtcNow - cutoff).Should().BeLessThanOrEqualTo(TimeSpan.FromSeconds(60));
+        (await GetAvailableSeatsAsync(departureId)).Should().Be(seatsBefore);
+    }
+
     private async Task<ExpiryBatchResult> RunExpiryProcessorAsync()
     {
         using var scope = Factory.Services.CreateScope();
