@@ -77,9 +77,10 @@ public sealed class ProblemDetailsMiddleware
                 break;
 
             case UnauthorizedAccessException:
-                status = StatusCodes.Status401Unauthorized;
-                code = "unauthenticated";
-                title = "No autenticado";
+                status = StatusCodes.Status500InternalServerError;
+                code = "internal_error";
+                title = "Error interno del servidor";
+                detail = "Acceso no autorizado a nivel de sistema de archivos.";
                 break;
 
             case KeyNotFoundException:

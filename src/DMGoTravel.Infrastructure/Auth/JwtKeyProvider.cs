@@ -62,7 +62,7 @@ public sealed class JwtKeyProvider : IDisposable
         ValidateAudience = true,
         ValidAudience = Options.Audience,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero,
+        ClockSkew = TimeSpan.FromSeconds(5),
         NameClaimType = "sub",
         RoleClaimType = "role"
     };

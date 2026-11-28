@@ -42,7 +42,7 @@ public static class MediaEndpoints
             .WithTags("AdminCatalog")
             .RequireAuthorization();
 
-        catalog.MapPost("/", async (
+        catalog.MapPost(string.Empty, async (
             string type,
             Guid id,
             HttpContext httpContext,

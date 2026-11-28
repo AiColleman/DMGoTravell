@@ -8,6 +8,7 @@ using DMGoTravel.Infrastructure.Auth;
 using DMGoTravel.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text.Json;
@@ -35,6 +36,12 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddScoped<ICorrelationContext, HttpCorrelationContext>();
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MemoryBufferThreshold = 10_485_760; // 10 MB buffer en memoria para uploads sin I/O a disco temp
+    options.MultipartBodyLengthLimit = 10_485_760; // 10 MB límite para permitir validación de 413 a nivel de aplicación
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();

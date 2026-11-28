@@ -327,7 +327,7 @@ public sealed class Phase6IntegrationsTests : ApiTestBase
         var offerId = (await ReadJsonAsync(offerResp)).GetProperty("id").GetGuid();
 
         // 2. Archivo falso (texto haciéndose pasar por image/jpeg) -> 415 UnsupportedMediaType
-        var fakeReq = CreateMultipartImageRequest(
+        using var fakeReq = CreateMultipartImageRequest(
             HttpMethod.Post,
             $"/api/v1/admin/catalog/tours/{offerId}/images",
             adminToken,
@@ -335,12 +335,13 @@ public sealed class Phase6IntegrationsTests : ApiTestBase
             "fake.jpg",
             "image/jpeg",
             true);
-        (await Client.SendAsync(fakeReq, Ct)).StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
+        using var fakeResp = await Client.SendAsync(fakeReq, Ct);
+        fakeResp.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
 
         // 3. Archivo > 5 MB -> 413 PayloadTooLarge
         var oversizedBytes = new byte[5_000_001];
         Array.Copy(ValidPngBytes, oversizedBytes, ValidPngBytes.Length);
-        var bigReq = CreateMultipartImageRequest(
+        using var bigReq = CreateMultipartImageRequest(
             HttpMethod.Post,
             $"/api/v1/admin/catalog/tours/{offerId}/images",
             adminToken,
@@ -348,7 +349,8 @@ public sealed class Phase6IntegrationsTests : ApiTestBase
             "huge.png",
             "image/png",
             true);
-        (await Client.SendAsync(bigReq, Ct)).StatusCode.Should().Be(HttpStatusCode.RequestEntityTooLarge);
+        using var bigResp = await Client.SendAsync(bigReq, Ct);
+        bigResp.StatusCode.Should().Be(HttpStatusCode.RequestEntityTooLarge);
 
         // 4. Subir PNG válido -> 201 Created (version = 1)
         var uploadOfferReq = CreateMultipartImageRequest(

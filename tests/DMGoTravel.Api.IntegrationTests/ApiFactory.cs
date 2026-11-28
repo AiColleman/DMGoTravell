@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using DMGoTravel.Application.Common.Interfaces;
+using DMGoTravel.Infrastructure.Integrations;
 using DMGoTravel.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -34,6 +35,14 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Development");
         builder.UseSetting("ConnectionStrings:DefaultConnection", TestConnection);
+        builder.ConfigureServices(services =>
+        {
+            services.PostConfigure<ExternalProviderOptions>(options =>
+            {
+                // En pruebas de integración, forzar modo simulado para Resend para evitar llamadas de red a api.resend.com
+                options.ResendApiKey = "";
+            });
+        });
     }
 
     /// <summary>

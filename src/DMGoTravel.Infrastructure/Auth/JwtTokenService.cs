@@ -39,7 +39,7 @@ public sealed class JwtTokenService : IJwtTokenService
             Issuer = _keys.Options.Issuer,
             Audience = _keys.Options.Audience,
             Expires = expiresAtUtc,
-            NotBefore = now,
+            NotBefore = now.AddSeconds(-5),
             IssuedAt = now,
             SigningCredentials = _keys.CreateSigningCredentials()
         };

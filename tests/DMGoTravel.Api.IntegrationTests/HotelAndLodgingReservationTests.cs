@@ -4,6 +4,7 @@ using DMGoTravel.Application.Common.Interfaces;
 using DMGoTravel.Application.Features.Reservations.ExpireReservations;
 using DMGoTravel.Domain.Modules.Catalog;
 using DMGoTravel.Domain.Modules.Identity;
+using DMGoTravel.Domain.Modules.Reservations;
 using DMGoTravel.Infrastructure.Persistence;
 using FluentAssertions;
 using MediatR;
@@ -165,7 +166,18 @@ public sealed class HotelAndLodgingReservationTests : ApiTestBase
 
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var expiry = await mediator.Send(new ProcessExpiredReservationsCommand(), Ct);
-            expiry.Cancelled.Should().BeGreaterThanOrEqualTo(1);
+
+            var res3State = await db.Reservations.AsNoTracking().SingleAsync(r => r.PublicId == res3Id, Ct);
+            res3State.Status.Should().Be(ReservationStatus.Cancelled);
+            if (expiry.Cancelled == 0)
+            {
+                // El HostedService ReservationExpiryWorker ya procesó concurrentemente la cancelación
+                res3State.CancellationOrigin.Should().Be(CancellationOrigin.Expiry);
+            }
+            else
+            {
+                expiry.Cancelled.Should().BeGreaterThanOrEqualTo(1);
+            }
         }
 
         (await GetCommittedRoomsAsync(roomTypeId, checkIn)).Should().Be(0);
